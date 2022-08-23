@@ -1,0 +1,14 @@
+codecept.conf.js
+mocha.js
+coverage/
+doc/
+bin/
+src/**/cartridges/**/cartridge/static/
+src/lib_productlist/
+src/plugin_wishlists/
+src/sfra_framework/
+src/plugin_seo/
+src/link_emarsys/
+src/plugin_dis/
+src/plugin_sitemap/
+src/**/test/
