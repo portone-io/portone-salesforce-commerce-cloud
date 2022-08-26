@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+    <type-extension type-id="SitePreferences">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="import_apiKey">
+                <display-name xml:lang="x-default">Import API Key</display-name>
+                <description xml:lang="x-default">API Key from the I'mport portal settings</description>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_apiSecret">
+                <display-name xml:lang="x-default">Import API Secret</display-name>
+                <description xml:lang="x-default">API Secret from the I'mport portal settings</description>
+                <type>password</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_merchantID">
+                <display-name xml:lang="x-default">Import Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from the I'mport portal settings</description>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_paymentGateway">
+                <display-name xml:lang="x-default">Import Payment Gateway</display-name>
+                <description xml:lang="x-default">Select from a list of supported payment gateways</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <select-multiple-flag>false</select-multiple-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">KG Inicis</display>
+                        <value>inicis</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">KCP</display>
+                        <value>kcp</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Toss</display>
+                        <value>toss</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">NICE</display>
+                        <value>nice</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">KICC</display>
+                        <value>kicc</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Danal</display>
+                        <value>danal</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Smartro</display>
+                        <value>smartro</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Settle Bank</display>
+                        <value>settleBank</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PAYJOA</display>
+                        <value>payjoa</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">KAKAOPAY</display>
+                        <value>kakaoPay</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">NaverPAY</display>
+                        <value>naverPay</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PAYCO</display>
+                        <value>payco</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_inicisPaymentMethods">
+                <display-name xml:lang="x-default">Inicis Payment Methods</display-name>
+                <description xml:lang="x-default">Hold the 'ctlr' key and select all applicable payment methods</description>
+                <type>enum-of-string</type>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Credit Card</display>
+                        <value>card</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Live Transfer</display>
+                        <value>liveTransfer</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Virtual Account</display>
+                        <value>vbank</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">KAKAOPAY</display>
+                        <value>kakaoPay</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">NaverPAY</display>
+                        <value>naverPay</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PAYCO</display>
+                        <value>payco</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">SamsungPAY</display>
+                        <value>samsungPay</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_inicisMerchantID">
+                <display-name xml:lang="x-default">Inicis Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from KC Inicis payment provider</description>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        <custom-attribute-definitions>
+
+        </group-definitions>            
+            <attribute-group group-id="import_general">
+                <display-name xml:lang="x-default">Import General Configs</display-name>
+                <attribute attribute-id="import_apiKey"/>
+                <attribute attribute-id="import_apiSecret"/>
+                <attribute attribute-id="import_merchantID"/>
+                <attribute attribute-id="import_paymentGateway"/>
+            </attribute-group>
+
+            <attribute-group group-id="import_inicisConfigs">
+                <display-name xml:lang="x-default">Import Inicis Configs</display-name>
+                <attribute attribute-id="import_inicisPaymentMethods"/>
+                <attribute attribute-id="import_inicisMerchantID"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+</metadata>
