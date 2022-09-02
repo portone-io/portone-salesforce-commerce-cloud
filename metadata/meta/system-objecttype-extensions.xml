@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+    <type-extension type-id="SitePreferences">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="import_apiKey">
+                <display-name xml:lang="x-default">Import API Key</display-name>
+                <description xml:lang="x-default">API Key from the I'mport portal settings</description>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_apiSecret">
+                <display-name xml:lang="x-default">Import API Secret</display-name>
+                <description xml:lang="x-default">API Secret from the I'mport portal settings</description>
+                <type>password</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_merchantID">
+                <display-name xml:lang="x-default">Import Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from the I'mport portal settings</description>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_paymentGateway">
+                <display-name xml:lang="x-default">Import Payment Gateway</display-name>
+                <description xml:lang="x-default">Select from a list of supported payment gateways</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <select-multiple-flag>false</select-multiple-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">KG Inicis</display>
+                        <value>inicis</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">KCP</display>
+                        <value>kcp</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Toss</display>
+                        <value>toss</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">NICE</display>
+                        <value>nice</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">KICC</display>
+                        <value>kicc</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Danal</display>
+                        <value>danal</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Smartro</display>
+                        <value>smartro</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Settle Bank</display>
+                        <value>settleBank</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PAYJOA</display>
+                        <value>payjoa</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">KAKAOPAY</display>
+                        <value>kakaoPay</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">NaverPAY</display>
+                        <value>naverPay</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PAYCO</display>
+                        <value>payco</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_inicisPaymentMethods">
+                <display-name xml:lang="x-default">KG Inicis Payment Methods</display-name>
+                <description xml:lang="x-default">Hold the 'ctlr' key and select all applicable payment methods</description>
+                <type>enum-of-string</type>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Credit Card</display>
+                        <value>card</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Live Transfer</display>
+                        <value>liveTransfer</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Virtual Account</display>
+                        <value>vbank</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">KAKAOPAY</display>
+                        <value>kakaoPay</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">NaverPAY</display>
+                        <value>naverPay</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PAYCO</display>
+                        <value>payco</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">SamsungPAY</display>
+                        <value>samsungPay</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_inicisMerchantID">
+                <display-name xml:lang="x-default">KG Inicis Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from KG Inicis payment gateway</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_kcpPaymentMethods">
+                <display-name xml:lang="x-default">KCP Payment Methods</display-name>
+                <description xml:lang="x-default">Hold the 'ctlr' key and select all applicable payment methods</description>
+                <type>enum-of-string</type>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Credit Card</display>
+                        <value>card</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Live Transfer</display>
+                        <value>liveTransfer</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Virtual Account</display>
+                        <value>vbank</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">KAKAOPAY</display>
+                        <value>kakaoPay</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">NaverPAY</display>
+                        <value>naverPay</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PAYCO</display>
+                        <value>payco</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">SamsungPAY</display>
+                        <value>samsungPay</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_kcpMerchantID">
+                <display-name xml:lang="x-default">KCP Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from KCP payment gateway</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_tossPaymentMethods">
+                <display-name xml:lang="x-default">Toss Payment Methods</display-name>
+                <description xml:lang="x-default">Hold the 'ctlr' key and select all applicable payment methods</description>
+                <type>enum-of-string</type>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Credit Card</display>
+                        <value>card</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Live Transfer</display>
+                        <value>liveTransfer</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Virtual Account</display>
+                        <value>vbank</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_tossMerchantID">
+                <display-name xml:lang="x-default">Toss Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from Toss payment gateway</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_nicePaymentMethods">
+                <display-name xml:lang="x-default">NICE Payment Methods</display-name>
+                <description xml:lang="x-default">Hold the 'ctlr' key and select all applicable payment methods</description>
+                <type>enum-of-string</type>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Credit Card</display>
+                        <value>card</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Live Transfer</display>
+                        <value>liveTransfer</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Virtual Account</display>
+                        <value>vbank</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">KAKAOPAY</display>
+                        <value>kakaoPay</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_niceMerchantID">
+                <display-name xml:lang="x-default">NICE Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from NICE payment gateway</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_kiccPaymentMethods">
+                <display-name xml:lang="x-default">KICC Payment Methods</display-name>
+                <description xml:lang="x-default">Hold the 'ctlr' key and select all applicable payment methods</description>
+                <type>enum-of-string</type>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Credit Card</display>
+                        <value>card</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Live Transfer</display>
+                        <value>liveTransfer</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Virtual Account</display>
+                        <value>vbank</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_kiccMerchantID">
+                <display-name xml:lang="x-default">KICC Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from KICC payment gateway</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_danalPaymentMethods">
+                <display-name xml:lang="x-default">Danal Payment Methods</display-name>
+                <description xml:lang="x-default">Hold the 'ctlr' key and select all applicable payment methods</description>
+                <type>enum-of-string</type>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Credit Card</display>
+                        <value>card</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Live Transfer</display>
+                        <value>liveTransfer</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Virtual Account</display>
+                        <value>vbank</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_danalMerchantID">
+                <display-name xml:lang="x-default">Danal Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from Danal payment gateway</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_smartroPaymentMethods">
+                <display-name xml:lang="x-default">Smartro Payment Methods</display-name>
+                <description xml:lang="x-default">Hold the 'ctlr' key and select all applicable payment methods</description>
+                <type>enum-of-string</type>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Credit Card</display>
+                        <value>card</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Live Transfer</display>
+                        <value>liveTransfer</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Virtual Account</display>
+                        <value>vbank</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_smartroMerchantID">
+                <display-name xml:lang="x-default">Smartro Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from Smartro payment gateway</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_settleBankPaymentMethods">
+                <display-name xml:lang="x-default">Settle Bank Payment Methods</display-name>
+                <description xml:lang="x-default">Hold the 'ctlr' key and select all applicable payment methods</description>
+                <type>enum-of-string</type>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Credit Card</display>
+                        <value>card</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Live Transfer</display>
+                        <value>liveTransfer</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Virtual Account</display>
+                        <value>vbank</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_settleBankMerchantID">
+                <display-name xml:lang="x-default">Settle Bank Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from Settle Bank payment gateway</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_payjoaPaymentMethods">
+                <display-name xml:lang="x-default">PAYJOA Payment Methods</display-name>
+                <description xml:lang="x-default">Hold the 'ctlr' key and select all applicable payment methods</description>
+                <type>enum-of-string</type>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Credit Card</display>
+                        <value>card</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Live Transfer</display>
+                        <value>liveTransfer</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Virtual Account</display>
+                        <value>vbank</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_payjoaMerchantID">
+                <display-name xml:lang="x-default">PAYJOA Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from PAYJOA payment gateway</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_kakaoPayPaymentMethods">
+                <display-name xml:lang="x-default">KAKAOPAY Payment Methods</display-name>
+                <description xml:lang="x-default">Hold the 'ctlr' key and select all applicable payment methods</description>
+                <type>enum-of-string</type>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Credit Card</display>
+                        <value>card</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Live Transfer</display>
+                        <value>liveTransfer</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">KAKAOPAY Account</display>
+                        <value>kakaoPay</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_kakaoPayMerchantID">
+                <display-name xml:lang="x-default">KAKAOPAY Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from KAKAOPAY payment gateway</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_naverPayPaymentMethods">
+                <display-name xml:lang="x-default">NaverPAY Payment Methods</display-name>
+                <description xml:lang="x-default">Hold the 'ctlr' key and select all applicable payment methods</description>
+                <type>enum-of-string</type>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Credit Card</display>
+                        <value>card</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Live Transfer</display>
+                        <value>liveTransfer</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">NaverPAY Account</display>
+                        <value>naverPay</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_naverPayMerchantID">
+                <display-name xml:lang="x-default">NaverPAY Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from NaverPAY payment gateway</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_paycoPaymentMethods">
+                <display-name xml:lang="x-default">PAYCO Payment Methods</display-name>
+                <description xml:lang="x-default">Hold the 'ctlr' key and select all applicable payment methods</description>
+                <type>enum-of-string</type>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Credit Card</display>
+                        <value>card</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Live Transfer</display>
+                        <value>liveTransfer</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PAYCO Account</display>
+                        <value>payco</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="import_paycoMerchantID">
+                <display-name xml:lang="x-default">PAYCO Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from PAYCO payment gateway</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+        </custom-attribute-definitions>
+
+        <group-definitions>            
+            <attribute-group group-id="import_general">
+                <display-name xml:lang="x-default">Import General Configs</display-name>
+                <attribute attribute-id="import_apiKey"/>
+                <attribute attribute-id="import_apiSecret"/>
+                <attribute attribute-id="import_merchantID"/>
+                <attribute attribute-id="import_paymentGateway"/>
+            </attribute-group>
+
+            <attribute-group group-id="import_inicisConfigs">
+                <display-name xml:lang="x-default">Import Inicis Configs</display-name>
+                <attribute attribute-id="import_inicisPaymentMethods"/>
+                <attribute attribute-id="import_inicisMerchantID"/>
+            </attribute-group>
+
+            <attribute-group group-id="import_kcpConfigs">
+                <display-name xml:lang="x-default">Import KCP Configs</display-name>
+                <attribute attribute-id="import_kcpPaymentMethods"/>
+                <attribute attribute-id="import_kcpMerchantID"/>
+            </attribute-group>
+
+            <attribute-group group-id="import_tossConfigs">
+                <display-name xml:lang="x-default">Import Toss Configs</display-name>
+                <attribute attribute-id="import_tossPaymentMethods"/>
+                <attribute attribute-id="import_tossMerchantID"/>
+            </attribute-group>
+
+            <attribute-group group-id="import_niceConfigs">
+                <display-name xml:lang="x-default">Import NICE Configs</display-name>
+                <attribute attribute-id="import_nicePaymentMethods"/>
+                <attribute attribute-id="import_niceMerchantID"/>
+            </attribute-group>
+
+            <attribute-group group-id="import_kiccConfigs">
+                <display-name xml:lang="x-default">Import KICC Configs</display-name>
+                <attribute attribute-id="import_kiccPaymentMethods"/>
+                <attribute attribute-id="import_kiccMerchantID"/>
+            </attribute-group>
+
+            <attribute-group group-id="import_danalConfigs">
+                <display-name xml:lang="x-default">Import Danal Configs</display-name>
+                <attribute attribute-id="import_danalPaymentMethods"/>
+                <attribute attribute-id="import_danalMerchantID"/>
+            </attribute-group>
+
+            <attribute-group group-id="import_smartroConfigs">
+                <display-name xml:lang="x-default">Import Smartro Configs</display-name>
+                <attribute attribute-id="import_smartroPaymentMethods"/>
+                <attribute attribute-id="import_smartroMerchantID"/>
+            </attribute-group>
+
+            <attribute-group group-id="import_settleBankConfigs">
+                <display-name xml:lang="x-default">Import Settle Bank Configs</display-name>
+                <attribute attribute-id="import_settleBankPaymentMethods"/>
+                <attribute attribute-id="import_settleBankMerchantID"/>
+            </attribute-group>
+
+            <attribute-group group-id="import_payjoaConfigs">
+                <display-name xml:lang="x-default">Import PAYJOA Configs</display-name>
+                <attribute attribute-id="import_payjoaPaymentMethods"/>
+                <attribute attribute-id="import_payjoaMerchantID"/>
+            </attribute-group>
+
+            <attribute-group group-id="import_kakaoPayConfigs">
+                <display-name xml:lang="x-default">Import KAKAOPAY Configs</display-name>
+                <attribute attribute-id="import_kakaoPayPaymentMethods"/>
+                <attribute attribute-id="import_kakaoPayMerchantID"/>
+            </attribute-group>
+
+            <attribute-group group-id="import_naverPayConfigs">
+                <display-name xml:lang="x-default">Import NaverPAY Configs</display-name>
+                <attribute attribute-id="import_naverPayPaymentMethods"/>
+                <attribute attribute-id="import_naverPayMerchantID"/>
+            </attribute-group>
+
+            <attribute-group group-id="import_paycoConfigs">
+                <display-name xml:lang="x-default">Import PAYCO Configs</display-name>
+                <attribute attribute-id="import_paycoPaymentMethods"/>
+                <attribute attribute-id="import_paycoMerchantID"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+</metadata>

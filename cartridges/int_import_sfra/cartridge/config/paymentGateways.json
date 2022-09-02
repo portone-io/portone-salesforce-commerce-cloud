@@ -1,0 +1,314 @@
+{
+    "nice": {
+        "name": "NICE",
+        "configGroup": "import_niceConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "payAsYouGo": true,
+                "subscriptionWindow": false,
+                "subscriptionAPI": false
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true,
+                "escrowAPI": false
+            },
+            {
+                "id": "liveTransfer",
+                "name": "Live Transfer",
+                "escrow": true,
+                "escrowAPI": false
+            },
+            {
+                "id": "kakoPay",
+                "name": "KAKAOPAY"
+            }
+        ]
+    },
+    "inicis": {
+        "name": "KG Inicis",
+        "configGroup": "import_inicisConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "payAsYouGo": true,
+                "subscriptionWindow": true,
+                "subscriptionAPI": true
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true,
+                "escrowAPI": true
+            },
+            {
+                "id": "liveTransfer",
+                "name": "Live Transfer",
+                "escrow": true,
+                "escrowAPI": true
+            },
+            {
+                "id": "kakaoPay",
+                "name": "KAKAOPAY"
+            },
+            {
+                "id": "naverPay",
+                "name": "Naver PAY"
+            },
+            {
+                "id": "payco",
+                "name": "PAYCO"
+            },
+            {
+                "id": "samsungPay",
+                "name": "SamsungPAY"
+            }
+        ]
+    },
+    "kcp": {
+        "name": "KCP",
+        "configGroup": "import_kcpConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "payAsYouGo": true,
+                "subscriptionWindow": true,
+                "subscriptionAPI": true
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true,
+                "escrowAPI": true
+            },
+            {
+                "id": "liveTransfer",
+                "name": "Live Transfer",
+                "escrow": true,
+                "escrowAPI": true
+            },
+            {
+                "id": "kakaoPay",
+                "name": "KAKAOPAY"
+            },
+            {
+                "id": "naverPay",
+                "name": "Naver PAY"
+            },
+            {
+                "id": "payco",
+                "name": "PAYCO"
+            },
+            {
+                "id": "samsungPay",
+                "name": "SamsungPAY"
+            }
+        ]
+    },
+    "toss": {
+        "name": "Toss",
+        "configGroup": "import_tossConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "payAsYouGo": true,
+                "subscriptionWindow": true,
+                "subscriptionAPI": true
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true,
+                "escrowAPI": false
+            },
+            {
+                "id": "liveTransfer",
+                "name": "Live Transfer",
+                "escrow": true,
+                "escrowAPI": false
+            }
+        ]
+    },
+    "kicc": {
+        "name": "KICC",
+        "configGroup": "import_kiccConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "payAsYouGo": true,
+                "subscriptionWindow": true,
+                "subscriptionAPI": false
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true,
+                "escrowAPI": false
+            },
+            {
+                "id": "liveTransfer",
+                "name": "Live Transfer",
+                "escrow": true,
+                "escrowAPI": false
+            }
+        ]
+    },
+    "danal": {
+        "name": "Danal",
+        "configGroup": "import_danalConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "payAsYouGo": true,
+                "subscriptionWindow": true,
+                "subscriptionAPI": false
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true,
+                "escrowAPI": false
+            },
+            {
+                "id": "liveTransfer",
+                "name": "Live Transfer",
+                "escrow": true,
+                "escrowAPI": false
+            }
+        ]
+    },
+    "smartro": {
+        "name": "Smartro",
+        "configGroup": "import_smartroConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "payAsYouGo": true,
+                "subscriptionWindow": true,
+                "subscriptionAPI": false
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true,
+                "escrowAPI": false
+            },
+            {
+                "id": "liveTransfer",
+                "name": "Live Transfer",
+                "escrow": true,
+                "escrowAPI": false
+            }
+        ]
+    },
+    "settleBank": {
+        "name": "Settle Bank",
+        "configGroup": "import_settleBankConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "payAsYouGo": true,
+                "subscriptionWindow": false,
+                "subscriptionAPI": false
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true,
+                "escrowAPI": false
+            },
+            {
+                "id": "liveTransfer",
+                "name": "Live Transfer",
+                "escrow": true,
+                "escrowAPI": false
+            }
+        ]
+    },
+    "payjoa": {
+        "name": "PAYJOA",
+        "configGroup": "import_payjoaConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "payAsYouGo": true,
+                "subscriptionWindow": false,
+                "subscriptionAPI": false
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true,
+                "escrowAPI": true
+            },
+            {
+                "id": "liveTransfer",
+                "name": "Live Transfer",
+                "escrow": true,
+                "escrowAPI": true
+            }
+        ]
+    },
+    "kakaoPay": {
+        "name": "KAKAOPAY",
+        "configGroup": "import_kakaoPayConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "payAsYouGo": false,
+                "subscriptionWindow": true,
+                "subscriptionAPI": false
+            },
+            {
+                "id": "kakaopay",
+                "name": "KAKAOPAY"
+            }
+        ]
+    },
+    "naverPay": {
+        "name": "Naver PAY",
+        "configGroup": "import_naverPayConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "payAsYouGo": false,
+                "subscriptionWindow": true,
+                "subscriptionAPI": false
+            },
+            {
+                "id": "naverPay",
+                "name": "NaverPAY"
+            }
+        ]
+    },
+    "payco": {
+        "name": "PAYCO",
+        "configGroup": "import_paycoConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "payAsYouGo": false,
+                "subscriptionWindow": true,
+                "subscriptionAPI": false
+            },
+            {
+                "id": "payco",
+                "name": "PAYCO"
+            }
+        ]
+    }
+}
