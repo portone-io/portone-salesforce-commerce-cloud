@@ -1,4 +1,41 @@
 {
   "root": true,
-  "extends": "airbnb-base/legacy"
+  "extends": "airbnb-base/legacy",
+  "rules": {
+      "import/no-unresolved": "off",
+      "indent": ["error", "tab", { "SwitchCase": 1, "VariableDeclarator": 1 }],
+      "func-names": "off",
+      "require-jsdoc": "error",
+      "valid-jsdoc": ["error", { "preferType": { "Boolean": "boolean", "Number": "number", "object": "Object", "String": "string" }, "requireReturn": false}],
+      "vars-on-top": "off",
+      "global-require": "off",
+      "no-shadow": ["error", { "allow": ["err", "callback"]}],
+      "max-len": "off",
+      "no-param-reassign": "off",
+      "no-undef": [1],
+      "no-unused-vars": ["error", { "vars": "all", "args": "none" }],
+      "no-restricted-syntax": ["off", "LabeledStatement", "WithStatement"],
+      "no-array-constructor": "off",
+      "guard-for-in": "off",
+      "no-continue": "off",
+      "no-useless-escape": "off",
+      "no-lonely-if": "off",
+      "no-loop-func": "off",
+      "no-tabs": 0
+  },
+  "parserOptions": {
+      "ecmaVersion": 2017
+  },
+  "env": {
+      "es6": true
+  },
+  "globals": {
+      "request": "readonly",
+      "empty": "readonly",
+      "dw": "readonly",
+      "$": "readonly",
+      "jQuery": "readonly",
+      "response": "readonly",
+      "session": "readonly"
+  }
 }
