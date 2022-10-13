@@ -1,0 +1,298 @@
+{
+    "nice": {
+        "name": "NICE",
+        "configGroup": "iamport_niceConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": false,
+                "directCall": true
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": true
+            },
+            {
+                "id": "kakaopay",
+                "name": "KAKAOPAY"
+            }
+        ]
+    },
+    "html5_inicis": {
+        "name": "KG Inicis",
+        "configGroup": "iamport_inicisConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": true,
+                "directCall": true
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": true
+            },
+            {
+                "id": "kakaopay",
+                "name": "KAKAOPAY"
+            },
+            {
+                "id": "naverpay",
+                "name": "Naver PAY"
+            },
+            {
+                "id": "payco",
+                "name": "PAYCO"
+            },
+            {
+                "id": "samsung",
+                "name": "SamsungPAY"
+            }
+        ]
+    },
+    "kcp": {
+        "name": "KCP",
+        "configGroup": "iamport_kcpConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": true,
+                "directCall": true
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": true
+            },
+            {
+                "id": "kakaopay",
+                "name": "KAKAOPAY"
+            },
+            {
+                "id": "naverpay",
+                "name": "Naver PAY"
+            },
+            {
+                "id": "payco",
+                "name": "PAYCO"
+            },
+            {
+                "id": "samsung",
+                "name": "SamsungPAY"
+            }
+        ]
+    },
+    "uplus": {
+        "name": "Toss",
+        "configGroup": "iamport_tossConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": false,
+                "directCall": false
+            },
+            {
+                "id": "tosspay",
+                "name": "Toss"
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": true
+            }
+        ]
+    },
+    "kicc": {
+        "name": "KICC",
+        "configGroup": "iamport_kiccConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": true,
+                "directCall": false
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": true
+            }
+        ]
+    },
+    "danal_tpay": {
+        "name": "Danal",
+        "configGroup": "iamport_danalConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": true,
+                "directCall": false
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": false
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": false
+            }
+        ]
+    },
+    "kakaopay": {
+        "name": "KAKAOPAY",
+        "configGroup": "iamport_kakaoPayConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": true,
+                "directCall": false
+            },
+            {
+                "id": "kakaopay",
+                "name": "KAKAOPAY"
+            }
+        ]
+    },
+    "naverpay": {
+        "name": "Naver PAY",
+        "configGroup": "iamport_naverPayConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": true,
+                "directCall": false
+            },
+            {
+                "id": "naverpay",
+                "name": "NaverPAY"
+            }
+        ]
+    },
+    "payco": {
+        "name": "PAYCO",
+        "configGroup": "iamport_paycoConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": true,
+                "directCall": false
+            },
+            {
+                "id": "payco",
+                "name": "PAYCO"
+            }
+        ]
+    },
+    "smilepay": {
+        "name": "SmilePay",
+        "configGroup": "iamport_smilePayConfigs",
+        "paymentMethods": [
+            {
+                "id": "smilepay",
+                "name": "SMilePay"
+            }
+        ]
+    },
+    "smartro": {
+        "name": "Smartro",
+        "configGroup": "iamport_smartroConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": false,
+                "directCall": false
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": false
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": false
+            }
+        ]
+    },
+    "settleBank": {
+        "name": "Settle Bank",
+        "configGroup": "iamport_settleBankConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": false,
+                "directCall": false
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": false
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": false
+            }
+        ]
+    },
+    "payjoa": {
+        "name": "PAYJOA",
+        "configGroup": "iamport_payjoaConfigs",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": false,
+                "directCall": true
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": true
+            }
+        ]
+    }
+}
