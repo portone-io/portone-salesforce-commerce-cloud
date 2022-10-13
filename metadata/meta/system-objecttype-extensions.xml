@@ -65,7 +65,7 @@
                 <value-definitions>
                     <value-definition default="true">
                         <display xml:lang="x-default">KG Inicis</display>
-                        <value>inicis</value>
+                        <value>html5_inicis</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">KCP</display>
@@ -73,7 +73,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Toss</display>
-                        <value>toss</value>
+                        <value>uplus</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">NICE</display>
@@ -85,7 +85,23 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Danal</display>
-                        <value>danal</value>
+                        <value>danal_tpay</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">KAKAOPAY</display>
+                        <value>kakaopay</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">NaverPAY</display>
+                        <value>naverpay</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PAYCO</display>
+                        <value>payco</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">SmilePay</display>
+                        <value>smilepay</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Smartro</display>
@@ -93,23 +109,11 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Settle Bank</display>
-                        <value>settleBank</value>
+                        <value>settlebank</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">PAYJOA</display>
                         <value>payjoa</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">KAKAOPAY</display>
-                        <value>kakaoPay</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">NaverPAY</display>
-                        <value>naverPay</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">PAYCO</display>
-                        <value>payco</value>
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
@@ -126,7 +130,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Live Transfer</display>
-                        <value>liveTransfer</value>
+                        <value>trans</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Virtual Account</display>
@@ -134,11 +138,11 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">KAKAOPAY</display>
-                        <value>kakaoPay</value>
+                        <value>kakaopay</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">NaverPAY</display>
-                        <value>naverPay</value>
+                        <value>naverpay</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">PAYCO</display>
@@ -146,7 +150,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">SamsungPAY</display>
-                        <value>samsungPay</value>
+                        <value>samsung</value>
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
@@ -172,7 +176,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Live Transfer</display>
-                        <value>liveTransfer</value>
+                        <value>trans</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Virtual Account</display>
@@ -180,11 +184,11 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">KAKAOPAY</display>
-                        <value>kakaoPay</value>
+                        <value>kakaopay</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">NaverPAY</display>
-                        <value>naverPay</value>
+                        <value>naverpay</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">PAYCO</display>
@@ -192,7 +196,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">SamsungPAY</display>
-                        <value>samsungPay</value>
+                        <value>samsung</value>
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
@@ -218,7 +222,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Live Transfer</display>
-                        <value>liveTransfer</value>
+                        <value>trans</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Virtual Account</display>
@@ -248,7 +252,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Live Transfer</display>
-                        <value>liveTransfer</value>
+                        <value>trans</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Virtual Account</display>
@@ -256,7 +260,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">KAKAOPAY</display>
-                        <value>kakaoPay</value>
+                        <value>kakaopay</value>
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
@@ -282,7 +286,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Live Transfer</display>
-                        <value>liveTransfer</value>
+                        <value>trans</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Virtual Account</display>
@@ -312,7 +316,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Live Transfer</display>
-                        <value>liveTransfer</value>
+                        <value>trans</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Virtual Account</display>
@@ -342,7 +346,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Live Transfer</display>
-                        <value>liveTransfer</value>
+                        <value>trans</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Virtual Account</display>
@@ -372,7 +376,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Live Transfer</display>
-                        <value>liveTransfer</value>
+                        <value>trans</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Virtual Account</display>
@@ -402,7 +406,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Live Transfer</display>
-                        <value>liveTransfer</value>
+                        <value>trans</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Virtual Account</display>
@@ -432,11 +436,11 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Live Transfer</display>
-                        <value>liveTransfer</value>
+                        <value>trans</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">KAKAOPAY Account</display>
-                        <value>kakaoPay</value>
+                        <value>kakaopay</value>
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
@@ -462,11 +466,11 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Live Transfer</display>
-                        <value>liveTransfer</value>
+                        <value>trans</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">NaverPAY Account</display>
-                        <value>naverPay</value>
+                        <value>naverpay</value>
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
@@ -492,7 +496,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Live Transfer</display>
-                        <value>liveTransfer</value>
+                        <value>trans</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">PAYCO Account</display>
@@ -504,6 +508,28 @@
             <attribute-definition attribute-id="iamport_paycoMerchantID">
                 <display-name xml:lang="x-default">PAYCO Merchant ID</display-name>
                 <description xml:lang="x-default">Merchant ID (MID) from PAYCO payment gateway</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="iamport_smilePayPaymentMethods">
+                <display-name xml:lang="x-default">smilePay Payment Methods</display-name>
+                <description xml:lang="x-default">Hold the 'ctlr' key and select all applicable payment methods</description>
+                <type>enum-of-string</type>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">smilePay Account</display>
+                        <value>smilepay</value>
+                    </value-definition> 
+                </value-definitions>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="iamport_smilePayMerchantID">
+                <display-name xml:lang="x-default">smilePay Merchant ID</display-name>
+                <description xml:lang="x-default">Merchant ID (MID) from smilePay payment gateway</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -593,6 +619,12 @@
                 <display-name xml:lang="x-default">Iamport PAYCO Configs</display-name>
                 <attribute attribute-id="iamport_paycoPaymentMethods"/>
                 <attribute attribute-id="iamport_paycoMerchantID"/>
+            </attribute-group>
+
+            <attribute-group group-id="iamport_smilePayConfigs">
+                <display-name xml:lang="x-default">Iamport SmilePay Configs</display-name>
+                <attribute attribute-id="iamport_smilePayPaymentMethods"/>
+                <attribute attribute-id="iamport_smilePayMerchantID"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
