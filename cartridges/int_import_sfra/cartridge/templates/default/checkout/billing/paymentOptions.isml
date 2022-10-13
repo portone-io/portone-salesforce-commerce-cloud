@@ -1,0 +1,13 @@
+<div>
+	<h3> Choose a payment method <h3>
+	<div>
+		<div class="btn-group">
+		<input type="radio" class="btn-check" name="options" id="option1" autocomplete="off" checked />
+		<label class="btn btn-secondary" for="option1">Checked</label>
+
+		<input type="radio" class="btn-check" name="options" id="option2" autocomplete="off" />
+		<label class="btn btn-secondary" for="option2">Radio</label>
+
+		</div>
+	</div>
+</div>
