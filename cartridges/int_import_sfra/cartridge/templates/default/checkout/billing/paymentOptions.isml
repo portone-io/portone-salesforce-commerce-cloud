@@ -1,13 +1,27 @@
-<div>
+<isscript>
+	var assets = require('*/cartridge/scripts/assets.js');
+	assets.addJs('https://cdn.iamport.kr/js/iamport.payment-1.1.8.js');
+	assets.addJs('/js/iamportMain.js');
+	assets.addCss('/css/iamportGlobal.css');
+</isscript>
+
+<div class="payment-options">
 	<h3> Choose a payment method <h3>
-	<div>
-		<div class="btn-group">
-		<input type="radio" class="btn-check" name="options" id="option1" autocomplete="off" checked />
-		<label class="btn btn-secondary" for="option1">Checked</label>
+	<div class="btn-group payment-method">
+		<isloop items="${pdict.order.billing.payment.iamportPaymentMethods}" alias="paymentMethod" status="payment">
+			<isif condition="${payment.first}">
+				<input type="radio" class="btn-check" name="paymentOption" id="${paymentMethod.value}" autocomplete="off" checked />
+				<label class="btn btn-secondary" for="${paymentMethod.value}">${paymentMethod.displayValue}</label>
 
-		<input type="radio" class="btn-check" name="options" id="option2" autocomplete="off" />
-		<label class="btn btn-secondary" for="option2">Radio</label>
-
-		</div>
+				<iselse>
+					<input type="radio" class="btn-check" name="paymentOption" id="${paymentMethod.value}" autocomplete="off" />
+					<label class="btn btn-secondary" for="${paymentMethod.value}">${paymentMethod.displayValue}</label>
+			</isif>
+		</isloop>
 	</div>
+	<div class="payment-error"></div>
 </div>
+
+<input type="hidden" name="merchantID" value="${JSON.stringify(pdict.merchantID)}"/>
+<input type="hidden" name="sfra6Enabled" value="${JSON.stringify(pdict.useIamportSFRA6)}"/>
+<input type="hidden" name="paymentInformation" value="${JSON.stringify(pdict.paymentInformation)}"/>
