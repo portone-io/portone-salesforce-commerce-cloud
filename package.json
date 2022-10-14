@@ -1,6 +1,6 @@
 {
-  "name": "int_import",
-  "version": "0.0.1",
+  "name": "int_import_sfra",
+  "version": "1.0.0",
   "description": "New overlay cartridge",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,19 @@
     "upload": "sgmf-scripts --upload -- ",
     "uploadCartridge": "sgmf-scripts --uploadCartridge int_import",
     "compile:js": "sgmf-scripts --compile js",
-    "compile:scss": "sgmf-scripts --compile css"
+    "compile:scss": "sgmf-scripts --compile css",
+    "compile": "npm run compile:js && npm run compile:scss"
+  },
+  "dependencies": {
+    "babel-preset-env": "^1.7.0",
+    "chromedriver": "^2.44.1",
+    "cleave.js": "^1.0.2",
+    "crypto-js": "^4.0.0",
+    "css-loader": "^0.28.11",
+    "jquery": "^3.5.1",
+    "module-alias": "^2.1.0",
+    "postcss-loader": "^2.1.5",
+    "isml-linter": "^5.26.4"
   },
   "devDependencies": {
     "eslint": "^3.2.2",
@@ -27,7 +39,8 @@
     "css-loader": "^0.28.11",
     "node-sass": "^4.9.0",
     "postcss-loader": "^2.1.5",
-    "sass-loader": "^7.0.3"
+    "sass-loader": "^7.0.3",
+    "husky": "^4.2.5"
   },
   "browserslist": [
     "last 2 versions",
