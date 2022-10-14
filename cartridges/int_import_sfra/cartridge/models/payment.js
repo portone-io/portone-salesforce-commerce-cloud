@@ -67,7 +67,7 @@ function Payment(currentBasket, currentCustomer, countryCode) {
 	basePayment.call(this, currentBasket, currentCustomer, countryCode);
 
 	let paymentGateway = Site.getCurrent().getCustomPreferenceValue(IamportConstants.PG_ATTRIBUTE_ID)
-		|| IamportConstants.PG_FALLBACK;
+		|| IamportConstants.PG_DEFAULT_FALLBACK;
 
 	this.iamportPaymentGateway = paymentGateway;
 	this.iamportPaymentMethods = getPaymentMethods(paymentGateway);
