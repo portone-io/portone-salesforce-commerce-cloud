@@ -1,7 +1,8 @@
 {
     "nice": {
         "name": "NICE",
-        "configGroup": "iamport_niceConfigs",
+        "paymentMethodsAttributeID": "iamport_nicePaymentMethods",
+        "merchantAttributeID": "iamport_niceMerchantID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -27,7 +28,8 @@
     },
     "html5_inicis": {
         "name": "KG Inicis",
-        "configGroup": "iamport_inicisConfigs",
+        "paymentMethodsAttributeID": "iamport_inicisPaymentMethods",
+        "merchantAttributeID": "iamport_inicisMerchantID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -65,7 +67,8 @@
     },
     "kcp": {
         "name": "KCP",
-        "configGroup": "iamport_kcpConfigs",
+        "paymentMethodsAttributeID": "iamport_kcpPaymentMethods",
+        "merchantAttributeID": "iamport_kcpMerchantID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -103,7 +106,8 @@
     },
     "uplus": {
         "name": "Toss",
-        "configGroup": "iamport_tossConfigs",
+        "paymentMethodsAttributeID": "iamport_tossPaymentMethods",
+        "merchantAttributeID": "iamport_tossMerchantID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -129,7 +133,8 @@
     },
     "kicc": {
         "name": "KICC",
-        "configGroup": "iamport_kiccConfigs",
+        "paymentMethodsAttributeID": "iamport_kiccPaymentMethods",
+        "merchantAttributeID": "iamport_kiccMerchantID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -151,7 +156,8 @@
     },
     "danal_tpay": {
         "name": "Danal",
-        "configGroup": "iamport_danalConfigs",
+        "paymentMethodsAttributeID": "iamport_danalPaymentMethods",
+        "merchantAttributeID": "iamport_danalMerchantID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -173,7 +179,8 @@
     },
     "kakaopay": {
         "name": "KAKAOPAY",
-        "configGroup": "iamport_kakaoPayConfigs",
+        "paymentMethodsAttributeID": "iamport_kakaoPayPaymentMethods",
+        "merchantAttributeID": "iamport_kakaoPayMerchantID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -189,7 +196,8 @@
     },
     "naverpay": {
         "name": "Naver PAY",
-        "configGroup": "iamport_naverPayConfigs",
+        "paymentMethodsAttributeID": "iamport_naverPayPaymentMethods",
+        "merchantAttributeID": "iamport_naverPayMerchantID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -205,7 +213,8 @@
     },
     "payco": {
         "name": "PAYCO",
-        "configGroup": "iamport_paycoConfigs",
+        "paymentMethodsAttributeID": "iamport_paycoPaymentMethods",
+        "merchantAttributeID": "iamport_paycoMerchantID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -221,7 +230,8 @@
     },
     "smilepay": {
         "name": "SmilePay",
-        "configGroup": "iamport_smilePayConfigs",
+        "paymentMethodsAttributeID": "iamport_smilePayPaymentMethods",
+        "merchantAttributeID": "iamport_smilePayMerchantID",
         "paymentMethods": [
             {
                 "id": "smilepay",
@@ -231,7 +241,8 @@
     },
     "smartro": {
         "name": "Smartro",
-        "configGroup": "iamport_smartroConfigs",
+        "paymentMethodsAttributeID": "iamport_smartroPaymentMethods",
+        "merchantAttributeID": "iamport_smartroMerchantID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -253,7 +264,8 @@
     },
     "settleBank": {
         "name": "Settle Bank",
-        "configGroup": "iamport_settleBankConfigs",
+        "paymentMethodsAttributeID": "iamport_settleBankPaymentMethods",
+        "merchantAttributeID": "iamport_settleBankMerchantID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -275,7 +287,8 @@
     },
     "payjoa": {
         "name": "PAYJOA",
-        "configGroup": "iamport_payjoaConfigs",
+        "paymentMethodsAttributeID": "iamport_spayjoaPaymentMethods",
+        "merchantAttributeID": "iamport_payjoaoMerchantID",
         "paymentMethods": [
             {
                 "id": "card",
