@@ -9,7 +9,7 @@ module.exports = [{
 	name: 'js',
 	entry: sgmfScripts.createJsPath(),
 	output: {
-		path: path.resolve('./cartridges/int_import_sfra/cartridge/static'),
+		path: path.resolve('./cartridges/int_iamport_sfra/cartridge/static'),
 		filename: '[name].js'
 	}
 }, {
@@ -17,7 +17,7 @@ module.exports = [{
 	name: 'scss',
 	entry: sgmfScripts.createScssPath(),
 	output: {
-		path: path.resolve('./cartridges/int_import_sfra/cartridge/static'),
+		path: path.resolve('./cartridges/int_iamport_sfra/cartridge/static'),
 		filename: '[name].css'
 	},
 	module: {
