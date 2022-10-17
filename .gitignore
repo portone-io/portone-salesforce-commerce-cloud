@@ -1,6 +1,8 @@
 .vscode
 node_modules/
 dw.json
+ismllinter.config.js
 
 cartridges/**/cartridge/static/default/js/
 cartridges/**/cartridge/static/default/css/
+coverage/
