@@ -5,7 +5,7 @@
 const deferLoader = require('../scripts/deferPayment');
 const iamportUtilities = require('../scripts/utils/common');
 
-const PAYMENT_ARGS = { MID: 'imp76202335' };
+const PAYMENT_ARGS = { MID: $('input[name="merchantID"]').val().toString() };
 const IMPORT_PAYMENT_INFO = JSON.parse($('input[name="paymentInformation"]').val());
 
 const requestPayment = function (item, args) {
@@ -37,6 +37,7 @@ module.exports = {
 				$.spinner().start();
 				deferLoader.defer('IMP', requestPayment, PAYMENT_ARGS);
 			} catch (err) {
+				// TODO: handle errors with meaningful error messages
 				iamportUtilities.createErrorNotification(err.message);
 			} finally {
 				$.spinner().stop();
