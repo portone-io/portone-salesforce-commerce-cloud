@@ -25,9 +25,7 @@
             </isif>
         </isloop>
     </div>
-    <div class="payment-error">
-        g
-    </div>
+    <div class="payment-error"></div>
 </div>
 
 <input type="hidden" name="merchantID" value="${JSON.stringify(pdict.merchantID)}"/>
