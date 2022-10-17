@@ -8,6 +8,11 @@ var iamportConstants = require('../../mocks/constants/iamportConstants');
 // var URLUtils = require('../dw.web.URLUtils');
 
 function proxyModel() {
+	// eslint-disable-next-line no-proto
+	module.__proto__.superModule = function () {
+		return this;
+	};
+
 	return proxyquire('../../../cartridges/int_iamport_sfra/cartridge/models/payment', {
 		'*/cartridge/scripts/util/collections': collections,
 		'dw/system/Site': Site,

@@ -45,7 +45,7 @@ function getPaymentMethods(paymentGatewayID) {
 	let paymentGateway = pgValidators[paymentGatewayID];
 
 	// TODO: Use logger here
-	if (empty(paymentGateway)) return [];
+	// if (empty(paymentGateway)) return [];
 
 	let customSitePrefAttributes = Site.getCurrent().getPreferences().getCustom();
 	let selectedPaymentMethods = customSitePrefAttributes[paymentGateway.paymentMethodsAttributeID];
