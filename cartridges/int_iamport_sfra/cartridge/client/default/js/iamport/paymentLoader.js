@@ -30,18 +30,14 @@ const requestPayment = function (item, args) {
 
 module.exports = {
 	generalPayment: function () {
-		$('body').on('click', '.payment-method', function (e) {
-			e.preventDefault();
-
-			try {
-				$.spinner().start();
-				deferLoader.defer('IMP', requestPayment, PAYMENT_ARGS);
-			} catch (err) {
-				// TODO: handle errors with meaningful error messages
-				iamportUtilities.createErrorNotification(err.message);
-			} finally {
-				$.spinner().stop();
-			}
-		});
+		try {
+			$.spinner().start();
+			deferLoader.defer('IMP', requestPayment, PAYMENT_ARGS);
+		} catch (err) {
+			// TODO: handle errors with meaningful error messages
+			iamportUtilities.createErrorNotification(err.message);
+		} finally {
+			$.spinner().stop();
+		}
 	}
 };
