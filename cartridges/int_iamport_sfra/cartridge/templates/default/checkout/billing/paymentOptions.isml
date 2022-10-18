@@ -1,7 +1,6 @@
 <isscript>
     var assets = require('*/cartridge/scripts/assets.js');
     assets.addJs('https://cdn.iamport.kr/js/iamport.payment-1.1.8.js');
-    assets.addJs('/js/iamportMain.js');
     assets.addCss('/css/iamportGlobal.css');
 </isscript>
 
@@ -9,25 +8,35 @@
     <h3>
         Choose a payment method
     </h3>
-    <div class="btn-group payment-method">
-        <isloop items="${pdict.order.billing.payment.iamportPaymentMethods}" alias="paymentMethod" status="payment">
-            <isif condition="${payment.first}">
-                <input type="radio" class="btn-check" name="paymentOption" id="${paymentMethod.value}" autocomplete="off" checked />
-                <label class="btn btn-secondary" for="${paymentMethod.value}">
-                    ${paymentMethod.displayValue}
-                </label>
+    
+    <div class="tab-pane active iamport-card-content" id="iamport-card-content" role="tabpanel">
+        <fieldset class="payment-form-fields">
+            <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="Iamport">
 
-            <iselse>
-                <input type="radio" class="btn-check" name="paymentOption" id="${paymentMethod.value}" autocomplete="off" />
-                <label class="btn btn-secondary" for="${paymentMethod.value}">
-                    ${paymentMethod.displayValue}
-                </label>
-            </isif>
-        </isloop>
+            <div class="btn-group payment-methods">
+                <isloop items="${pdict.order.billing.payment.iamportPaymentMethods}" alias="paymentMethod" status="payment">
+                    <isif condition="${payment.first}">
+                        <input type="radio" class="btn-check" name="paymentOption" id="${paymentMethod.value}" autocomplete="off" checked />
+                        <label class="btn btn-secondary" for="${paymentMethod.value}">
+                            ${paymentMethod.displayValue}
+                        </label>
+
+                    <iselse>
+                        <input type="radio" class="btn-check" name="paymentOption" id="${paymentMethod.value}" autocomplete="off" />
+                        <label class="btn btn-secondary" for="${paymentMethod.value}">
+                            ${paymentMethod.displayValue}
+                        </label>
+                    </isif>
+
+                    <isset name="paymentInformation" value="${dw.system.HookMgr.callHook('app.payment.processor.iamport', 'processPaymentInformation', pdict.order, paymentMethod.value)}" scope="page" />
+                </isloop>
+            </div>
+            <div class="payment-error"></div>
+
+        </fieldset>
     </div>
-    <div class="payment-error"></div>
 </div>
 
 <input type="hidden" name="merchantID" value="${JSON.stringify(pdict.merchantID)}"/>
-<input type="hidden" name="sfra6Enabled" value="${JSON.stringify(pdict.useIamportSFRA6)}"/>
-<input type="hidden" name="paymentInformation" value="${JSON.stringify(pdict.paymentInformation)}"/>
+<input type="hidden" name="sfra5Enabled" value="${JSON.stringify(pdict.useIamportSFRA5)}"/>
+<input type="hidden" name="paymentInformation" value="${JSON.stringify(paymentInformation)}"/>
