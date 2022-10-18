@@ -2,6 +2,7 @@
 
 const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
+const Resource = require('dw/web/Resource');
 
 /**
  * Iamport hook form processor
@@ -54,7 +55,7 @@ function Handle(basket, paymentInformation, paymentMethodID, req) {
 			};
 		});
 	} catch (e) {
-		Logger.getLogger('Checkout', 'Paypal').error('Error on pyament "Handle" hook: {0}', e.message);
+		Logger.getLogger('Checkout', 'Paypal').error('Error on payment "Handle" hook: {0}', e.message);
 		result = {
 			paymentInstrument: null,
 			success: false,
@@ -62,6 +63,35 @@ function Handle(basket, paymentInformation, paymentMethodID, req) {
 		};
 	}
 	return result;
+}
+
+
+/**
+ * Authorizes a payment using PayPal Plus
+ * @param {number} orderNumber - The current order's number
+ * @param {dw.order.PaymentInstrument} paymentInstrument -  The payment instrument to authorize
+ * @param {dw.order.PaymentProcessor} paymentProcessor -  The payment processor of the current
+ *      payment method
+ * @return {Object} returns an error object
+ */
+function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
+	let serverErrors = [];
+	let fieldErrors = {};
+	let error = false;
+
+	try {
+		Transaction.wrap(function () {
+			paymentInstrument.paymentTransaction.setTransactionID(orderNumber);
+			paymentInstrument.paymentTransaction.setPaymentProcessor(paymentProcessor);
+		});
+	} catch (e) {
+		error = true;
+		serverErrors.push(
+			Resource.msg('error.technical', 'checkout', null)
+		);
+	}
+
+	return { fieldErrors: fieldErrors, serverErrors: serverErrors, error: error };
 }
 
 /**
@@ -90,5 +120,6 @@ function processPaymentInformation(order, selectedPaymentMethod) {
 module.exports = {
 	processPaymentInformation: processPaymentInformation,
 	processForm: processForm,
-	Handle: Handle
+	Handle: Handle,
+	Authorize: Authorize
 };
