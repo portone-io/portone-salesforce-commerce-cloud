@@ -1,3 +1,12 @@
 {
-	"hooks": []
+	"hooks": [
+		{
+			"name": "app.payment.processor.iamport",
+			"script": "./cartridge/scripts/hooks/payment/processor/iamportPayments"
+		},
+		{
+            "name": "app.payment.form.processor.iamport",
+            "script": "./cartridge/scripts/hooks/payment/processor/iamportPayments"
+        }
+	]
 }
