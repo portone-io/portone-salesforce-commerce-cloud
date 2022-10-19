@@ -5,7 +5,7 @@
 const deferLoader = require('../scripts/deferPayment');
 const iamportUtilities = require('../scripts/utils/common');
 
-const IAMPORT_ARGS = { MID: $('input[name="merchantID"]').val().toString() };
+const IAMPORT_ARGS = { MID: $('input[name="merchantID"]').val().toString().replace(/['"]+/g, '') };
 
 /**
  * Request payment to Iamport server using the payment information
