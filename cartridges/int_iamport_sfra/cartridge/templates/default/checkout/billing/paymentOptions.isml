@@ -27,8 +27,6 @@
                             ${paymentMethod.displayValue}
                         </label>
                     </isif>
-
-                    <isset name="paymentInformation" value="${dw.system.HookMgr.callHook('app.payment.processor.iamport', 'processPaymentInformation', pdict.order, paymentMethod.value)}" scope="page" />
                 </isloop>
             </div>
             <div class="payment-error"></div>
@@ -39,4 +37,3 @@
 
 <input type="hidden" name="merchantID" value="${JSON.stringify(pdict.merchantID)}"/>
 <input type="hidden" name="sfra5Enabled" value="${JSON.stringify(pdict.useIamportSFRA5)}"/>
-<input type="hidden" name="paymentInformation" value="${JSON.stringify(paymentInformation)}"/>
