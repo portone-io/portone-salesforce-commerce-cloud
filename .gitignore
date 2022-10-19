@@ -4,6 +4,8 @@ dw.json
 eslint.xml
 ismllinter.config.js
 
+storefront-reference-architecture
+sfra-webpack-builder
 cartridges/**/cartridge/static/default/js/
 cartridges/**/cartridge/static/default/css/
 coverage/
