@@ -5,19 +5,24 @@
 const deferLoader = require('../scripts/deferPayment');
 const iamportUtilities = require('../scripts/utils/common');
 
-const PAYMENT_ARGS = { MID: $('input[name="merchantID"]').val().toString() };
-const IMPORT_PAYMENT_INFO = JSON.parse($('input[name="paymentInformation"]').val());
+const IAMPORT_ARGS = { MID: $('input[name="merchantID"]').val().toString() };
 
-const requestPayment = function (item, args) {
-	if (IMPORT_PAYMENT_INFO) {
+/**
+ * Request payment to Iamport server using the payment information
+ *
+ * @param {*} item Iamport global object
+ * @param {*} paymentInformation The payment information
+ */
+const requestPayment = function requestPayment(item, paymentInformation) {
+	if (paymentInformation) {
 		let IMP = window[item];
 
-		if (!IMP || !args.MID) {
+		if (!IMP || !IAMPORT_ARGS.MID) {
 			throw new Error('Merchant code not set');
 		}
 
-		IMP.init(args.MID);
-		IMP.request_pay(IMPORT_PAYMENT_INFO, function (paymentResponse) {
+		IMP.init(IAMPORT_ARGS.MID);
+		IMP.request_pay(paymentInformation, function (paymentResponse) {
 			if (paymentResponse.success) {
 				// success
 			} else {
@@ -29,10 +34,10 @@ const requestPayment = function (item, args) {
 };
 
 module.exports = {
-	generalPayment: function () {
+	generalPayment: function (paymentInformation) {
 		try {
 			$.spinner().start();
-			deferLoader.defer('IMP', requestPayment, PAYMENT_ARGS);
+			deferLoader.defer('IMP', requestPayment, paymentInformation);
 		} catch (err) {
 			// TODO: handle errors with meaningful error messages
 			iamportUtilities.createErrorNotification(err.message);

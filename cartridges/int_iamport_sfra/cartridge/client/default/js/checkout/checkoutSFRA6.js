@@ -350,6 +350,8 @@ const iamportPayment = require('../iamport/paymentLoader');
 									defer.reject(data);
 								}
 							} else {
+								iamportPayment.generalPayment(data.paymentInformation);
+
 								let redirect = $('<form>')
 									.appendTo(document.body)
 									.attr({
