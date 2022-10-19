@@ -322,6 +322,7 @@ server.replace(
 
 /**
  * CheckoutServices-PlaceOrder : The CheckoutServices-PlaceOrder endpoint places the order
+ * This endpoint has been modified to just create an order
  * @replace Base/CheckoutServices-PlaceOrder
  * @function
  * @memberof CheckoutServices
@@ -452,7 +453,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	}
 
 	let selectedPaymentMethod = req.session.privacyCache.get('iamportPaymentMethod');
-	let paymentInformation = iamportHelpers.preparePaymentInformation(order, selectedPaymentMethod);
+	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod);
 
     // TODO: Exposing a direct route to an Order, without at least encoding the orderID
     //  is a serious PII violation.  It enables looking up every customers orders, one at a
@@ -462,8 +463,100 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		orderID: order.orderNo,
 		orderToken: order.orderToken,
 		continueUrl: URLUtils.url('Order-Confirm').toString(),
-		paymentInformation: paymentInformation
+		paymentInformation: paymentResources
 	});
+
+	return next();
+});
+
+/**
+ * CheckoutServices-ValidatePlaceOrder : The CheckoutServices-ValidatePlaceOrder endpoint places the order
+ * @replace Base/CheckoutServices-ValidatePlaceOrder
+ * @function
+ * @memberof CheckoutServices
+ * @param {middleware} - server.middleware.https
+ * @param {category} - sensitive
+ * @param {returns} - json
+ * @param {serverfunction} - post
+ */
+server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, next) {
+	//
+
+	// Handles payment authorization
+	// var handlePaymentResult = COHelpers.handlePayments(order, order.orderNo);
+
+    // // Handle custom processing post authorization
+	// var options = {
+	// 	req: req,
+	// 	res: res
+	// };
+	// var postAuthCustomizations = hooksHelper('app.post.auth', 'postAuthorization', handlePaymentResult, order, options, require('*/cartridge/scripts/hooks/postAuthorizationHandling').postAuthorization);
+	// if (postAuthCustomizations && Object.prototype.hasOwnProperty.call(postAuthCustomizations, 'error')) {
+	// 	res.json(postAuthCustomizations);
+	// 	return next();
+	// }
+
+	// if (handlePaymentResult.error) {
+	// 	res.json({
+	// 		error: true,
+	// 		errorMessage: Resource.msg('error.technical', 'checkout', null)
+	// 	});
+	// 	return next();
+	// }
+
+	// var fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', currentBasket, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
+	// if (fraudDetectionStatus.status === 'fail') {
+	// 	Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
+
+    //     // fraud detection failed
+	// 	req.session.privacyCache.set('fraudDetectionStatus', true);
+
+	// 	res.json({
+	// 		error: true,
+	// 		cartError: true,
+	// 		redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
+	// 		errorMessage: Resource.msg('error.technical', 'checkout', null)
+	// 	});
+
+	// 	return next();
+	// }
+
+    // // Places the order
+	// var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+	// if (placeOrderResult.error) {
+	// 	res.json({
+	// 		error: true,
+	// 		errorMessage: Resource.msg('error.technical', 'checkout', null)
+	// 	});
+	// 	return next();
+	// }
+
+	// if (req.currentCustomer.addressBook) {
+    //     // save all used shipping addresses to address book of the logged in customer
+	// 	var allAddresses = addressHelpers.gatherShippingAddresses(order);
+	// 	allAddresses.forEach(function (address) {
+	// 		if (!addressHelpers.checkIfAddressStored(address, req.currentCustomer.addressBook.addresses)) {
+	// 			addressHelpers.saveAddress(address, req.currentCustomer, addressHelpers.generateAddressName(address));
+	// 		}
+	// 	});
+	// }
+
+	// if (order.getCustomerEmail()) {
+	// 	COHelpers.sendConfirmationEmail(order, req.locale.id);
+	// }
+
+    // // Reset usingMultiShip after successful Order placement
+	// req.session.privacyCache.set('usingMultiShipping', false);
+
+    // // TODO: Exposing a direct route to an Order, without at least encoding the orderID
+    // //  is a serious PII violation.  It enables looking up every customers orders, one at a
+    // //  time.
+	// res.json({
+	// 	error: false,
+	// 	orderID: order.orderNo,
+	// 	orderToken: order.orderToken,
+	// 	continueUrl: URLUtils.url('Order-Confirm').toString()
+	// });
 
 	return next();
 });

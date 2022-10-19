@@ -351,7 +351,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 								}
 							} else {
 								if (data.paymentInformation) {
-									iamportPayment.generalPayment(data.paymentInformation);
+									iamportPayment.generalPayment(data.paymentResources);
 								}
 
 								let redirect = $('<form>')

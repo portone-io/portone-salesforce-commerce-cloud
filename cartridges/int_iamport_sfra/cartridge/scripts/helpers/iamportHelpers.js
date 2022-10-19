@@ -4,12 +4,12 @@ const iamportConstants = require('*/cartridge/constants/iamportConstants');
 const Site = require('dw/system/Site');
 
 /**
- * Prepares the payment information needed to request payment to Iamport server
+ * Prepares the payment resources needed to request payment to Iamport server
  * @param {Object} order - Customer order data
  * @param {string} selectedPaymentMethod - Id of the selected payment method
- * @returns {Object} - The payment information
+ * @returns {Object} - The payment resources
  */
-function preparePaymentInformation(order, selectedPaymentMethod) {
+function preparePaymentResources(order, selectedPaymentMethod) {
 	let paymentInformation = {
 		pg: Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value,
 		pay_method: selectedPaymentMethod,
@@ -52,5 +52,5 @@ function preparePaymentInformation(order, selectedPaymentMethod) {
 }
 
 module.exports = {
-	preparePaymentInformation: preparePaymentInformation
+	preparePaymentResources: preparePaymentResources
 };
