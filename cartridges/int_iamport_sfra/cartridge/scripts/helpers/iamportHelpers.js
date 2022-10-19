@@ -1,29 +1,56 @@
 'use strict';
 
+const iamportConstants = require('*/cartridge/constants/iamportConstants');
+const Site = require('dw/system/Site');
 
 /**
- * Constructs the payment information needed to request payment to Iamport server
+ * Prepares the payment information needed to request payment to Iamport server
  * @param {Object} order - Customer order data
  * @param {string} selectedPaymentMethod - Id of the selected payment method
  * @returns {Object} - The payment information
  */
-function processPaymentInformation(order, selectedPaymentMethod) {
+function preparePaymentInformation(order, selectedPaymentMethod) {
 	let paymentInformation = {
-		pg: order.billing.payment.iamportPaymentGateway.toString(),
+		pg: Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value,
 		pay_method: selectedPaymentMethod,
-		merchant_uid: 'ORD20180131-0000011',
-		name: 'Norway swivel chair',
-		amount: 100,
-		buyer_email: 'johndoe@gmail.com',
-		buyer_name: 'John Doe',
-		buyer_tel: '010-4242-4242',
-		buyer_addr: 'Shinsa-dong, Gangnam-gu, Seoul',
-		buyer_postcode: '01181'
+		amount: iamportConstants.TEST_AMOUNT
 	};
+
+	if (!paymentInformation.amount && order.totalNetPrice) {
+		paymentInformation.amount = order.totalNetPrice.value;
+	}
+
+	if (order.orderNo) {
+		paymentInformation.merchant_uid = order.orderNo;
+	}
+
+	if (order.customerName) {
+		paymentInformation.name = order.customerName;
+	}
+
+	if (order.customerEmail) {
+		paymentInformation.buyer_email = order.customerEmail;
+	}
+
+	if (order.billingAddress.address1) {
+		paymentInformation.buyer_addr = order.billingAddress.address1;
+	}
+
+	if (order.billingAddress.phone) {
+		paymentInformation.buyer_tel = order.billingAddress.phone;
+	}
+
+	if (order.billingAddress.fullName) {
+		paymentInformation.buyer_name = order.billingAddress.fullName;
+	}
+
+	if (order.billingAddress.postalCode) {
+		paymentInformation.buyer_postcode = order.billingAddress.postalCode;
+	}
 
 	return paymentInformation;
 }
 
 module.exports = {
-	processPaymentInformation: processPaymentInformation
+	preparePaymentInformation: preparePaymentInformation
 };
