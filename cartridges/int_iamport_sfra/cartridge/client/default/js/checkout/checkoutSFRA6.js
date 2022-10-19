@@ -351,32 +351,10 @@ const iamportPayment = require('../iamport/paymentLoader');
 								}
 							} else {
 								if (data.paymentInformation) {
-									iamportPayment.generalPayment(data.paymentResources);
+									iamportPayment.generalPayment(data.paymentResources, data.validationUrl);
 								}
 
-								let redirect = $('<form>')
-									.appendTo(document.body)
-									.attr({
-										method: 'POST',
-										action: data.continueUrl
-									});
-
-								$('<input>')
-									.appendTo(redirect)
-									.attr({
-										name: 'orderID',
-										value: data.orderID
-									});
-
-								$('<input>')
-									.appendTo(redirect)
-									.attr({
-										name: 'orderToken',
-										value: data.orderToken
-									});
-
-								// redirect.submit();
-								// defer.resolve(data);
+								defer.resolve(data);
 							}
 						},
 						error: function () {
