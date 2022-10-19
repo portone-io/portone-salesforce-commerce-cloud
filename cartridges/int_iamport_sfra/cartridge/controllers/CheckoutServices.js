@@ -1,28 +1,63 @@
 'use strict';
 
-var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+let csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
 const server = require('server');
 server.extend(module.superModule);
 
+
+/**
+ *  Handle Ajax payment (and billing) form submit
+ */
+/**
+ * CheckoutServices-SubmitPayment : The CheckoutServices-SubmitPayment endpoint will submit the payment information and render the checkout place order page allowing the shopper to confirm and place the order
+ * @replace Base/CheckoutServices-SubmitPayment
+ * @function
+ * @memberof CheckoutServices
+ * @param {middleware} - server.middleware.https
+ * @param {middleware} - csrfProtection.validateAjaxRequest
+ * @param {httpparameter} - addressSelector - For Guest shopper: A shipment UUID that contains address that matches the selected address. For returning shopper: ab_<address-name-from-address-book>" of the selected address. For both type of shoppers:  "new" if a brand new address is entered
+ * @param {httpparameter} - dwfrm_billing_addressFields_firstName - Input field for the shoppers's first name
+ * @param {httpparameter} - dwfrm_billing_addressFields_lastName - Input field for the shoppers's last name
+ * @param {httpparameter} - dwfrm_billing_addressFields_address1 - Input field for the shoppers's address 1 - street
+ * @param {httpparameter} - dwfrm_billing_addressFields_address2 - Input field for the shoppers's address 2 - street
+ * @param {httpparameter} - dwfrm_billing_addressFields_country - Input field for the shoppers's address - country
+ * @param {httpparameter} - dwfrm_billing_addressFields_states_stateCode - Input field for the shoppers's address - state code
+ * @param {httpparameter} - dwfrm_billing_addressFields_city - Input field for the shoppers's address - city
+ * @param {httpparameter} - dwfrm_billing_addressFields_postalCode - Input field for the shoppers's address - postal code
+ * @param {httpparameter} - csrf_token - hidden input field CSRF token
+ * @param {httpparameter} - localizedNewAddressTitle - label for new address
+ * @param {httpparameter} - dwfrm_billing_contactInfoFields_email - Input field for the shopper's email address
+ * @param {httpparameter} - dwfrm_billing_contactInfoFields_phone - Input field for the shopper's phone number
+ * @param {httpparameter} - dwfrm_billing_paymentMethod - Input field for the shopper's payment method
+ * @param {httpparameter} - dwfrm_billing_creditCardFields_cardType - Input field for the shopper's credit card type
+ * @param {httpparameter} - dwfrm_billing_creditCardFields_cardNumber - Input field for the shopper's credit card number
+ * @param {httpparameter} - dwfrm_billing_creditCardFields_expirationMonth - Input field for the shopper's credit card expiration month
+ * @param {httpparameter} - dwfrm_billing_creditCardFields_expirationYear - Input field for the shopper's credit card expiration year
+ * @param {httpparameter} - dwfrm_billing_creditCardFields_securityCode - Input field for the shopper's credit card security code
+ * @param {category} - sensitive
+ * @param {returns} - json
+ * @param {serverfunction} - post
+ */
 server.replace(
     'SubmitPayment',
     server.middleware.https,
     csrfProtection.validateAjaxRequest,
     function (req, res, next) {
-	var PaymentManager = require('dw/order/PaymentMgr');
-	var HookManager = require('dw/system/HookMgr');
-	var Resource = require('dw/web/Resource');
-	var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	let PaymentManager = require('dw/order/PaymentMgr');
+	let HookManager = require('dw/system/HookMgr');
+	let Resource = require('dw/web/Resource');
+	let COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	let iamportConstants = require('*/cartridge/constants/iamportConstants');
 
-	var viewData = {};
-	var paymentForm = server.forms.getForm('billing');
+	let viewData = {};
+	let paymentForm = server.forms.getForm('billing');
 
-    // verify billing form data
-	var billingFormErrors = COHelpers.validateBillingForm(paymentForm.addressFields);
-	var contactInfoFormErrors = COHelpers.validateFields(paymentForm.contactInfoFields);
+        // verify billing form data
+	let billingFormErrors = COHelpers.validateBillingForm(paymentForm.addressFields);
+	let contactInfoFormErrors = COHelpers.validateFields(paymentForm.contactInfoFields);
 
-	var formFieldErrors = [];
+	let formFieldErrors = [];
 	if (Object.keys(billingFormErrors).length) {
 		formFieldErrors.push(billingFormErrors);
 	} else {
@@ -47,7 +82,7 @@ server.replace(
 		viewData.phone = { value: paymentForm.contactInfoFields.phone.value };
 	}
 
-	var paymentMethodIdValue = paymentForm.paymentMethod.value;
+	let paymentMethodIdValue = paymentForm.paymentMethod.value;
 	if (!PaymentManager.getPaymentMethod(paymentMethodIdValue).paymentProcessor) {
 		throw new Error(Resource.msg(
                 'error.payment.processor.missing',
@@ -56,9 +91,9 @@ server.replace(
             ));
 	}
 
-	var paymentProcessor = PaymentManager.getPaymentMethod(paymentMethodIdValue).getPaymentProcessor();
+	let paymentProcessor = PaymentManager.getPaymentMethod(paymentMethodIdValue).getPaymentProcessor();
 
-	var paymentFormResult;
+	let paymentFormResult;
 	if (HookManager.hasHook('app.payment.form.processor.' + paymentProcessor.ID.toLowerCase())) {
 		paymentFormResult = HookManager.callHook('app.payment.form.processor.' + paymentProcessor.ID.toLowerCase(),
                 'processForm',
@@ -88,21 +123,21 @@ server.replace(
 	res.setViewData(paymentFormResult.viewData);
 
 	this.on('route:BeforeComplete', function (req, res) { // eslint-disable-line no-shadow
-		var BasketMgr = require('dw/order/BasketMgr');
-		var HookMgr = require('dw/system/HookMgr');
-		var PaymentMgr = require('dw/order/PaymentMgr');
-		var Transaction = require('dw/system/Transaction');
-		var AccountModel = require('*/cartridge/models/account');
-		var OrderModel = require('*/cartridge/models/order');
-		var URLUtils = require('dw/web/URLUtils');
-		var Locale = require('dw/util/Locale');
-		var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
-		var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
-		var validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
+		const BasketMgr = require('dw/order/BasketMgr');
+		const HookMgr = require('dw/system/HookMgr');
+		const PaymentMgr = require('dw/order/PaymentMgr');
+		const Transaction = require('dw/system/Transaction');
+		const AccountModel = require('*/cartridge/models/account');
+		const OrderModel = require('*/cartridge/models/order');
+		const URLUtils = require('dw/web/URLUtils');
+		const Locale = require('dw/util/Locale');
+		const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
+		const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
+		const validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
 
-		var currentBasket = BasketMgr.getCurrentBasket();
+		let currentBasket = BasketMgr.getCurrentBasket();
 
-		var billingData = res.getViewData();
+		let billingData = res.getViewData();
 
 		if (!currentBasket) {
 			delete billingData.paymentInformation;
@@ -117,7 +152,7 @@ server.replace(
 			return;
 		}
 
-		var validatedProducts = validationHelpers.validateProducts(currentBasket);
+		let validatedProducts = validationHelpers.validateProducts(currentBasket);
 		if (validatedProducts.error) {
 			delete billingData.paymentInformation;
 
@@ -131,10 +166,10 @@ server.replace(
 			return;
 		}
 
-		var billingAddress = currentBasket.billingAddress;
-		var billingForm = server.forms.getForm('billing');
-		var paymentMethodID = billingData.paymentMethod.value;
-		var result;
+		let billingAddress = currentBasket.billingAddress;
+		let billingForm = server.forms.getForm('billing');
+		let paymentMethodID = billingData.paymentMethod.value;
+		let result;
 
 		billingForm.creditCardFields.cardNumber.htmlValue = '';
 		billingForm.creditCardFields.securityCode.htmlValue = '';
@@ -160,7 +195,7 @@ server.replace(
 
             // if there is no selected payment option and balance is greater than zero
 		if (!paymentMethodID && currentBasket.totalGrossPrice.value > 0) {
-			var noPaymentMethod = {};
+			let noPaymentMethod = {};
 
 			noPaymentMethod[billingData.paymentMethod.htmlName] =
                     Resource.msg('error.no.selected.payment.method', 'payment', null);
@@ -176,7 +211,7 @@ server.replace(
 			return;
 		}
 
-		var processor = PaymentMgr.getPaymentMethod(paymentMethodID).getPaymentProcessor();
+		let processor = PaymentMgr.getPaymentMethod(paymentMethodID).getPaymentProcessor();
 
             // check to make sure there is a payment processor
 		if (!processor) {
@@ -229,7 +264,7 @@ server.replace(
 		});
 
             // Re-calculate the payments.
-		var calculatedPaymentTransaction = COHelpers.calculatePaymentTransaction(
+		let calculatedPaymentTransaction = COHelpers.calculatePaymentTransaction(
                 currentBasket
             );
 
@@ -243,7 +278,7 @@ server.replace(
 			return;
 		}
 
-		var usingMultiShipping = req.session.privacyCache.get('usingMultiShipping');
+		let usingMultiShipping = req.session.privacyCache.get('usingMultiShipping');
 		if (usingMultiShipping === true && currentBasket.shipments.length < 2) {
 			req.session.privacyCache.set('usingMultiShipping', false);
 			usingMultiShipping = false;
@@ -251,15 +286,21 @@ server.replace(
 
 		hooksHelper('app.customer.subscription', 'subscribeTo', [paymentForm.subscribe.checked, currentBasket.customerEmail], function () {});
 
-		var currentLocale = Locale.getLocale(req.locale.id);
+		let currentLocale = Locale.getLocale(req.locale.id);
 
-		var basketModel = new OrderModel(
-                currentBasket,
-                { usingMultiShipping: usingMultiShipping, countryCode: currentLocale.country, containerView: 'basket' }
-            );
+		let basketModel = new OrderModel(currentBasket, {
+			usingMultiShipping: usingMultiShipping,
+			countryCode: currentLocale.country,
+			containerView: 'basket',
+			iamportPaymentOption: req.form.paymentOption || iamportConstants.DEFAULT_PAYMENT_METHOD
+		});
 
-		var accountModel = new AccountModel(req.currentCustomer);
-		var renderedStoredPaymentInstrument = COHelpers.getRenderedPaymentInstruments(
+		// save the selected payment method in the session
+		req.session.privacyCache.set('iamportPaymentMethod', req.form.paymentOption
+			|| iamportConstants.DEFAULT_PAYMENT_METHOD);
+
+		let accountModel = new AccountModel(req.currentCustomer);
+		let renderedStoredPaymentInstrument = COHelpers.getRenderedPaymentInstruments(
                 req,
                 accountModel
             );
@@ -280,15 +321,151 @@ server.replace(
 );
 
 /**
- * CheckoutServices-SubmitPayment : The CheckoutServices-SubmitPayment endpoint will submit the payment information and render the checkout place order page allowing the shopper to confirm and place the order
- * @extend Base/CheckoutServices-SubmitPayment
+ * CheckoutServices-PlaceOrder : The CheckoutServices-PlaceOrder endpoint places the order
+ * @replace Base/CheckoutServices-PlaceOrder
  * @function
- * @memberof Checkout
+ * @memberof CheckoutServices
+ * @param {middleware} - server.middleware.https
+ * @param {category} - sensitive
+ * @param {returns} - json
+ * @param {serverfunction} - post
  */
-// server.append('SubmitPayment', function (req, res, next) {
-// 	let viewData = res.getViewData();
+server.replace('PlaceOrder', server.middleware.https, function (req, res, next) {
+	const BasketMgr = require('dw/order/BasketMgr');
+	const Resource = require('dw/web/Resource');
+	const Transaction = require('dw/system/Transaction');
+	const URLUtils = require('dw/web/URLUtils');
+	const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
+	const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
+	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	const validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
+	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 
-// 	next();
-// });
+	let currentBasket = BasketMgr.getCurrentBasket();
+
+	if (!currentBasket) {
+		res.json({
+			error: true,
+			cartError: true,
+			fieldErrors: [],
+			serverErrors: [],
+			redirectUrl: URLUtils.url('Cart-Show').toString()
+		});
+		return next();
+	}
+
+	let validatedProducts = validationHelpers.validateProducts(currentBasket);
+	if (validatedProducts.error) {
+		res.json({
+			error: true,
+			cartError: true,
+			fieldErrors: [],
+			serverErrors: [],
+			redirectUrl: URLUtils.url('Cart-Show').toString()
+		});
+		return next();
+	}
+
+	if (req.session.privacyCache.get('fraudDetectionStatus')) {
+		res.json({
+			error: true,
+			cartError: true,
+			redirectUrl: URLUtils.url('Error-ErrorCode', 'err', '01').toString(),
+			errorMessage: Resource.msg('error.technical', 'checkout', null)
+		});
+
+		return next();
+	}
+
+	let validationOrderStatus = hooksHelper('app.validate.order', 'validateOrder', currentBasket, require('*/cartridge/scripts/hooks/validateOrder').validateOrder);
+	if (validationOrderStatus.error) {
+		res.json({
+			error: true,
+			errorMessage: validationOrderStatus.message
+		});
+		return next();
+	}
+
+    // Check to make sure there is a shipping address
+	if (currentBasket.defaultShipment.shippingAddress === null) {
+		res.json({
+			error: true,
+			errorStage: {
+				stage: 'shipping',
+				step: 'address'
+			},
+			errorMessage: Resource.msg('error.no.shipping.address', 'checkout', null)
+		});
+		return next();
+	}
+
+    // Check to make sure billing address exists
+	if (!currentBasket.billingAddress) {
+		res.json({
+			error: true,
+			errorStage: {
+				stage: 'payment',
+				step: 'billingAddress'
+			},
+			errorMessage: Resource.msg('error.no.billing.address', 'checkout', null)
+		});
+		return next();
+	}
+
+    // Calculate the basket
+	Transaction.wrap(function () {
+		basketCalculationHelpers.calculateTotals(currentBasket);
+	});
+
+    // Re-validates existing payment instruments
+	let validPayment = COHelpers.validatePayment(req, currentBasket);
+	if (validPayment.error) {
+		res.json({
+			error: true,
+			errorStage: {
+				stage: 'payment',
+				step: 'paymentInstrument'
+			},
+			errorMessage: Resource.msg('error.payment.not.valid', 'checkout', null)
+		});
+		return next();
+	}
+
+    // Re-calculate the payments.
+	let calculatedPaymentTransactionTotal = COHelpers.calculatePaymentTransaction(currentBasket);
+	if (calculatedPaymentTransactionTotal.error) {
+		res.json({
+			error: true,
+			errorMessage: Resource.msg('error.technical', 'checkout', null)
+		});
+		return next();
+	}
+
+    // Creates a new order.
+	let order = COHelpers.createOrder(currentBasket);
+	if (!order) {
+		res.json({
+			error: true,
+			errorMessage: Resource.msg('error.technical', 'checkout', null)
+		});
+		return next();
+	}
+
+	let selectedPaymentMethod = req.session.privacyCache.get('iamportPaymentMethod');
+	let paymentInformation = iamportHelpers.processPaymentInformation(order, selectedPaymentMethod);
+
+    // TODO: Exposing a direct route to an Order, without at least encoding the orderID
+    //  is a serious PII violation.  It enables looking up every customers orders, one at a
+    //  time.
+	res.json({
+		error: false,
+		orderID: order.orderNo,
+		orderToken: order.orderToken,
+		continueUrl: URLUtils.url('Order-Confirm').toString(),
+		paymentInformation: paymentInformation
+	});
+
+	return next();
+});
 
 module.exports = server.exports();
