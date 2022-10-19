@@ -11,6 +11,7 @@ function createErrorNotification(message) {
         '<span aria-hidden="true">&times;</span>' +
         '</button>' + message + '</div>';
 
+        // TODO: fix the location of this error message
 	$('.payment-error').append(errorHtml);
 }
 
