@@ -462,7 +462,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		error: false,
 		orderID: order.orderNo,
 		orderToken: order.orderToken,
-		continueUrl: URLUtils.url('Order-Confirm').toString(),
+		validationUrl: URLUtils.url('Order-ValidatePlaceOrder').toString(),
 		paymentInformation: paymentResources
 	});
 
