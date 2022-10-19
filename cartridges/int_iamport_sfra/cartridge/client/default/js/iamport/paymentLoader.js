@@ -44,5 +44,27 @@ module.exports = {
 		} finally {
 			$.spinner().stop();
 		}
+	},
+
+	handlePaymentMethodSelection: function () {
+		$('body').on('click', '.payment-method', function () {
+			//
+		});
+	},
+
+	// Get the selected payment method
+	getSelectedPaymentMethod: function () {
+		let paymentMethods = $('.payment-method');
+		let selectedPaymentMethod = '';
+
+		for (let i = 0; i < paymentMethods.length; i++) {
+			let paymentMethod = paymentMethods[i];
+
+			if (paymentMethod.checked) {
+				selectedPaymentMethod = paymentMethod.value;
+			}
+		}
+
+		return selectedPaymentMethod;
 	}
 };
