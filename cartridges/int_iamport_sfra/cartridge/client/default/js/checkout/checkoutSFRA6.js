@@ -350,7 +350,9 @@ const iamportPayment = require('../iamport/paymentLoader');
 									defer.reject(data);
 								}
 							} else {
-								iamportPayment.generalPayment(data.paymentInformation);
+								if (data.paymentInformation) {
+									iamportPayment.generalPayment(data.paymentInformation);
+								}
 
 								let redirect = $('<form>')
 									.appendTo(document.body)
@@ -373,8 +375,8 @@ const iamportPayment = require('../iamport/paymentLoader');
 										value: data.orderToken
 									});
 
-								redirect.submit();
-								defer.resolve(data);
+								// redirect.submit();
+								// defer.resolve(data);
 							}
 						},
 						error: function () {
