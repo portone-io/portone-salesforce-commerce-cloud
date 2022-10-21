@@ -463,7 +463,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		orderID: order.orderNo,
 		orderToken: order.orderToken,
 		validationUrl: URLUtils.url('Order-ValidatePlaceOrder').toString(),
-		paymentInformation: paymentResources
+		paymentResources: paymentResources
 	});
 
 	return next();

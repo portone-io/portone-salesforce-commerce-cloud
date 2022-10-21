@@ -350,11 +350,9 @@ const iamportPayment = require('../iamport/paymentLoader');
 									defer.reject(data);
 								}
 							} else {
-								if (data.paymentInformation) {
+								if (data.paymentResources) {
 									iamportPayment.generalPayment(data.paymentResources, data.validationUrl);
 								}
-
-								defer.resolve(data);
 							}
 						},
 						error: function () {
