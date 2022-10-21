@@ -17,7 +17,6 @@ function sendPaymentInformation(paymentInformation, paymentOptions) {
 	jQuery.ajax({
 		url: paymentOptions.validationUrl,
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
 		data: paymentInformation,
 		success: function (data) {
 			let redirect = $('<form>')
@@ -61,7 +60,6 @@ function sendPaymentInformation(paymentInformation, paymentOptions) {
 const requestPayment = function requestPayment(item, paymentResources, validationUrl) {
 	if (paymentResources) {
 		let IMP = window[item];
-
 		if (!IMP || !IAMPORT_ARGS.MID) {
 			throw new Error('Merchant code not set');
 		}
@@ -73,6 +71,8 @@ const requestPayment = function requestPayment(item, paymentResources, validatio
 			};
 
 			if (paymentResponse.success) {
+				// TODO: Remove log
+				// eslint-disable-next-line no-console
 				console.log('success');
 				sendPaymentInformation({
 					imp_uid: paymentResponse.imp_uid,
@@ -83,13 +83,35 @@ const requestPayment = function requestPayment(item, paymentResources, validatio
 				iamportUtilities.createErrorNotification(paymentResponse.error_msg);
 			}
 
-			// TODO: Test only; remove it later
+			// POC only TODO: Remove
 			sendPaymentInformation({
 				imp_uid: paymentResponse.imp_uid || '',
 				merchant_uid: paymentResponse.merchant_uid || ''
 			}, paymentOptions);
 		});
 	}
+};
+
+// POC only TODO: Remove
+const testPOCPayment = function (testPaymentResources, testValidationUrl) {
+	deferLoader.defer('IMP', function (item, paymentResources, validationUrl) {
+		if (paymentResources) {
+			let IMP = window[item];
+			if (!IMP || !IAMPORT_ARGS.MID) {
+				throw new Error('Merchant code not set');
+			}
+
+			IMP.init(IAMPORT_ARGS.MID);
+			IMP.request_pay(paymentResources, function (paymentResponse) {
+				// if payment is successful, or failed
+				let paymentOptions = { validationUrl: validationUrl };
+				sendPaymentInformation({
+					imp_uid: paymentResponse.imp_uid || '',
+					merchant_uid: paymentResponse.merchant_uid || ''
+				}, paymentOptions);
+			});
+		}
+	}, testPaymentResources, testValidationUrl);
 };
 
 module.exports = {
@@ -125,5 +147,28 @@ module.exports = {
 		}
 
 		return selectedPaymentMethod;
+	},
+
+	// For Testing POC TODO: Remove
+	testPOCPayment: function () {
+		$('body').on('click', '.payment-method', function (e) {
+			e.stopPropagation();
+			let url = $('.payment-method').data('poc-action');
+
+			$.ajax({
+				url: url,
+				method: 'POST',
+				success: function (data) {
+					if (data.paymentResources) {
+						testPOCPayment(data.paymentResources, data.validationUrl);
+					}
+				},
+				error: function (err) {
+					// TODO: Remove log
+					// eslint-disable-next-line no-console
+					console.log(err);
+				}
+			});
+		});
 	}
 };
