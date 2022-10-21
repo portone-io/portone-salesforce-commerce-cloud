@@ -42,6 +42,7 @@ function sendPaymentInformation(paymentInformation, paymentOptions) {
 				});
 
 			redirect.submit();
+			defer.resolve(data);
 		},
 		error: function () {
 			// enable the placeOrder button here
