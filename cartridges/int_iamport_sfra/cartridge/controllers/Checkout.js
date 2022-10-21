@@ -26,4 +26,21 @@ server.append('Begin', function (req, res, next) {
 	next();
 });
 
+server.post('BeginPOC', function (req, res, next) {
+	const URLUtils = require('dw/web/URLUtils');
+	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
+	const OrderMgr = require('dw/order/OrderMgr');
+
+	let order = OrderMgr.getOrder('00000901');
+	let selectedPaymentMethod = req.querystring.pm;
+	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod);
+
+	res.json({
+		validationUrl: URLUtils.url('CheckoutServices-ValidatePlaceOrder').toString(),
+		paymentResources: paymentResources
+	});
+
+	return next();
+});
+
 module.exports = server.exports();
