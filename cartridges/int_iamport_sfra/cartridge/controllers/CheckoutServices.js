@@ -462,7 +462,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		error: false,
 		orderID: order.orderNo,
 		orderToken: order.orderToken,
-		validationUrl: URLUtils.url('Order-ValidatePlaceOrder').toString(),
+		validationUrl: URLUtils.url('CheckoutServices-ValidatePlaceOrder').toString(),
 		paymentResources: paymentResources
 	});
 
@@ -480,46 +480,63 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
  * @param {serverfunction} - post
  */
 server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, next) {
-	//
+	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
+	const OrderMgr = require('dw/order/OrderMgr');
+	const Resource = require('dw/web/Resource');
+	const URLUtils = require('dw/web/URLUtils');
+	const Transaction = require('dw/system/Transaction');
+	const BasketMgr = require('dw/order/BasketMgr');
+
+	let currentBasket = BasketMgr.getCurrentBasket();
+	let paymentInformation = req.forms.paymentInformation;
+	if (empty(paymentInformation)) {
+		// TODO: Log the message before returning
+		return next();
+	}
+
+	let orderID = paymentInformation.merchant_uid;
+	let order = OrderMgr.getOrder(orderID);
 
 	// Handles payment authorization
-	// var handlePaymentResult = COHelpers.handlePayments(order, order.orderNo);
+	let handlePaymentResult = COHelpers.handlePayments(order, order.orderNo);
 
-    // // Handle custom processing post authorization
-	// var options = {
-	// 	req: req,
-	// 	res: res
-	// };
-	// var postAuthCustomizations = hooksHelper('app.post.auth', 'postAuthorization', handlePaymentResult, order, options, require('*/cartridge/scripts/hooks/postAuthorizationHandling').postAuthorization);
-	// if (postAuthCustomizations && Object.prototype.hasOwnProperty.call(postAuthCustomizations, 'error')) {
-	// 	res.json(postAuthCustomizations);
-	// 	return next();
-	// }
+    // Handle custom processing post authorization
+	let options = { req: req, res: res };
+	let postAuthCustomizations = hooksHelper('app.post.auth', 'postAuthorization', handlePaymentResult, order, options, require('*/cartridge/scripts/hooks/postAuthorizationHandling').postAuthorization);
+	if (postAuthCustomizations && Object.prototype.hasOwnProperty.call(postAuthCustomizations, 'error')) {
+		res.json(postAuthCustomizations);
+		return next();
+	}
 
-	// if (handlePaymentResult.error) {
-	// 	res.json({
-	// 		error: true,
-	// 		errorMessage: Resource.msg('error.technical', 'checkout', null)
-	// 	});
-	// 	return next();
-	// }
+	if (handlePaymentResult.error) {
+		res.json({
+			error: true,
+			errorMessage: Resource.msg('error.technical', 'checkout', null)
+		});
+		return next();
+	}
 
-	// var fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', currentBasket, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
-	// if (fraudDetectionStatus.status === 'fail') {
-	// 	Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
+	let fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', currentBasket, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
+	if (fraudDetectionStatus.status === 'fail') {
+		Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
 
-    //     // fraud detection failed
-	// 	req.session.privacyCache.set('fraudDetectionStatus', true);
+        // fraud detection failed
+		req.session.privacyCache.set('fraudDetectionStatus', true);
 
-	// 	res.json({
-	// 		error: true,
-	// 		cartError: true,
-	// 		redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
-	// 		errorMessage: Resource.msg('error.technical', 'checkout', null)
-	// 	});
+		res.json({
+			error: true,
+			cartError: true,
+			redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
+			errorMessage: Resource.msg('error.technical', 'checkout', null)
+		});
 
-	// 	return next();
-	// }
+		return next();
+	}
+
+	let paymentID = paymentInformation.imp_uid;
+	// make a service call to authorize subsequent API calls to Iamport
+	
 
     // // Places the order
 	// var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
