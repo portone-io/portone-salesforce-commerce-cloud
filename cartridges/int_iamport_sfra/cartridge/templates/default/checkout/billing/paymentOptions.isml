@@ -17,13 +17,13 @@
             <div class="btn-group payment-methods">
                 <isloop items="${pdict.order.billing.payment.iamportPaymentMethods}" alias="paymentMethod" status="payment">
                     <isif condition="${payment.first}">
-                        <input type="radio" class="btn-check payment-method" name="paymentOption" value=${paymentMethod.value} id="${paymentMethod.value}" autocomplete="off" checked />
+                        <input type="radio" class="btn-check payment-method" name="paymentOption" value=${paymentMethod.value} id="${paymentMethod.value}" autocomplete="off" checked data-poc-action="${URLUtils.url('Checkout-BeginPOC', 'pm', paymentMethod.value).toString()}" />
                         <label class="btn btn-secondary" for="${paymentMethod.value}">
                             ${paymentMethod.displayValue}
                         </label>
 
                     <iselse>
-                        <input type="radio" class="btn-check payment-method" name="paymentOption" value=${paymentMethod.value} id="${paymentMethod.value}" autocomplete="off" />
+                        <input type="radio" class="btn-check payment-method" name="paymentOption" value=${paymentMethod.value} id="${paymentMethod.value}" autocomplete="off" data-poc-action="${URLUtils.url('Checkout-BeginPOC', 'pm', paymentMethod.value).toString()}" />
                         <label class="btn btn-secondary" for="${paymentMethod.value}">
                             ${paymentMethod.displayValue}
                         </label>
