@@ -487,9 +487,12 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	const URLUtils = require('dw/web/URLUtils');
 	const Transaction = require('dw/system/Transaction');
 	const BasketMgr = require('dw/order/BasketMgr');
+	const IamportServices = require('*/cartridge/scripts/service/iamportService');
+	const addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
+
 
 	let currentBasket = BasketMgr.getCurrentBasket();
-	let paymentInformation = req.forms.paymentInformation;
+	let paymentInformation = req.form;
 	if (empty(paymentInformation)) {
 		// TODO: Log the message before returning
 		return next();
@@ -535,45 +538,76 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	}
 
 	let paymentID = paymentInformation.imp_uid;
-	// make a service call to authorize subsequent API calls to Iamport
-	
 
-    // // Places the order
-	// var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-	// if (placeOrderResult.error) {
-	// 	res.json({
-	// 		error: true,
-	// 		errorMessage: Resource.msg('error.technical', 'checkout', null)
-	// 	});
-	// 	return next();
+	// TODO: pre-register payment before the client call. Move it up
+	// let validPayment = IamportServices.validatePayment.call();
+
+	// if (!validPayment.isOk()) {
+	// 	return next(); // TODO: throw an error
 	// }
 
-	// if (req.currentCustomer.addressBook) {
-    //     // save all used shipping addresses to address book of the logged in customer
-	// 	var allAddresses = addressHelpers.gatherShippingAddresses(order);
-	// 	allAddresses.forEach(function (address) {
-	// 		if (!addressHelpers.checkIfAddressStored(address, req.currentCustomer.addressBook.addresses)) {
-	// 			addressHelpers.saveAddress(address, req.currentCustomer, addressHelpers.generateAddressName(address));
-	// 		}
-	// 	});
-	// }
+	let paymentData = IamportServices.getPaymentInformation.call({
+		paymentID: paymentID
+	});
 
-	// if (order.getCustomerEmail()) {
-	// 	COHelpers.sendConfirmationEmail(order, req.locale.id);
-	// }
+	if (!paymentData.isOk()) {
+		return next();  // TODO: throw an error
+	}
 
-    // // Reset usingMultiShip after successful Order placement
-	// req.session.privacyCache.set('usingMultiShipping', false);
+	// TODO: compare prices for fraud checks
+	let iamportFraudChecks = false;
+	if (iamportFraudChecks) {
+		Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
 
-    // // TODO: Exposing a direct route to an Order, without at least encoding the orderID
-    // //  is a serious PII violation.  It enables looking up every customers orders, one at a
-    // //  time.
-	// res.json({
-	// 	error: false,
-	// 	orderID: order.orderNo,
-	// 	orderToken: order.orderToken,
-	// 	continueUrl: URLUtils.url('Order-Confirm').toString()
-	// });
+        // fraud detection failed
+		req.session.privacyCache.set('fraudDetectionStatus', true);
+
+		res.json({
+			error: true,
+			cartError: true,
+			redirectUrl: URLUtils.url('Error-ErrorCode', 'err', 'fraud detected').toString(),
+			errorMessage: Resource.msg('error.technical', 'checkout', null)
+		});
+
+		return next();
+	}
+
+    // Places the order
+	let placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+	if (placeOrderResult.error) {
+		res.json({
+			error: true,
+			errorMessage: Resource.msg('error.technical', 'checkout', null)
+		});
+		return next();
+	}
+
+	if (req.currentCustomer.addressBook) {
+        // save all used shipping addresses to address book of the logged in customer
+		let allAddresses = addressHelpers.gatherShippingAddresses(order);
+		allAddresses.forEach(function (address) {
+			if (!addressHelpers.checkIfAddressStored(address, req.currentCustomer.addressBook.addresses)) {
+				addressHelpers.saveAddress(address, req.currentCustomer, addressHelpers.generateAddressName(address));
+			}
+		});
+	}
+
+	if (order.getCustomerEmail()) {
+		COHelpers.sendConfirmationEmail(order, req.locale.id);
+	}
+
+    // Reset usingMultiShip after successful Order placement
+	req.session.privacyCache.set('usingMultiShipping', false);
+
+    // TODO: Exposing a direct route to an Order, without at least encoding the orderID
+    //  is a serious PII violation.  It enables looking up every customers orders, one at a
+    //  time.
+	res.json({
+		error: false,
+		orderID: order.orderNo,
+		orderToken: order.orderToken,
+		continueUrl: URLUtils.url('Order-Confirm').toString()
+	});
 
 	return next();
 });
