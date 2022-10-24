@@ -106,8 +106,8 @@ const testPOCPayment = function (testPaymentResources, testValidationUrl) {
 				// if payment is successful, or failed
 				let paymentOptions = { validationUrl: validationUrl };
 				sendPaymentInformation({
-					imp_uid: paymentResponse.imp_uid || '',
-					merchant_uid: paymentResponse.merchant_uid || ''
+					imp_uid: 'imp_566377906932',
+					merchant_uid: '00000901'
 				}, paymentOptions);
 			});
 		}
@@ -150,7 +150,7 @@ module.exports = {
 	},
 
 	// For Testing POC TODO: Remove
-	testPOCPayment: function () {
+	testPOC: function () {
 		$('body').on('click', '.payment-method', function (e) {
 			e.stopPropagation();
 			let url = $('.payment-method').data('poc-action');
