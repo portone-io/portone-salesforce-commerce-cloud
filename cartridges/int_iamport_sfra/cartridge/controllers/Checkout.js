@@ -29,9 +29,10 @@ server.append('Begin', function (req, res, next) {
 server.post('BeginPOC', function (req, res, next) {
 	const URLUtils = require('dw/web/URLUtils');
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
+	const iamportConstants = require('*/cartridge/constants/iamportConstants');
 	const OrderMgr = require('dw/order/OrderMgr');
 
-	let order = OrderMgr.getOrder('00000901');
+	let order = OrderMgr.getOrder(iamportConstants.TEST_ORDER);
 	let selectedPaymentMethod = req.querystring.pm;
 	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod);
 
