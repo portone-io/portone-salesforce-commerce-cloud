@@ -1,1 +1,11 @@
-// create post routes for Import webhooks
+'use strict';
+
+const server = require('server');
+
+server.post('SfccNotifyHook', server.middleware.https, function (req, res, next) {
+	//
+
+	next();
+});
+
+module.exports = server.exports();
