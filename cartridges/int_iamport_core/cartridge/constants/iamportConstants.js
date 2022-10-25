@@ -5,5 +5,6 @@ module.exports = {
 	PG_DEFAULT_FALLBACK: 'html5_inicis',
 	PG_MID_ATTRIBUTE_ID: 'iamport_merchantID',
 	DEFAULT_PAYMENT_METHOD: 'card',
-	TEST_AMOUNT: 100
+	TEST_AMOUNT: 100,
+	TEST_ORDER: '00001002'
 };
