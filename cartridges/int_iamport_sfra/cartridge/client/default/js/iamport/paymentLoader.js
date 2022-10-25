@@ -19,29 +19,39 @@ function sendPaymentInformation(paymentInformation, paymentOptions) {
 		method: 'POST',
 		data: paymentInformation,
 		success: function (data) {
-			let redirect = $('<form>')
+			if (data.error) {
+				if (data.cartError) {
+					window.location.href = data.redirectUrl;
+					defer.reject();
+				} else {
+					// go to appropriate stage and display error message
+					defer.reject(data);
+				}
+			} else {
+				let redirect = $('<form>')
 				.appendTo(document.body)
 				.attr({
 					method: 'POST',
 					action: data.continueUrl
 				});
 
-			$('<input>')
+				$('<input>')
 				.appendTo(redirect)
 				.attr({
 					name: 'orderID',
 					value: data.orderID
 				});
 
-			$('<input>')
+				$('<input>')
 				.appendTo(redirect)
 				.attr({
 					name: 'orderToken',
 					value: data.orderToken
 				});
 
-			redirect.submit();
-			defer.resolve(data);
+				redirect.submit();
+				defer.resolve(data);
+			}
 		},
 		error: function () {
 			// enable the placeOrder button here
@@ -107,7 +117,7 @@ const testPOCPayment = function (testPaymentResources, testValidationUrl) {
 				let paymentOptions = { validationUrl: validationUrl };
 				sendPaymentInformation({
 					imp_uid: 'imp_566377906932',
-					merchant_uid: '00000901'
+					merchant_uid: '00001002'
 				}, paymentOptions);
 			});
 		}
