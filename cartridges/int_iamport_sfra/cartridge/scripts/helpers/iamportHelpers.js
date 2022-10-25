@@ -51,6 +51,18 @@ function preparePaymentResources(order, selectedPaymentMethod) {
 	return paymentInformation;
 }
 
+/**
+ * Compares the actual amount paid to Iamport to the transaction amount
+ * @param {Object} paymentData - Iamport payment data
+ * @param {order} order - The order
+ * @returns {boolean} - if fraud is detected
+ */
+function checkFraudPayments(paymentData, order) {
+	return paymentData.object.response.amount
+		!== order.paymentTransaction.amount.value;
+}
+
 module.exports = {
-	preparePaymentResources: preparePaymentResources
+	preparePaymentResources: preparePaymentResources,
+	checkFraudPayments: checkFraudPayments
 };
