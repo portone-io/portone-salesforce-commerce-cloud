@@ -2,7 +2,7 @@
 
 const server = require('server');
 
-server.post('SfccNotifyHoo', function (req, res, next) {
+server.post('SfNotifyHook', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
 	const iamportConstants = require('*/cartridge/constants/iamportConstants');
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
