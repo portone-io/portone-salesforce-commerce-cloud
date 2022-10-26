@@ -574,41 +574,37 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	}
 
     // Places the order
-	// let placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-	// if (placeOrderResult.error) {
-	// 	res.json({
-	// 		error: true,
-	// 		errorMessage: Resource.msg('error.technical', 'checkout', null)
-	// 	});
-	// 	return next();
-	// }
+	let placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+	if (placeOrderResult.error) {
+		res.json({
+			error: true,
+			errorMessage: Resource.msg('error.technical', 'checkout', null)
+		});
+		return next();
+	}
 
-	// if (req.currentCustomer.addressBook) {
-    //     // save all used shipping addresses to address book of the logged in customer
-	// 	let allAddresses = addressHelpers.gatherShippingAddresses(order);
-	// 	allAddresses.forEach(function (address) {
-	// 		if (!addressHelpers.checkIfAddressStored(address, req.currentCustomer.addressBook.addresses)) {
-	// 			addressHelpers.saveAddress(address, req.currentCustomer, addressHelpers.generateAddressName(address));
-	// 		}
-	// 	});
-	// }
+	if (req.currentCustomer.addressBook) {
+        // save all used shipping addresses to address book of the logged in customer
+		let allAddresses = addressHelpers.gatherShippingAddresses(order);
+		allAddresses.forEach(function (address) {
+			if (!addressHelpers.checkIfAddressStored(address, req.currentCustomer.addressBook.addresses)) {
+				addressHelpers.saveAddress(address, req.currentCustomer, addressHelpers.generateAddressName(address));
+			}
+		});
+	}
 
-	// if (order.getCustomerEmail()) {
-	// 	COHelpers.sendConfirmationEmail(order, req.locale.id);
-	// }
+    // Reset usingMultiShip after successful Order placement
+	req.session.privacyCache.set('usingMultiShipping', false);
 
-    // // Reset usingMultiShip after successful Order placement
-	// req.session.privacyCache.set('usingMultiShipping', false);
-
-    // // TODO: Exposing a direct route to an Order, without at least encoding the orderID
-    // //  is a serious PII violation.  It enables looking up every customers orders, one at a
-    // //  time.
-	// res.json({
-	// 	error: false,
-	// 	orderID: order.orderNo,
-	// 	orderToken: order.orderToken,
-	// 	continueUrl: URLUtils.url('Order-Confirm').toString()
-	// });
+    // TODO: Exposing a direct route to an Order, without at least encoding the orderID
+    //  is a serious PII violation.  It enables looking up every customers orders, one at a
+    //  time.
+	res.json({
+		error: false,
+		orderID: order.orderNo,
+		orderToken: order.orderToken,
+		continueUrl: URLUtils.url('Order-Confirm').toString()
+	});
 
 	return next();
 });
