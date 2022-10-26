@@ -3,6 +3,10 @@
 const Logger = require('dw/system/Logger');
 const Transaction = require('dw/system/Transaction');
 const Resource = require('dw/web/Resource');
+const Order = require('dw/order/Order');
+const PaymentMgr = require('dw/order/PaymentMgr');
+const Money = require('dw/value/Money');
+const OrderMgr = require('dw/order/OrderMgr');
 
 /**
  * Iamport hook form processor
@@ -94,8 +98,87 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
 	return { fieldErrors: fieldErrors, serverErrors: serverErrors, error: error };
 }
 
+/**
+ * Save Iamport data on payment transaction
+ * @param {dw.order.Order} order The current order
+ * @param {Object} paymentData The returned payment data
+ * @param {Object} req The current request
+ * @returns {Object} Returns the post authorize result
+ */
+function postAuthorize(order, paymentData, req) {
+	const paymentMethod = 'Iamport';
+
+	let paymentInstrument = null;
+	let paymentInstruments;
+	let paymentProcessor;
+	let paymentTransaction;
+	let orderStatus;
+
+	return Transaction.wrap(function () {
+		paymentInstruments = order.getPaymentInstruments(paymentMethod);
+		if (paymentInstruments.length > 0) {
+			paymentInstrument = paymentInstruments.toArray()[0];
+		}
+
+		if (empty(paymentInstrument)) {
+			Logger.getLogger('Hook', 'Iamport').error('Payment Instrument is empty');
+			return {
+				success: false,
+				error: true
+			};
+		}
+
+		if (paymentData.object.response.amount) {
+			paymentProcessor = PaymentMgr.getPaymentMethod(paymentMethod).getPaymentProcessor();
+			paymentTransaction = paymentInstrument.getPaymentTransaction();
+			paymentTransaction.setPaymentProcessor(paymentProcessor);
+			paymentTransaction.setTransactionID(paymentData.object.response.imp_uid);
+			paymentTransaction.setAmount(
+				new Money(
+					parseFloat(paymentData.object.response.amount),
+					'USD'
+				)
+			);
+			order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+		}
+
+		orderStatus = order.getStatus().getValue();
+		return {
+			success: orderStatus !== Order.ORDER_STATUS_FAILED,
+			error: orderStatus === Order.ORDER_STATUS_FAILED
+		};
+	});
+}
+
+/**
+ * Save Iamport data on payment transaction
+ * @param {dw.order.Order} order The current order
+ * @returns {Object} Returns the post authorize result
+ */
+function cancelOrder(order) {
+	let paymentStatus;
+	let orderStatus;
+
+	return Transaction.wrap(function () {
+		OrderMgr.cancelOrder(order);
+
+		paymentStatus = order.getPaymentStatus();
+		if (paymentStatus === Order.PAYMENT_STATUS_PAID) {
+			order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+		}
+
+		orderStatus = order.getStatus().getValue();
+		return {
+			success: orderStatus === Order.ORDER_STATUS_FAILED,
+			error: orderStatus !== Order.ORDER_STATUS_FAILED
+		};
+	});
+}
+
 module.exports = {
 	processForm: processForm,
 	Handle: Handle,
-	Authorize: Authorize
+	Authorize: Authorize,
+	postAuthorize: postAuthorize,
+	cancelOrder: cancelOrder
 };
