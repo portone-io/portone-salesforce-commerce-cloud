@@ -4,8 +4,8 @@
 
 const deferLoader = require('../scripts/deferPayment');
 const iamportUtilities = require('../scripts/utils/common');
-
-const IAMPORT_ARGS = { MID: $('input[name="merchantID"]').val().toString().replace(/['"]+/g, '') };
+const IAMPORT_ARGS = { MID: $('input[name="merchantID"]').val()
+	.toString().replace(/['"]+/g, '') };
 
 /**
  * Send payment information to the server for validation
@@ -102,28 +102,6 @@ const requestPayment = function requestPayment(item, paymentResources, validatio
 	}
 };
 
-// POC only TODO: Remove
-const testPOCPayment = function (testPaymentResources, testValidationUrl) {
-	deferLoader.defer('IMP', function (item, paymentResources, validationUrl) {
-		if (paymentResources) {
-			let IMP = window[item];
-			if (!IMP || !IAMPORT_ARGS.MID) {
-				throw new Error('Merchant code not set');
-			}
-
-			IMP.init(IAMPORT_ARGS.MID);
-			IMP.request_pay(paymentResources, function (paymentResponse) {
-				// if payment is successful, or failed
-				let paymentOptions = { validationUrl: validationUrl };
-				sendPaymentInformation({
-					imp_uid: 'imp_566377906932',
-					merchant_uid: '00001002'
-				}, paymentOptions);
-			});
-		}
-	}, testPaymentResources, testValidationUrl);
-};
-
 module.exports = {
 	generalPayment: function (paymentResources, validationUrl) {
 		try {
@@ -157,28 +135,5 @@ module.exports = {
 		}
 
 		return selectedPaymentMethod;
-	},
-
-	// For Testing POC TODO: Remove
-	testPOC: function () {
-		$('body').on('click', '.payment-method', function (e) {
-			e.stopPropagation();
-			let url = $('.payment-method').data('poc-action');
-
-			$.ajax({
-				url: url,
-				method: 'POST',
-				success: function (data) {
-					if (data.paymentResources) {
-						testPOCPayment(data.paymentResources, data.validationUrl);
-					}
-				},
-				error: function (err) {
-					// TODO: Remove log
-					// eslint-disable-next-line no-console
-					console.log(err);
-				}
-			});
-		});
 	}
 };
