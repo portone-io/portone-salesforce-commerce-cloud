@@ -26,6 +26,42 @@ server.append('Begin', function (req, res, next) {
 	next();
 });
 
+server.post('HandleCancel', function (req, res, next) {
+	const Transaction = require('dw/system/Transaction');
+	const OrderMgr = require('dw/order/OrderMgr');
+	const BasketMgr = require('dw/order/BasketMgr');
+	const URLUtils = require('dw/web/URLUtils');
+
+	let paymentInformation = req.form.paymentInformation;
+	let orderToken = req.form.orderToken;
+	let orderId = paymentInformation.merchant_uid;
+
+	let order = null;
+	if (orderId && orderToken) {
+		order = OrderMgr.getOrder(orderId, orderToken);
+	}
+
+	if (!empty(order)) {
+		const currentBasket = BasketMgr.getCurrentOrNewBasket();
+		const defaultShipment = currentBasket.getDefaultShipment();
+
+		Transaction.wrap(function () {
+			order.getProductLineItems().toArray().forEach((productLineItem) => {
+				let newProductLineItem = currentBasket.createProductLineItem(productLineItem.productID, defaultShipment);
+				newProductLineItem.setQuantityValue(productLineItem.getQuantityValue());
+			});
+
+			OrderMgr.cancelOrder(order);
+		});
+	}
+
+	res.json({
+		redirectUrl: URLUtils.url('Cart-Show').toString()
+	});
+
+	return next();
+});
+
 server.post('BeginPOC', function (req, res, next) {
 	const URLUtils = require('dw/web/URLUtils');
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
