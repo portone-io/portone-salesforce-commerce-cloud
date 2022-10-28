@@ -341,6 +341,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 	const validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
+	const iamportServices = require('*/cartridge/scripts/service/iamportService');
+	const Logger = require('dw/system/Logger');
 
 	let currentBasket = BasketMgr.getCurrentBasket();
 
@@ -452,8 +454,28 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		return next();
 	}
 
+	// save the current basket in the session
+	// req.session.privacyCache.set('currentBasket', currentBasket);
+
 	let selectedPaymentMethod = req.session.privacyCache.get('iamportPaymentMethod');
 	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod);
+
+	// Pre-register payment before the client call
+	let paymentRegistered = iamportServices.registerAndValidatePayment.call();
+
+	// when Iamport server call (service) fails
+	if (!paymentRegistered.isOk()) {
+		Logger.getLogger('Services', 'Iamport').error('Payment registration and validation failed: ' + paymentRegistered.error);
+		res.json({
+			error: true,
+			errorStage: {
+				stage: 'placeOrder',
+				step: 'paymentInstrument'
+			},
+			errorMessage: Resource.msgf('error.payment.not.registered', 'checkout', null, paymentRegistered.errorMessage)
+		});
+		return next();
+	}
 
     // TODO: Exposing a direct route to an Order, without at least encoding the orderID
     //  is a serious PII violation.  It enables looking up every customers orders, one at a
@@ -463,6 +485,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		orderID: order.orderNo,
 		orderToken: order.orderToken,
 		validationUrl: URLUtils.url('CheckoutServices-ValidatePlaceOrder').toString(),
+		cancelUrl: URLUtils.url('Checkout-HandleCancel').toString(),
 		paymentResources: paymentResources
 	});
 
@@ -487,20 +510,39 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	const URLUtils = require('dw/web/URLUtils');
 	const Transaction = require('dw/system/Transaction');
 	const BasketMgr = require('dw/order/BasketMgr');
+	const Logger = require('dw/system/Logger');
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
-	const addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
+	// const addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
 
-
-	let currentBasket = BasketMgr.getCurrentBasket();
 	let paymentInformation = req.form;
 	if (empty(paymentInformation)) {
-		// TODO: Log the message before returning
+		Logger.getLogger('Checkout', 'Iamport').error('Payment must contain a unique id and and an order id' + paymentInformation.error);
 		return next();
 	}
 
 	let orderID = paymentInformation.merchant_uid;
 	let order = OrderMgr.getOrder(orderID);
+
+	let currentBasket = null;
+	try {
+		Transaction.wrap(function () {
+			currentBasket = BasketMgr.createBasketFromOrder(order);
+		});
+	} catch (e) {
+		Logger.getLogger('Checkout', 'Iamport').error(e);
+	}
+
+	if (!currentBasket) {
+		res.json({
+			error: true,
+			cartError: true,
+			fieldErrors: [],
+			serverErrors: [],
+			redirectUrl: URLUtils.url('Cart-Show').toString()
+		});
+		return next();
+	}
 
 	// Handles payment authorization
 	let handlePaymentResult = COHelpers.handlePayments(order, order.orderNo);
@@ -539,20 +581,21 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	}
 
 	let paymentID = paymentInformation.imp_uid;
-
-	// TODO: pre-register payment before the client call. Move it up
-	// let validPayment = IamportServices.validatePayment.call();
-
-	// if (!validPayment.isOk()) {
-	// 	return next(); // TODO: throw an error
-	// }
-
 	let paymentData = iamportServices.getPaymentInformation.call({
 		paymentID: paymentID
 	});
 
 	if (!paymentData.isOk()) {
-		return next();  // TODO: log an error
+		Logger.getLogger('Services', 'Iamport').error('Server failed to retrieve payment data for "' + paymentID + '": ' + paymentInformation.error);
+		res.json({
+			error: true,
+			errorStage: {
+				stage: 'placeOrder',
+				step: 'paymentInstrument'
+			},
+			errorMessage: Resource.msg('error.no.payment.information', 'checkout', null)
+		});
+		return next();
 	}
 
 	// TODO: compare prices for fraud checks
@@ -574,37 +617,37 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	}
 
     // Places the order
-	let placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-	if (placeOrderResult.error) {
-		res.json({
-			error: true,
-			errorMessage: Resource.msg('error.technical', 'checkout', null)
-		});
-		return next();
-	}
+	// let placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+	// if (placeOrderResult.error) {
+	// 	res.json({
+	// 		error: true,
+	// 		errorMessage: Resource.msg('error.technical', 'checkout', null)
+	// 	});
+	// 	return next();
+	// }
 
-	if (req.currentCustomer.addressBook) {
-        // save all used shipping addresses to address book of the logged in customer
-		let allAddresses = addressHelpers.gatherShippingAddresses(order);
-		allAddresses.forEach(function (address) {
-			if (!addressHelpers.checkIfAddressStored(address, req.currentCustomer.addressBook.addresses)) {
-				addressHelpers.saveAddress(address, req.currentCustomer, addressHelpers.generateAddressName(address));
-			}
-		});
-	}
+	// if (req.currentCustomer.addressBook) {
+    //     // save all used shipping addresses to address book of the logged in customer
+	// 	let allAddresses = addressHelpers.gatherShippingAddresses(order);
+	// 	allAddresses.forEach(function (address) {
+	// 		if (!addressHelpers.checkIfAddressStored(address, req.currentCustomer.addressBook.addresses)) {
+	// 			addressHelpers.saveAddress(address, req.currentCustomer, addressHelpers.generateAddressName(address));
+	// 		}
+	// 	});
+	// }
 
-    // Reset usingMultiShip after successful Order placement
-	req.session.privacyCache.set('usingMultiShipping', false);
+    // // Reset usingMultiShip after successful Order placement
+	// req.session.privacyCache.set('usingMultiShipping', false);
 
-    // TODO: Exposing a direct route to an Order, without at least encoding the orderID
-    //  is a serious PII violation.  It enables looking up every customers orders, one at a
-    //  time.
-	res.json({
-		error: false,
-		orderID: order.orderNo,
-		orderToken: order.orderToken,
-		continueUrl: URLUtils.url('Order-Confirm').toString()
-	});
+    // // TODO: Exposing a direct route to an Order, without at least encoding the orderID
+    // //  is a serious PII violation.  It enables looking up every customers orders, one at a
+    // //  time.
+	// res.json({
+	// 	error: false,
+	// 	orderID: order.orderNo,
+	// 	orderToken: order.orderToken,
+	// 	continueUrl: URLUtils.url('Order-Confirm').toString()
+	// });
 
 	return next();
 });
