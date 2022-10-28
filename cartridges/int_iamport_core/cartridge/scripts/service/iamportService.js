@@ -40,10 +40,10 @@ const getAuthAccessToken = LocalServiceRegistry.createService('iamport_authentic
 });
 
 /**
- * Validate the payment amount with Iamport
+ * Register and validate the payment amount with Iamport
  * @returns {Object} returns the response from iamport
  */
-const validatePayment = LocalServiceRegistry.createService('iamport_validatePayment', {
+const registerAndValidatePayment = LocalServiceRegistry.createService('iamport_validatePayment', {
 	createRequest: function (svc, args) {
 		const auth = getAuthAccessToken.call();
 		const token = auth.isOk() && auth.object.response.access_token;
@@ -85,5 +85,5 @@ const getPaymentInformation = LocalServiceRegistry.createService('iamport_getPay
 
 module.exports = {
 	getPaymentInformation: getPaymentInformation,
-	validatePayment: validatePayment
+	registerAndValidatePayment: registerAndValidatePayment
 };
