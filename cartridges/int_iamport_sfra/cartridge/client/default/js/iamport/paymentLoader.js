@@ -14,7 +14,7 @@ const IAMPORT_ARGS = { MID: $('input[name="merchantID"]').val()
  * @param {Object} paymentOptions - Additional payment information
  */
 function sendPaymentInformation(paymentInformation, paymentOptions) {
-	jQuery.ajax({
+	$.ajax({
 		url: paymentOptions.validationUrl,
 		method: 'POST',
 		data: paymentInformation,
@@ -61,23 +61,50 @@ function sendPaymentInformation(paymentInformation, paymentOptions) {
 }
 
 /**
+ * Send payment information to the server for validation
+ *
+ * @param {Object} paymentInformation - Payment information response upon payment request
+ * @param {Object} paymentOptions - Additional payment information
+ * @param {Object} paymentOptions.validationUrl - Url for payment post validation
+ * @param {Object} paymentOptions.cancelUrl - Url for handling payment failure cases
+ */
+function handlePaymentFailure(paymentInformation, paymentOptions) {
+	$.ajax({
+		url: paymentOptions.cancelUrl,
+		method: 'POST',
+		data: {
+			paymentInformation: paymentInformation,
+			orderToken: paymentOptions.orderToken
+		},
+		success: function (data) {
+			window.location.href = data.redirectUrl;
+			defer.reject();
+		},
+		error: function (error) {
+			//
+		}
+	});
+}
+
+/**
  * Request payment to Iamport server using the payment information
  *
  * @param {string} item Iamport global object
- * @param {Object} paymentResources The payment resources
- * @param {string} validationUrl  the url to validate payment and place order
+ * @param {Object} paymentPayload The payment resources
  */
-const requestPayment = function requestPayment(item, paymentResources, validationUrl) {
-	if (paymentResources) {
+const requestPayment = function requestPayment(item, paymentPayload) {
+	if (paymentPayload.paymentResources) {
 		let IMP = window[item];
 		if (!IMP || !IAMPORT_ARGS.MID) {
 			throw new Error('Merchant code not set');
 		}
 
 		IMP.init(IAMPORT_ARGS.MID);
-		IMP.request_pay(paymentResources, function (paymentResponse) {
+		IMP.request_pay(paymentPayload.paymentResources, function (paymentResponse) {
 			let paymentOptions = {
-				validationUrl: validationUrl
+				validationUrl: paymentPayload.validationUrl,
+				cancelUrl: paymentPayload.cancelUrl,
+				orderToken: paymentPayload.orderToken
 			};
 
 			if (paymentResponse.success) {
@@ -89,8 +116,11 @@ const requestPayment = function requestPayment(item, paymentResources, validatio
 					merchant_uid: paymentResponse.merchant_uid
 				}, paymentOptions);
 			} else {
-				// TODO: use a toast instead
-				iamportUtilities.createErrorNotification(paymentResponse.error_msg);
+				// handle payment failure
+				handlePaymentFailure({
+					imp_uid: paymentResponse.imp_uid,
+					merchant_uid: paymentResponse.merchant_uid
+				}, paymentOptions);
 			}
 
 			// POC only TODO: Remove
@@ -103,10 +133,10 @@ const requestPayment = function requestPayment(item, paymentResources, validatio
 };
 
 module.exports = {
-	generalPayment: function (paymentResources, validationUrl) {
+	generalPayment: function (payload) {
 		try {
 			$.spinner().start();
-			deferLoader.defer('IMP', requestPayment, paymentResources, validationUrl);
+			deferLoader.defer('IMP', requestPayment, paymentPayload);
 		} catch (err) {
 			// TODO: handle errors with meaningful error messages
 			iamportUtilities.createErrorNotification(err.message);
