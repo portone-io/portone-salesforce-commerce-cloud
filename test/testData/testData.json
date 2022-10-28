@@ -1,3 +1,34 @@
 {
-	"data": []
+	"paymentGateway": "html5_inicis",
+	"paymentMethodsAttributeID": "iamport_inicisPaymentMethods",
+	"paymentMethods": [
+		{
+			"value": "card",
+			"displayValue": "Credit Card"
+		},
+		{
+			"value": "vbank",
+			"displayValue": "Virtual Account"
+		},
+		{
+			"value": "trans",
+			"displayValue": "Live Transfer"
+		},
+		{
+			"value": "kakaopay",
+			"displayValue": "KAKAOPAY"
+		},
+		{
+			"value": "naverpay",
+			"displayValue": "Naver PAY"
+		},
+		{
+			"value": "payco",
+			"displayValue": "PAYCO"
+		},
+		{
+			"value": "samsung",
+			"displayValue": "SamsungPAY"
+		}
+	]
 }

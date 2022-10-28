@@ -1,0 +1,311 @@
+{
+    "nice": {
+        "name": "NICE",
+        "paymentMethodsAttributeID": "iamport_nicePaymentMethods",
+        "merchantAttributeID": "iamport_niceMerchantID",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": false,
+                "directCall": true
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": true
+            },
+            {
+                "id": "kakaopay",
+                "name": "KAKAOPAY"
+            }
+        ]
+    },
+    "html5_inicis": {
+        "name": "KG Inicis",
+        "paymentMethodsAttributeID": "iamport_inicisPaymentMethods",
+        "merchantAttributeID": "iamport_inicisMerchantID",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": true,
+                "directCall": true
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": true
+            },
+            {
+                "id": "kakaopay",
+                "name": "KAKAOPAY"
+            },
+            {
+                "id": "naverpay",
+                "name": "Naver PAY"
+            },
+            {
+                "id": "payco",
+                "name": "PAYCO"
+            },
+            {
+                "id": "samsung",
+                "name": "SamsungPAY"
+            }
+        ]
+    },
+    "kcp": {
+        "name": "KCP",
+        "paymentMethodsAttributeID": "iamport_kcpPaymentMethods",
+        "merchantAttributeID": "iamport_kcpMerchantID",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": true,
+                "directCall": true
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": true
+            },
+            {
+                "id": "kakaopay",
+                "name": "KAKAOPAY"
+            },
+            {
+                "id": "naverpay",
+                "name": "Naver PAY"
+            },
+            {
+                "id": "payco",
+                "name": "PAYCO"
+            },
+            {
+                "id": "samsung",
+                "name": "SamsungPAY"
+            }
+        ]
+    },
+    "uplus": {
+        "name": "Toss",
+        "paymentMethodsAttributeID": "iamport_tossPaymentMethods",
+        "merchantAttributeID": "iamport_tossMerchantID",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": false,
+                "directCall": false
+            },
+            {
+                "id": "tosspay",
+                "name": "Toss"
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": true
+            }
+        ]
+    },
+    "kicc": {
+        "name": "KICC",
+        "paymentMethodsAttributeID": "iamport_kiccPaymentMethods",
+        "merchantAttributeID": "iamport_kiccMerchantID",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": true,
+                "directCall": false
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": true
+            }
+        ]
+    },
+    "danal_tpay": {
+        "name": "Danal",
+        "paymentMethodsAttributeID": "iamport_danalPaymentMethods",
+        "merchantAttributeID": "iamport_danalMerchantID",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": true,
+                "directCall": false
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": false
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": false
+            }
+        ]
+    },
+    "kakaopay": {
+        "name": "KAKAOPAY",
+        "paymentMethodsAttributeID": "iamport_kakaoPayPaymentMethods",
+        "merchantAttributeID": "iamport_kakaoPayMerchantID",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": true,
+                "directCall": false
+            },
+            {
+                "id": "kakaopay",
+                "name": "KAKAOPAY"
+            }
+        ]
+    },
+    "naverpay": {
+        "name": "Naver PAY",
+        "paymentMethodsAttributeID": "iamport_naverPayPaymentMethods",
+        "merchantAttributeID": "iamport_naverPayMerchantID",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": true,
+                "directCall": false
+            },
+            {
+                "id": "naverpay",
+                "name": "NaverPAY"
+            }
+        ]
+    },
+    "payco": {
+        "name": "PAYCO",
+        "paymentMethodsAttributeID": "iamport_paycoPaymentMethods",
+        "merchantAttributeID": "iamport_paycoMerchantID",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": true,
+                "directCall": false
+            },
+            {
+                "id": "payco",
+                "name": "PAYCO"
+            }
+        ]
+    },
+    "smilepay": {
+        "name": "SmilePay",
+        "paymentMethodsAttributeID": "iamport_smilePayPaymentMethods",
+        "merchantAttributeID": "iamport_smilePayMerchantID",
+        "paymentMethods": [
+            {
+                "id": "smilepay",
+                "name": "SMilePay"
+            }
+        ]
+    },
+    "smartro": {
+        "name": "Smartro",
+        "paymentMethodsAttributeID": "iamport_smartroPaymentMethods",
+        "merchantAttributeID": "iamport_smartroMerchantID",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": false,
+                "directCall": false
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": false
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": false
+            }
+        ]
+    },
+    "settleBank": {
+        "name": "Settle Bank",
+        "paymentMethodsAttributeID": "iamport_settleBankPaymentMethods",
+        "merchantAttributeID": "iamport_settleBankMerchantID",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": false,
+                "directCall": false
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": false
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": false
+            }
+        ]
+    },
+    "payjoa": {
+        "name": "PAYJOA",
+        "paymentMethodsAttributeID": "iamport_spayjoaPaymentMethods",
+        "merchantAttributeID": "iamport_payjoaoMerchantID",
+        "paymentMethods": [
+            {
+                "id": "card",
+                "name": "Credit Card",
+                "paymentWindow": false,
+                "directCall": true
+            },
+            {
+                "id": "vbank",
+                "name": "Virtual Account",
+                "escrow": true
+            },
+            {
+                "id": "trans",
+                "name": "Live Transfer",
+                "escrow": true
+            }
+        ]
+    }
+}

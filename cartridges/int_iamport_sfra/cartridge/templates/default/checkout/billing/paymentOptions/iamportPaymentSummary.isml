@@ -1,0 +1,4 @@
+<div class="iamport-payment-method-name">
+    <span>${Resource.msg('msg.iamport.payment.method.name', 'iamport', null)}
+    ${payment.paymentOption}</span>
+</div>

@@ -1,0 +1,40 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs('https://cdn.iamport.kr/js/iamport.payment-1.1.8.js');
+    assets.addJs('/js/iamportMain.js');
+    assets.addCss('/css/iamportGlobal.css');
+</isscript>
+
+<div class="payment-options">
+    <h3>
+        Choose a payment method
+    </h3>
+    
+    <div class="tab-pane active iamport-card-content" id="iamport-card-content" role="tabpanel">
+        <fieldset class="payment-form-fields">
+            <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="Iamport">
+
+            <div class="btn-group payment-methods">
+                <isloop items="${pdict.order.billing.payment.iamportPaymentMethods}" alias="paymentMethod" status="payment">
+                    <isif condition="${payment.first}">
+                        <input type="radio" class="btn-check payment-method" name="paymentOption" value=${paymentMethod.value} id="${paymentMethod.value}" autocomplete="off" checked data-poc-action="${URLUtils.url('Checkout-BeginPOC', 'pm', paymentMethod.value).toString()}" />
+                        <label class="btn btn-secondary" for="${paymentMethod.value}">
+                            ${paymentMethod.displayValue}
+                        </label>
+
+                    <iselse>
+                        <input type="radio" class="btn-check payment-method" name="paymentOption" value=${paymentMethod.value} id="${paymentMethod.value}" autocomplete="off" data-poc-action="${URLUtils.url('Checkout-BeginPOC', 'pm', paymentMethod.value).toString()}" />
+                        <label class="btn btn-secondary" for="${paymentMethod.value}">
+                            ${paymentMethod.displayValue}
+                        </label>
+                    </isif>
+                </isloop>
+            </div>
+            <div class="payment-error"></div>
+
+        </fieldset>
+    </div>
+</div>
+
+<input type="hidden" name="merchantID" value="${JSON.stringify(pdict.merchantID)}"/>
+<input type="hidden" name="sfra5Enabled" value="${JSON.stringify(pdict.useIamportSFRA5)}"/>
