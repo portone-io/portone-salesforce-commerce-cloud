@@ -55,6 +55,8 @@ server.post('SfNotifyHook', function (req, res, next) {
 							COHelpers.sendConfirmationEmail(order, req.locale.id, true);
 						}
 					}
+
+					COHelpers.addOrderNote(order, 'New', 'Payment was successful and order successfully validated');
 				} else if (whatToTest === 'cancellation') {
 					// Test cancellation
 					orderCancellation = HookMgr.callHook('app.payment.processor.iamport',
@@ -93,6 +95,8 @@ server.post('SfNotifyHook', function (req, res, next) {
 					}
 				}
 
+				COHelpers.addOrderNote(order, 'New', 'Payment was successful and order successfully validated');
+
 				break;
 			// payment cancelled and refund initiated
 			case 'cancelled':
@@ -107,6 +111,8 @@ server.post('SfNotifyHook', function (req, res, next) {
 						// send cancellation email to customer
 					}
 				}
+
+				COHelpers.addOrderNote(order, 'Cancel', 'Order cancelled by user');
 
 				break;
 			default:
