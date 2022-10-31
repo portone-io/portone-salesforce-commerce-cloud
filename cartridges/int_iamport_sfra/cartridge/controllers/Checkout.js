@@ -27,11 +27,10 @@ server.append('Begin', function (req, res, next) {
 });
 
 server.post('HandleCancel', function (req, res, next) {
-	const Transaction = require('dw/system/Transaction');
 	const OrderMgr = require('dw/order/OrderMgr');
-	const BasketMgr = require('dw/order/BasketMgr');
 	const URLUtils = require('dw/web/URLUtils');
 	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 	let orderToken = req.form.orderToken;
 	let orderId = req.form.merchant_uid;
@@ -44,20 +43,7 @@ server.post('HandleCancel', function (req, res, next) {
 		order = OrderMgr.getOrder(orderId, orderToken);
 	}
 
-	if (!empty(order)) {
-		// recreate the basket from the current order and fail the order afterwards
-		let currentBasket = BasketMgr.getCurrentOrNewBasket();
-		let defaultShipment = currentBasket.getDefaultShipment();
-
-		Transaction.wrap(function () {
-			order.getProductLineItems().toArray().forEach((productLineItem) => {
-				let newProductLineItem = currentBasket.createProductLineItem(productLineItem.productID, defaultShipment);
-				newProductLineItem.setQuantityValue(productLineItem.getQuantityValue());
-			});
-
-			OrderMgr.failOrder(order, true);
-		});
-	}
+	COHelpers.recreateCurrentBasket(order, 'failed', 'Payment was not completed by the user');
 
 	res.json({
 		redirectUrl: URLUtils.url('Cart-Show').toString()
