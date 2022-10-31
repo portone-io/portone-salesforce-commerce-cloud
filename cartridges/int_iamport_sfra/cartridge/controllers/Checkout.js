@@ -31,19 +31,23 @@ server.post('HandleCancel', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
 	const BasketMgr = require('dw/order/BasketMgr');
 	const URLUtils = require('dw/web/URLUtils');
+	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 
-	let paymentInformation = req.form.paymentInformation;
 	let orderToken = req.form.orderToken;
-	let orderId = paymentInformation.merchant_uid;
-
+	let orderId = req.form.merchant_uid;
+	let iamportErrorMessage = req.form.errorMsg;
 	let order = null;
+
+	Logger.error('Iamport server responded with an error: ' + iamportErrorMessage);
+
 	if (orderId && orderToken) {
 		order = OrderMgr.getOrder(orderId, orderToken);
 	}
 
 	if (!empty(order)) {
-		const currentBasket = BasketMgr.getCurrentOrNewBasket();
-		const defaultShipment = currentBasket.getDefaultShipment();
+		// recreate the basket from the current order and fail the order afterwards
+		let currentBasket = BasketMgr.getCurrentOrNewBasket();
+		let defaultShipment = currentBasket.getDefaultShipment();
 
 		Transaction.wrap(function () {
 			order.getProductLineItems().toArray().forEach((productLineItem) => {
@@ -51,7 +55,7 @@ server.post('HandleCancel', function (req, res, next) {
 				newProductLineItem.setQuantityValue(productLineItem.getQuantityValue());
 			});
 
-			OrderMgr.cancelOrder(order);
+			OrderMgr.failOrder(order, true);
 		});
 	}
 
