@@ -72,6 +72,8 @@ function sendPaymentInformation(paymentResponse, paymentOptions) {
  * @param {Object} paymentOptions.cancelUrl - Url for handling payment failure cases
  */
 function handlePaymentFailure(paymentResources, paymentOptions) {
+	let defer = $.Deferred(); // eslint-disable-line
+
 	$.ajax({
 		url: paymentOptions.cancelUrl,
 		method: 'POST',
@@ -82,8 +84,8 @@ function handlePaymentFailure(paymentResources, paymentOptions) {
 			orderToken: paymentOptions.orderToken
 		},
 		success: function (data) {
-			window.location.href = data.redirectUrl;
 			defer.reject();
+			window.location.href = data.redirectUrl;
 		},
 		error: function (error) {
 			//
@@ -118,7 +120,7 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 			} else {
 				console.log('failed: ' + paymentResponse); // TODO: remove log
 				// handle payment failure
-				handlePaymentFailure(paymentResponse, paymentOptions);
+				// handlePaymentFailure(paymentResponse, paymentOptions);
 			}
 
 			// POC only TODO: Remove
