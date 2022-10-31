@@ -4,7 +4,8 @@
 const proxyquire = require('proxyquire').noCallThru().noPreserveCache();
 const collections = require('../util/collections');
 const Site = require('../dw/system/Site');
-var iamportConstants = require('../../mocks/constants/iamportConstants');
+const Logger = require('../dw/system/Logger');
+const iamportConstants = require('../../mocks/constants/iamportConstants');
 // var URLUtils = require('../dw.web.URLUtils');
 
 function proxyModel() {
@@ -57,7 +58,8 @@ function proxyModel() {
 				return ['applicable payment cards'];
 			}
 		},
-		'dw/order/PaymentInstrument': {}
+		'dw/order/PaymentInstrument': {},
+		'dw/system/Logger': Logger
 	});
 }
 
