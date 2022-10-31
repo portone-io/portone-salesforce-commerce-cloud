@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('dw/system/Logger');
+const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 const Transaction = require('dw/system/Transaction');
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
@@ -59,7 +59,7 @@ function Handle(basket, paymentInformation, paymentMethodID, req) {
 			};
 		});
 	} catch (e) {
-		Logger.getLogger('Checkout', 'Paypal').error('Error on payment "Handle" hook: {0}', e.message);
+		Logger.error('Error on payment "Handle" hook: {0}', e.message);
 		result = {
 			paymentInstrument: null,
 			success: false,
@@ -121,7 +121,7 @@ function postAuthorize(order, paymentData, req) {
 		}
 
 		if (empty(paymentInstrument)) {
-			Logger.getLogger('Hook', 'Iamport').error('Payment Instrument is empty');
+			Logger.error('Payment Instrument is empty');
 			return {
 				success: false,
 				error: true

@@ -7,7 +7,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 	const iamportConstants = require('*/cartridge/constants/iamportConstants');
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
 	const HookMgr = require('dw/system/HookMgr');
-	const Logger = require('dw/system/Logger');
+	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 	let webhookData = JSON.parse(req.body);
@@ -27,7 +27,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 		});
 
 		if (!paymentData.isOk()) {
-			Logger.getLogger('Webhook', 'Iamport').error('Payment data is empty. Check the payment service');
+			Logger.error('Payment data is empty. Check the payment service');
 		}
 
 		switch (status) {
@@ -47,8 +47,8 @@ server.post('SfNotifyHook', function (req, res, next) {
 						req
 					);
 
-					Logger.info('merchant_uid: ' + webhookData.merchant_uid);
-					Logger.info('imp_uid: ' + webhookData.imp_uid);
+					Logger.debug('merchant_uid: ' + webhookData.merchant_uid);
+					Logger.debug('imp_uid: ' + webhookData.imp_uid);
 
 					if (postAuthorization.success) {
 						if (order.getCustomerEmail()) {
@@ -83,9 +83,9 @@ server.post('SfNotifyHook', function (req, res, next) {
 					req
 				);
 
-				Logger.info('merchant_uid: ' + webhookData.merchant_uid);
-				Logger.info('imp_uid: ' + webhookData.imp_uid);
-				Logger.info('paymentInfo: ' + JSON.stringify(paymentData));
+				Logger.debug('merchant_uid: ' + webhookData.merchant_uid);
+				Logger.debug('imp_uid: ' + webhookData.imp_uid);
+				Logger.debug('paymentInfo: ' + JSON.stringify(paymentData));
 
 				if (postAuthorization.success) {
 					if (order.getCustomerEmail()) {
@@ -113,13 +113,13 @@ server.post('SfNotifyHook', function (req, res, next) {
 				break;
 		}
 
-		Logger.getLogger('Webhook', 'Iamport').error('Webhook called successfully');
+		Logger.debug('Webhook called successfully');
 
 		res.print('success');
 		return next();
 	} catch (err) {
 		// TODO: log error
-		Logger.getLogger('Webhook', 'Iamport').error('Webhook failed: ' + err);
+		Logger.error('Webhook failed: ' + err);
 		res.setStatusCode(400).print(err);
 		return next();
 	}

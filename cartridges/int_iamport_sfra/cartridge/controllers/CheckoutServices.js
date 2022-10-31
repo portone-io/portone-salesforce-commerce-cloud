@@ -342,7 +342,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	const validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
-	const Logger = require('dw/system/Logger');
+	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 
 	let currentBasket = BasketMgr.getCurrentBasket();
 
@@ -465,7 +465,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 
 	// when Iamport server call (service) fails
 	if (!paymentRegistered.isOk()) {
-		Logger.getLogger('Services', 'Iamport').error('Payment registration and validation failed: ' + paymentRegistered.error);
+		Logger.error('Payment registration and validation failed: ' + paymentRegistered.error);
 		res.json({
 			error: true,
 			errorStage: {
@@ -510,14 +510,14 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	const URLUtils = require('dw/web/URLUtils');
 	const Transaction = require('dw/system/Transaction');
 	const BasketMgr = require('dw/order/BasketMgr');
-	const Logger = require('dw/system/Logger');
+	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	// const addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
 
 	let paymentInformation = req.form;
 	if (empty(paymentInformation)) {
-		Logger.getLogger('Checkout', 'Iamport').error('Payment must contain a unique id and and an order id' + paymentInformation.error);
+		Logger.error('Payment must contain a unique id and and an order id' + paymentInformation.error);
 		return next();
 	}
 
@@ -530,7 +530,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 			currentBasket = BasketMgr.createBasketFromOrder(order);
 		});
 	} catch (e) {
-		Logger.getLogger('Checkout', 'Iamport').error(e);
+		Logger.error(e);
 	}
 
 	if (!currentBasket) {
@@ -586,7 +586,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	});
 
 	if (!paymentData.isOk()) {
-		Logger.getLogger('Services', 'Iamport').error('Server failed to retrieve payment data for "' + paymentID + '": ' + paymentInformation.error);
+		Logger.error('Server failed to retrieve payment data for "' + paymentID + '": ' + paymentInformation.error);
 		res.json({
 			error: true,
 			errorStage: {
