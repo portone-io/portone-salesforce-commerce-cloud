@@ -10,14 +10,17 @@ const IAMPORT_ARGS = { MID: $('input[name="merchantID"]').val()
 /**
  * Send payment information to the server for validation
  *
- * @param {Object} paymentInformation - Payment information response upon payment request
+ * @param {Object} paymentResponse - Payment response upon payment request
  * @param {Object} paymentOptions - Additional payment information
+ * @param {Object} paymentOptions.validationUrl - Url for payment post validation
  */
-function sendPaymentInformation(paymentInformation, paymentOptions) {
+function sendPaymentInformation(paymentResponse, paymentOptions) {
+	let defer = $.Deferred(); // eslint-disable-line
+
 	$.ajax({
 		url: paymentOptions.validationUrl,
 		method: 'POST',
-		data: paymentInformation,
+		data: paymentResponse,
 		success: function (data) {
 			if (data.error) {
 				if (data.cartError) {
@@ -28,7 +31,7 @@ function sendPaymentInformation(paymentInformation, paymentOptions) {
 					defer.reject(data);
 				}
 			} else {
-				let redirect = $('<form>')
+				let $redirect = $('<form>')
 				.appendTo(document.body)
 				.attr({
 					method: 'POST',
@@ -36,21 +39,22 @@ function sendPaymentInformation(paymentInformation, paymentOptions) {
 				});
 
 				$('<input>')
-				.appendTo(redirect)
+				.appendTo($redirect)
 				.attr({
 					name: 'orderID',
 					value: data.orderID
 				});
 
 				$('<input>')
-				.appendTo(redirect)
+				.appendTo($redirect)
 				.attr({
 					name: 'orderToken',
 					value: data.orderToken
 				});
 
-				redirect.submit();
-				defer.resolve(data);
+				$redirect.on('submit', function () {
+					defer.resolve(data);
+				});
 			}
 		},
 		error: function () {
@@ -63,17 +67,18 @@ function sendPaymentInformation(paymentInformation, paymentOptions) {
 /**
  * Send payment information to the server for validation
  *
- * @param {Object} paymentInformation - Payment information response upon payment request
+ * @param {Object} paymentResources - Payment response upon payment request
  * @param {Object} paymentOptions - Additional payment information
- * @param {Object} paymentOptions.validationUrl - Url for payment post validation
  * @param {Object} paymentOptions.cancelUrl - Url for handling payment failure cases
  */
-function handlePaymentFailure(paymentInformation, paymentOptions) {
+function handlePaymentFailure(paymentResources, paymentOptions) {
 	$.ajax({
 		url: paymentOptions.cancelUrl,
 		method: 'POST',
 		data: {
-			paymentInformation: paymentInformation,
+			merchant_uid: paymentResources.merchant_uid,
+			imp_uid: paymentResources.imp_uid,
+			errorMsg: paymentResources.error_msg,
 			orderToken: paymentOptions.orderToken
 		},
 		success: function (data) {
@@ -108,26 +113,16 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 			};
 
 			if (paymentResponse.success) {
-				// TODO: Remove log
-				// eslint-disable-next-line no-console
-				console.log('success');
-				sendPaymentInformation({
-					imp_uid: paymentResponse.imp_uid,
-					merchant_uid: paymentResponse.merchant_uid
-				}, paymentOptions);
+				console.log('success: ' + paymentResponse); // TODO: Remove log
+				sendPaymentInformation(paymentResponse, paymentOptions);
 			} else {
+				console.log('failed: ' + paymentResponse); // TODO: remove log
 				// handle payment failure
-				handlePaymentFailure({
-					imp_uid: paymentResponse.imp_uid,
-					merchant_uid: paymentResponse.merchant_uid
-				}, paymentOptions);
+				handlePaymentFailure(paymentResponse, paymentOptions);
 			}
 
 			// POC only TODO: Remove
-			sendPaymentInformation({
-				imp_uid: paymentResponse.imp_uid || '',
-				merchant_uid: paymentResponse.merchant_uid || ''
-			}, paymentOptions);
+			sendPaymentInformation(paymentResponse, paymentOptions);
 		});
 	}
 };
@@ -136,8 +131,12 @@ module.exports = {
 	generalPayment: function (payload) {
 		try {
 			$.spinner().start();
-			deferLoader.defer('IMP', requestPayment, paymentPayload);
+
+			if (payload) {
+				deferLoader.defer('IMP', requestPayment, payload);
+			}
 		} catch (err) {
+			console.error(err); // TODO: remove log
 			// TODO: handle errors with meaningful error messages
 			iamportUtilities.createErrorNotification(err.message);
 		} finally {
