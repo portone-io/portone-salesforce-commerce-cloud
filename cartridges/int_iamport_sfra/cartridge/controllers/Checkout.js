@@ -43,10 +43,10 @@ server.post('HandleCancel', function (req, res, next) {
 		order = OrderMgr.getOrder(orderId, orderToken);
 	}
 
-	COHelpers.recreateCurrentBasket(order, 'failed', 'Payment was not completed by the user');
+	COHelpers.recreateCurrentBasket(order, 'Order failed', 'Payment was not completed by the user');
 
 	res.json({
-		redirectUrl: URLUtils.url('Cart-Show').toString()
+		redirectUrl: URLUtils.url('Cart-Show', 'error', true, 'errorMessage', 'Payment was cancelled').toString()
 	});
 
 	return next();
