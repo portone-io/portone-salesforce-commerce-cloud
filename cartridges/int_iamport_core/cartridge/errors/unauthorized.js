@@ -6,7 +6,7 @@
  */
 function UnauthorizedError(message) {
 	// errorMessage: Resource.msgf('error.payment.not.registered', 'checkout', null, customError.message)
-	this.message = 'Permission failed';
+	this.message = 'Permission denied';
 	this.status = '401';
 	this.code = '-1';
 	this.description = 'Unauthorized';
