@@ -115,12 +115,12 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 			};
 
 			if (paymentResponse.success) {
-				console.log('success: ' + paymentResponse); // TODO: Remove log
+				console.log('success: ' + JSON.stringify(paymentResponse)); // TODO: Remove log
 				sendPaymentInformation(paymentResponse, paymentOptions);
 			} else {
-				console.log('failed: ' + paymentResponse); // TODO: remove log
+				console.log('failed: ' + JSON.stringify(paymentResponse)); // TODO: remove log
 				// handle payment failure
-				// handlePaymentFailure(paymentResponse, paymentOptions);
+				handlePaymentFailure(paymentResponse, paymentOptions);
 			}
 
 			// POC only TODO: Remove
