@@ -478,8 +478,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		res.json({
 			error: true,
 			errorStage: {
-				stage: 'placeOrder',
-				step: 'paymentInstrument'
+				stage: 'shipping',
+				step: 'billingAddress'
 			},
 			errorMessage: customError.message
 		});
@@ -608,8 +608,8 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		res.json({
 			error: true,
 			errorStage: {
-				stage: 'placeOrder',
-				step: 'paymentInstrument'
+				stage: 'shipping',
+				step: 'billingAddress'
 			},
 			errorMessage: customError.message
 		});
