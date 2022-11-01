@@ -14,20 +14,24 @@
         <fieldset class="payment-form-fields d-flex">
             <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="Iamport">
 
+
             <div class="btn-group payment-methods d-flex flex-column">
 
-                <isloop end=6 items="${pdict.order.billing.payment.iamportPaymentMethods}" alias="paymentMethod" status="payment">
+            <isloop items="${pdict.order.billing.payment.iamportPaymentMethods}" alias="paymentMethod" status="payment">
+
+            <isset name="firstPaymentChecked" value="${payment.first === true ? 'checked' : ''}"  scope="page"/>
+
                         <div class="payment-options__payment d-flex align-items-center justify-content-start">
-                            <input type="radio" class="btn-check payment-method" name="paymentOption" value=${paymentMethod.value} id="${paymentMethod.value}" autocomplete="off" checked data-poc-action="${URLUtils.url('Checkout-BeginPOC', 'pm', paymentMethod.value).toString()}" />
+                            <input type="radio" class="btn-check payment-method" name="paymentOption" value=${paymentMethod.value} id="${paymentMethod.value}" autocomplete="off" ${firstPaymentChecked} data-poc-action="${URLUtils.url('Checkout-BeginPOC', 'pm', paymentMethod.value).toString()}" />
 
                             <isif condition="${paymentMethod.value === 'card'}">
                                 <img class="payment-option_img" src="${URLUtils.staticURL('/images/credit.png')}" alt="${Resource.msg('global.storename', 'common', null)}" />
 
                                 <iselseif condition="${paymentMethod.value === 'trans'}">
-                                   <img class="payment-option_img" src="${URLUtils.staticURL('/images/bank-transfer.png')}" alt="${Resource.msg('global.storename', 'common', null)}" />
+                                   <img class="payment-option_img" src="${URLUtils.staticURL('/images/transfer-payment-logo.png')}" alt="${Resource.msg('global.storename', 'common', null)}" />
 
                                 <iselseif condition="${paymentMethod.value === 'vbank'}">
-                                   <img class="payment-option_img" src="${URLUtils.staticURL('/images/payment-transf.jpg')}" alt="${paymentMethod.displayValue}" />
+                                   <img class="payment-option_img" src="${URLUtils.staticURL('/images/virtual_mastercard_visa_card.jpg')}" alt="${paymentMethod.displayValue}" />
 
                                 <iselseif condition="${paymentMethod.value === 'kakaopay'}">
                                    <img class="payment-option_img" src="${URLUtils.staticURL('/images/kakao-pay-logo.png')}" alt="${paymentMethod.displayValue}" />
@@ -36,13 +40,13 @@
                                    <img class="payment-option_img" src="${URLUtils.staticURL('/images/kakao-pay-logo.png')}" alt="${paymentMethod.displayValue}" />
 
                                 <iselseif condition="${paymentMethod.value === 'naverpay'}">
-                                   <img class="payment-option_img payment-option_img-bg" src="${URLUtils.staticURL('/images/npay_20.png')}" alt="${paymentMethod.displayValue}" />
+                                   <img class="payment-option_img payment-option_img-bg" src="${URLUtils.staticURL('/images/naverpay-new.jpg')}" alt="${paymentMethod.displayValue}" />
 
                                 <iselseif condition="${paymentMethod.value === 'payco'}">
                                    <img class="payment-option_img" src="${URLUtils.staticURL('/images/payco.png')}" alt="${paymentMethod.displayValue}" />
 
                                 <iselseif condition="${paymentMethod.value === 'samsung'}">
-                                   <img class="payment-option_img" src="${URLUtils.staticURL('/images/Samsung_Pay_icon.png')}" alt="${paymentMethod.displayValue}" />
+                                   <img class="payment-option_img payment-option_img-less" src="${URLUtils.staticURL('/images/Samsung_Pay_icon.png')}" alt="${paymentMethod.displayValue}" />
 
                                 <iselse/>
                                 <img class="payment-option_img" src="${URLUtils.staticURL('/images/payment-gateway.png')}" alt="${paymentMethod.displayValue}" />
