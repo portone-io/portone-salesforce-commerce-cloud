@@ -27,7 +27,7 @@
                             <img class="payment-option_img" src="${URLUtils.staticURL('/images/bank-transfer-logo.png')}" alt="${Resource.msg('global.storename', 'common', null)}" />
 
                         <iselseif condition="${paymentMethod.value === 'vbank'}">
-                            <img class="payment-option_img" src="${URLUtils.staticURL('/images/virtualpay-mastercard-visa.jpg')}" alt="${paymentMethod.displayValue}" />
+                            <img class="payment-option_img payment-option_img-md" src="${URLUtils.staticURL('/images/virtualpay-mastercard-visa.jpg')}" alt="${paymentMethod.displayValue}" />
 
                         <iselseif condition="${paymentMethod.value === 'kakaopay'}">
                             <img class="payment-option_img" src="${URLUtils.staticURL('/images/kakao-pay-logo.png')}" alt="${paymentMethod.displayValue}" />
