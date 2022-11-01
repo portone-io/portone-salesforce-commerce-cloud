@@ -1,3 +1,86 @@
 @charset "UTF-8";
 
-@import "./import/payment";
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
+.payment-options {
+  .payment-options__title {
+    margin: 20px 0px;
+    font-family: var(--skin-body-font);
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--color-darker-gray);
+  }
+
+  .payment-options__payment {
+    margin-bottom: 8px;
+
+    input[type="radio"] {
+      box-sizing: border-box;
+      appearance: none;
+      background-color: #fff;
+      display: grid;
+      margin: 0;
+      font: inherit;
+      color: var(--color-darker-gray);
+      width: 1.15em;
+      height: 1.15em;
+      border: 0.15em solid var(--color-darker-gray);
+      border-radius: 50%;
+      transform: translateY(-0.075em);
+      place-content: center;
+      cursor: pointer;
+      transition:all 0.4s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    input[type="radio"]::before {
+      content: "";
+      width: 0.65em;
+      height: 0.65em;
+      border-radius: 50%;
+      transform: scale(0);
+      transition:all 0.4s;
+      box-shadow: inset 1em 1em var(--color-darker-gray);
+    }
+
+    input[type="radio"]:checked::before {
+      transform: scale(0.68);
+      transition:all 0.6s;
+    }
+
+    input[type="radio"]:focus {
+      outline: max(2px, 0px) solid var(--color-darker-gray);
+      outline-offset: max(2px, 0px);
+    }
+
+    input[type="radio"]:hover {
+      outline: max(3px, 8px) solid #e9ecef;
+      outline-offset: max(2px, 2px);
+    }
+  }
+
+  .payment-method_option_label {
+    margin-bottom: 0;
+  }
+
+  .payment-option_img {
+    width: 35px;
+    height: 26px;
+    margin-left: 15px;
+  }
+
+  .payment-option_img-bg {
+    width: 63px;
+  }
+
+  .payment-option_img-md {
+    width: 40px;
+  }
+
+  .payment-option_img-less {
+    width: 30px;
+  }
+}
