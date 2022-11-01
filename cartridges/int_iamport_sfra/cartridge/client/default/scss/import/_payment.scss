@@ -1,3 +1,67 @@
+@import "../variables";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/functions";
+
 .payment-options {
-  background-color: silver;
+  .payment-options__title {
+    margin-bottom: 20px;
+  }
+
+  .payment-options__payment {
+    margin-bottom: 8px;
+
+    input[type="radio"] {
+      appearance: none;
+      background-color: #fff;
+      display: grid;
+      margin: 0;
+      font: inherit;
+      color: $dark-gray;
+      width: 1.15em;
+      height: 1.15em;
+      border-radius: 50%;
+      transform: translateY(-0.075em);
+      place-content: center;
+      cursor: pointer;
+      border: 0.12em solid $grey3;
+    }
+
+    input[type="radio"]::before {
+      content: "";
+      width: 0.65em;
+      height: 0.65em;
+      border-radius: 50%;
+      transform: scale(0);
+      transition: 160ms transform ease-in-out;
+      box-shadow: inset 1em 1em $dark-gray;
+    }
+
+    input[type="radio"]:checked::before {
+      transform: scale(1);
+    }
+
+    input[type="radio"]:checked {
+      transform: scale(1);
+      border: 0.15em solid $dark-gray;
+    }
+
+    input[type="radio"]:focus {
+      outline: max(2px, 1px) solid lightgray;
+      outline-offset: max(2px, 2px);
+    }
+  }
+
+  .payment-method_option_label {
+    margin-bottom: 0;
+  }
+
+  .payment-option_img {
+    width: 35px;
+    height: 26px;
+    margin-left: 15px;
+  }
+
+  .payment-option_img-bg {
+    width: 42px;
+  }
 }
