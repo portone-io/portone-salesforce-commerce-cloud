@@ -21,7 +21,9 @@
     "dev": "./sfra-webpack-builder/node_modules/.bin/webpack --config ./sfra-webpack-builder/webpack.config.js --env dev --env local",
     "watch": "./sfra-webpack-builder/node_modules/.bin/webpack --config ./sfra-webpack-builder/webpack.config.js --env dev --watch --env local",
     "watch:lint": "./sfra-webpack-builder/node_modules/.bin/webpack --config ./sfra-webpack-builder/webpack.config.js --env dev --env useLinter --watch --env local",
-    "watch:reload": "./sfra-webpack-builder/node_modules/.bin/webpack --config ./sfra-webpack-builder/webpack.config.js --env dev --watch --env local --env livereload"
+    "watch:reload": "./sfra-webpack-builder/node_modules/.bin/webpack --config ./sfra-webpack-builder/webpack.config.js --env dev --watch --env local --env livereload",
+    "compile:js": "sgmf-scripts --compile js",
+    "compile:scss": "sgmf-scripts --compile css"
   },
   "sfraBuilderConfig": "./sfraBuilderConfig",
   "dependencies": {
@@ -55,7 +57,7 @@
     "postcss-loader": "^2.1.5",
     "proxyquire": "1.7.4",
     "sass-loader": "^7.0.3",
-    "sgmf-scripts": "^2.0.0",
+    "sgmf-scripts": "^2.4.2",
     "sinon": "^1.17.4",
     "stylelint": "^7.1.0",
     "stylelint-config-standard": "^12.0.0",
