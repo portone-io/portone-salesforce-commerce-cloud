@@ -5,7 +5,6 @@ let csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 const server = require('server');
 server.extend(module.superModule);
 
-
 /**
  *  Handle Ajax payment (and billing) form submit
  */
@@ -343,7 +342,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
-	const CustomErrors = require('*/cartridge/errors/index');
+	const CustomError = require('*/cartridge/errors/customError');
 	let customError;
 
 	let currentBasket = BasketMgr.getCurrentBasket();
@@ -466,14 +465,12 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	let paymentRegistered = iamportServices.registerAndValidatePayment.call();
 
 	// when Iamport server call (service) fails
+	// TODO: list the expected server error codes
 	if (!paymentRegistered.isOk()) {
-		customError = new CustomErrors({
-			status: paymentRegistered.error,
-			message: paymentRegistered.errorMessage
-		});
-		Logger.error('Payment registration and validation failed: ' + customError);
+		customError = new CustomError({ status: paymentRegistered.error });
+		Logger.error('Payment registration and validation failed: ' + JSON.stringify(paymentRegistered));
 
-		COHelpers.recreateCurrentBasket(order, 'failed', customError.note);
+		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
 
 		res.json({
 			error: true,
@@ -523,7 +520,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	// const addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
-	const CustomErrors = require('*/cartridge/errors/index');
+	const CustomError = require('*/cartridge/errors/index');
 	let customError;
 
 	let paymentInformation = req.form;
@@ -597,13 +594,10 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	});
 
 	if (!paymentData.isOk()) {
-		customError = new CustomErrors({
-			status: paymentData.error,
-			message: paymentData.errorMessage
-		});
-		Logger.error('Server failed to retrieve payment data for "' + paymentID + '": ' + customError);
+		Logger.error('Server failed to retrieve payment data for "' + paymentID + '": ' + JSON.stringify(paymentData));
+		customError = new CustomError({ status: paymentData.error });
 
-		COHelpers.recreateCurrentBasket(order, 'failed', customError.note);
+		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
 
 		res.json({
 			error: true,
@@ -616,12 +610,12 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		return next();
 	}
 
-	// TODO: compare prices for fraud checks
+	// Compare prices for fraud checks
 	let iamportFraudFlagged = iamportHelpers.checkFraudPayments(paymentData, order);
 	if (iamportFraudFlagged) {
 		Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
 
-        // fraud detection failed
+        // fraud detected
 		req.session.privacyCache.set('fraudDetectionStatus', true);
 
 		res.json({
