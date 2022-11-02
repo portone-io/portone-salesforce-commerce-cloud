@@ -31,6 +31,7 @@ server.post('HandleCancel', function (req, res, next) {
 	const URLUtils = require('dw/web/URLUtils');
 	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	const Resource = require('dw/web/Resource');
 
 	let orderToken = req.form.orderToken;
 	let orderId = req.form.merchant_uid;
@@ -43,10 +44,14 @@ server.post('HandleCancel', function (req, res, next) {
 		order = OrderMgr.getOrder(orderId, orderToken);
 	}
 
-	COHelpers.recreateCurrentBasket(order, 'Order failed', 'Payment was not completed by the user');
+	COHelpers.recreateCurrentBasket(order,
+		Resource.msg('order.note.payment.incomplete.subject', 'order', null),
+		Resource.msg('order.note.payment.incomplete.body', 'order', null));
 
 	res.json({
-		redirectUrl: URLUtils.url('Cart-Show', 'error', true, 'errorMessage', 'Payment was cancelled').toString()
+		redirectUrl: URLUtils.url('Cart-Show', 'error', true,
+			'errorMessage',
+			Resource.msg('error.payment.incomplete', 'checkout', null)).toString()
 	});
 
 	return next();
