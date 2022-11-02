@@ -147,7 +147,12 @@ const baseCheckout = require('base/checkout/checkout');
 						type: 'post',
 						data: shippingFormData,
 						success: function (data) {
-							// Not re-enable the netx-step-button when moving to payment method
+								// Not re-enable the netx-step-button when moving to payment method
+								// $('body').trigger('checkout:enableButton', '.next-step-button button');
+							let hasPaymentMethodSelected = $('.payment-method:input:radio:checked').length > 0;
+							if (hasPaymentMethodSelected) {
+								$('body').trigger('checkout:enableButton', '.next-step-button button');
+							}
 							shippingHelpers.methods.shippingFormResponse(defer, data);
 						},
 						error: function (err) {

@@ -3,5 +3,5 @@
 const basePreferences = require('*/cartridge/config/preferences');
 
 module.exports = Object.assign(basePreferences, {
-	SFRA5_ENABLED: true
+	SFRA5_ENABLED: false
 });
