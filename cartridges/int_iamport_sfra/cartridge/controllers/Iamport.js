@@ -9,6 +9,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 	const HookMgr = require('dw/system/HookMgr');
 	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	const Resource = require('dw/web/Resource');
 
 	let webhookData = JSON.parse(req.body);
 	let status = webhookData.status;
@@ -27,7 +28,8 @@ server.post('SfNotifyHook', function (req, res, next) {
 		});
 
 		if (!paymentData.isOk()) {
-			Logger.error('Payment data is empty. Check the payment service');
+			Logger.error('No payment data retrieved. Check the payment service');
+			return next();
 		}
 
 		switch (status) {
@@ -56,7 +58,9 @@ server.post('SfNotifyHook', function (req, res, next) {
 						}
 					}
 
-					COHelpers.addOrderNote(order, 'New', 'Payment was successful and order successfully validated');
+					COHelpers.addOrderNote(order,
+						Resource.msg('order.note.payment.complete.subject', 'order', null),
+						Resource.msg('order.note.payment.complete.body', 'order', null));
 				} else if (whatToTest === 'cancellation') {
 					// Test cancellation
 					orderCancellation = HookMgr.callHook('app.payment.processor.iamport',
@@ -69,6 +73,10 @@ server.post('SfNotifyHook', function (req, res, next) {
 							// send cancellation email to customer
 						}
 					}
+
+					COHelpers.addOrderNote(order,
+						Resource.msg('order.note.payment.cancelled.subject', 'order', null),
+						Resource.msg('order.note.payment.cancelled.body', 'order', null));
 				} else if (whatToTest === 'vbank') {
 					// Test vbank payments
 				} else if (whatToTest === 'escrow') {
@@ -95,7 +103,9 @@ server.post('SfNotifyHook', function (req, res, next) {
 					}
 				}
 
-				COHelpers.addOrderNote(order, 'New', 'Payment was successful and order successfully validated');
+				COHelpers.addOrderNote(order,
+					Resource.msg('order.note.payment.complete.subject', 'order', null),
+					Resource.msg('order.note.payment.complete.body', 'order', null));
 
 				break;
 			// payment cancelled and refund initiated
@@ -112,21 +122,22 @@ server.post('SfNotifyHook', function (req, res, next) {
 					}
 				}
 
-				COHelpers.addOrderNote(order, 'Cancel', 'Order cancelled by user');
+				COHelpers.addOrderNote(order,
+					Resource.msg('order.note.payment.cancelled.subject', 'order', null),
+					Resource.msg('order.note.payment.cancelled.body', 'order', null));
 
 				break;
 			default:
 				break;
 		}
 
-		Logger.debug('Webhook called successfully');
-
-		res.print('success');
+		Logger.debug('Webhook called successfully. Webhook response: ', JSON.stringify(webhookData));
+		// return success message to the import server
+		res.setStatusCode(200).print('WebhookCall: success');
 		return next();
 	} catch (err) {
-		// TODO: log error
-		Logger.error('Webhook failed: ' + err);
-		res.setStatusCode(400).print(err);
+		Logger.error('Webhook failed: ' + JSON.stringify(err));
+		res.setStatusCode(500).print(err.message);
 		return next();
 	}
 });

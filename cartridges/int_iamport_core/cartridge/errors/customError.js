@@ -1,5 +1,7 @@
 'use strict';
 
+const Resource = require('dw/web/Resource');
+
 /**
  * Map custom error
  * @constructor
@@ -9,24 +11,24 @@
 function CustomError(error) {
 	switch (error.status) {
 		case 400:
-			this.message = 'Permission Denied';
-			this.note = '';
+			this.message = Resource.msg('msg.unauthorized.error', 'iamport', null);
+			this.note = Resource.msg('note.unauthorized.error', 'iamport', null);
 			break;
 		case 401:
-			this.message = 'Failed to establish a connection';
-			this.note = '';
+			this.message = Resource.msg('msg.bad.request.error', 'iamport', null);
+			this.note = Resource.msg('note.bad.request.error', 'iamport', null);
 			break;
 		case 404:
-			this.message = 'Service could not be reached';
-			this.note = '';
+			this.message = Resource.msg('msg.not.found.error', 'iamport', null);
+			this.note = Resource.msg('note.not.found.error', 'iamport', null);
 			break;
 		case 500:
-			this.message = 'Server down';
-			this.note = '';
+			this.message = Resource.msg('msg.server.error', 'iamport', null);
+			this.note = Resource.msg('note.server.error', 'iamport', null);
 			break;
 		default:
-			this.message = 'Contact customer service';
-			this.note = '';
+			this.message = Resource.msg('msg.general.error', 'iamport', null);
+			this.note = Resource.msg('note.general.error', 'iamport', null);
 			break;
 	}
 }
