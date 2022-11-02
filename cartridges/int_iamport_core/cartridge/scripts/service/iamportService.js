@@ -11,10 +11,9 @@ const ServiceMock = require('*/cartridge/scripts/service/iamportApiMock');
 const getAuthAccessToken = LocalServiceRegistry.createService('iamport_authenticate', {
 	createRequest: function (svc, args) {
 		let credential = svc.getConfiguration().getCredential();
-
-		if (!(credential instanceof ServiceCredential)) {
-			// TODO: Log error
-			return JSON.stringify(args);
+		if (!(credential instanceof ServiceCredential) || (!empty(args)
+			&& !(args instanceof ServiceCredential))) {
+			throw new Error('Incorrect service credentials');
 		}
 
 		svc.setURL(credential.getURL());
@@ -24,12 +23,17 @@ const getAuthAccessToken = LocalServiceRegistry.createService('iamport_authentic
 		svc.addParam('grant-type', 'client_credentials');
 
 		// map the service credentials to import credentials
-		args = {
+		if (!empty(args)) {
+			return JSON.stringify({
+				imp_key: args.getUser(),
+				imp_secret: args.getPassword()
+			});
+		}
+
+		return JSON.stringify({
 			imp_key: credential.user,
 			imp_secret: credential.password
-		};
-
-		return JSON.stringify(args);
+		});
 	},
 	parseResponse: function (svc, response) {
 		return JSON.parse(response.text);
@@ -45,13 +49,17 @@ const getAuthAccessToken = LocalServiceRegistry.createService('iamport_authentic
  */
 const registerAndValidatePayment = LocalServiceRegistry.createService('iamport_validatePayment', {
 	createRequest: function (svc, args) {
-		const auth = getAuthAccessToken.call();
-		const token = auth.isOk() && auth.object.response.access_token;
+		let credential = svc.getConfiguration().getCredential();
+		let auth = getAuthAccessToken.call(credential);
+		let token = auth.isOk() && auth.object.response.access_token;
+
 		svc.setURL(svc.getURL());
 		svc.setAuthentication('NONE');
-		svc.setRequestMethod('GET');
+		svc.setRequestMethod('POST');
 		svc.addHeader('Content-Type', 'application/json');
 		svc.addHeader('Authorization', 'Bearer ' + token);
+
+		return JSON.stringify(args);
 	},
 	parseResponse: function (svc, response) {
 		return JSON.parse(response.text);
@@ -67,8 +75,10 @@ const registerAndValidatePayment = LocalServiceRegistry.createService('iamport_v
  */
 const getPaymentInformation = LocalServiceRegistry.createService('iamport_getPaymentInfo', {
 	createRequest: function (svc, args) {
-		const auth = getAuthAccessToken.call();
-		const token = auth.isOk() && auth.object.response.access_token;
+		let credential = svc.getConfiguration().getCredential();
+		let auth = getAuthAccessToken.call(credential);
+		let token = auth.isOk() && auth.object.response.access_token;
+
 		svc.setURL(svc.getURL() + args.paymentID);
 		svc.setAuthentication('NONE');
 		svc.setRequestMethod('GET');
