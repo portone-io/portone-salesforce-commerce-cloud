@@ -455,22 +455,36 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		return next();
 	}
 
-	// save the current basket in the session
-	// req.session.privacyCache.set('currentBasket', currentBasket);
-
 	let selectedPaymentMethod = req.session.privacyCache.get('iamportPaymentMethod');
 	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod);
 
-	// Pre-register payment before the client call
-	let paymentRegistered = iamportServices.registerAndValidatePayment.call();
+	// Pre-register payment before the client call for forgery protection
+	let paymentRegistered = iamportServices.registerAndValidatePayment.call({
+		merchant_uid: paymentResources.merchant_uid,
+		amount: paymentResources.amount
+	});
 
 	// when Iamport server call (service) fails
-	// TODO: list the expected server error codes
+	// Expected server error codes: 401
 	if (!paymentRegistered.isOk()) {
-		customError = new CustomError({ status: paymentRegistered.error });
+		customError = new CustomError({ status: paymentRegistered.getError() });
 		Logger.error('Payment registration and validation failed: ' + JSON.stringify(paymentRegistered));
-
 		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
+
+		res.json({
+			error: true,
+			errorStage: {
+				stage: 'shipping',
+				step: 'shippingAddress'
+			},
+			errorMessage: customError.message
+		});
+		return next();
+	} else if (paymentRegistered.getObject().message) {
+		Logger.error('Payment registration and validation failed: ' + JSON.stringify(paymentRegistered));
+		COHelpers.recreateCurrentBasket(order,
+			'Order failed',
+			Resource.msgf('error.payment.forgery', 'checkout', null, paymentResources.merchant_uid));
 
 		res.json({
 			error: true,
@@ -478,7 +492,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 				stage: 'shipping',
 				step: 'billingAddress'
 			},
-			errorMessage: customError.message
+			errorMessage: Resource.msgf('error.payment.forgery', 'checkout', null, '00002853' || paymentResources.merchant_uid)
 		});
 		return next();
 	}
@@ -595,7 +609,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 
 	if (!paymentData.isOk()) {
 		Logger.error('Server failed to retrieve payment data for "' + paymentID + '": ' + JSON.stringify(paymentData));
-		customError = new CustomError({ status: paymentData.error });
+		customError = new CustomError({ status: paymentData.getError() });
 
 		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
 
