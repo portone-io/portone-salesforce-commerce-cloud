@@ -175,7 +175,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 							type: 'post',
 							data: shippingFormData,
 							success: function (data) {
-								// Not re-enable the next-step-button when moving to payment method
+								// Don't enable the next-step-button when moving to payment method
 								// $('body').trigger('checkout:enableButton', '.next-step-button button');
 								let hasPaymentMethodSelected = $('.payment-method:input:radio:checked').length > 0;
 								if (hasPaymentMethodSelected) {
