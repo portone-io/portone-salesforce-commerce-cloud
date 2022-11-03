@@ -8,5 +8,4 @@
             <isinclude template="checkout/billing/paymentOptions/iamportPaymentSummary" />
         </isif>
     </isloop>
-    <p> Name: card </p>
 </div>
