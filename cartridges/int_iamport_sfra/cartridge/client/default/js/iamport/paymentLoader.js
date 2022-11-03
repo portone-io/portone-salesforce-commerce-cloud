@@ -31,7 +31,7 @@ function sendPaymentInformation(paymentResponse, paymentOptions) {
 					defer.reject(data);
 				}
 			} else {
-				let $redirect = $('<form>')
+				let redirect = $('<form>')
 				.appendTo(document.body)
 				.attr({
 					method: 'POST',
@@ -39,22 +39,21 @@ function sendPaymentInformation(paymentResponse, paymentOptions) {
 				});
 
 				$('<input>')
-				.appendTo($redirect)
+				.appendTo(redirect)
 				.attr({
 					name: 'orderID',
 					value: data.orderID
 				});
 
 				$('<input>')
-				.appendTo($redirect)
+				.appendTo(redirect)
 				.attr({
 					name: 'orderToken',
 					value: data.orderToken
 				});
 
-				$redirect.on('submit', function () {
-					defer.resolve(data);
-				});
+				redirect.submit();
+				defer.resolve(data);
 			}
 		},
 		error: function () {
@@ -120,7 +119,7 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 			} else {
 				console.log('failed: ' + JSON.stringify(paymentResponse)); // TODO: remove log
 				// handle payment failure
-				handlePaymentFailure(paymentResponse, paymentOptions);
+				// handlePaymentFailure(paymentResponse, paymentOptions);
 			}
 
 			// POC only TODO: Remove
