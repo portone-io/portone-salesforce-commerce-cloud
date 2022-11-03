@@ -99,9 +99,24 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
 }
 
 /**
+ * Update the iamport payment id (imp_uid) attribute on the Order object
+ * @param {string} paymentId - The payment identifier
+ * @param {Object} order - The current order
+ */
+function updatePaymentIdOnOrder(paymentId, order) {
+	try {
+		Transaction.wrap(function () {
+			order.custom.imp_uid = paymentId;
+		});
+	} catch (e) {
+		Logger.error('imp_uid custom attribute is not defined on the Order system object');
+	}
+}
+
+/**
  * Save Iamport data on payment transaction
  * @param {dw.order.Order} order The current order
- * @param {Object} paymentData The returned payment data
+ * @param {ServiceResult} paymentData The returned payment data
  * @param {Object} req The current request
  * @returns {Object} Returns the post authorize result
  */
@@ -128,18 +143,20 @@ function postAuthorize(order, paymentData, req) {
 			};
 		}
 
-		if (paymentData.object.response.amount) {
+		if (paymentData.getObject().response.amount) {
 			paymentProcessor = PaymentMgr.getPaymentMethod(paymentMethod).getPaymentProcessor();
 			paymentTransaction = paymentInstrument.getPaymentTransaction();
 			paymentTransaction.setPaymentProcessor(paymentProcessor);
 			paymentTransaction.setTransactionID(paymentData.object.response.imp_uid);
 			paymentTransaction.setAmount(
 				new Money(
-					parseFloat(paymentData.object.response.amount),
+					parseFloat(paymentData.getObject().response.amount),
 					'USD'
 				)
 			);
 			order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+			let paymentId = paymentData.getObject().response.imp_uid;
+			updatePaymentIdOnOrder(paymentId, order);
 		}
 
 		orderStatus = order.getStatus().getValue();
@@ -180,5 +197,6 @@ module.exports = {
 	Handle: Handle,
 	Authorize: Authorize,
 	postAuthorize: postAuthorize,
-	cancelOrder: cancelOrder
+	cancelOrder: cancelOrder,
+	updatePaymentIdOnOrder: updatePaymentIdOnOrder
 };

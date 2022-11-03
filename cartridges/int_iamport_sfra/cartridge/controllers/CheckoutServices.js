@@ -530,11 +530,12 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	const URLUtils = require('dw/web/URLUtils');
 	const Transaction = require('dw/system/Transaction');
 	const BasketMgr = require('dw/order/BasketMgr');
+	const HookMgr = require('dw/system/HookMgr');
 	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
-	// const addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
-	const CustomError = require('*/cartridge/errors/index');
+	const addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
+	const CustomError = require('*/cartridge/errors/customError');
 	let customError;
 
 	let paymentInformation = req.form;
@@ -608,7 +609,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	});
 
 	if (!paymentData.isOk()) {
-		Logger.error('Server failed to retrieve payment data for "' + paymentID + '": ' + JSON.stringify(paymentData));
+		Logger.error('Server failed to retrieve payment data for "{0}": {1}', paymentID, JSON.stringify(paymentData));
 		customError = new CustomError({ status: paymentData.getError() });
 
 		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
@@ -643,37 +644,50 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	}
 
     // Places the order
-	// let placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-	// if (placeOrderResult.error) {
-	// 	res.json({
-	// 		error: true,
-	// 		errorMessage: Resource.msg('error.technical', 'checkout', null)
-	// 	});
-	// 	return next();
-	// }
+	let placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+	if (placeOrderResult.error) {
+		res.json({
+			error: true,
+			errorMessage: Resource.msg('error.technical', 'checkout', null)
+		});
+		return next();
+	}
 
-	// if (req.currentCustomer.addressBook) {
-    //     // save all used shipping addresses to address book of the logged in customer
-	// 	let allAddresses = addressHelpers.gatherShippingAddresses(order);
-	// 	allAddresses.forEach(function (address) {
-	// 		if (!addressHelpers.checkIfAddressStored(address, req.currentCustomer.addressBook.addresses)) {
-	// 			addressHelpers.saveAddress(address, req.currentCustomer, addressHelpers.generateAddressName(address));
-	// 		}
-	// 	});
-	// }
+	let mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
+	Logger.debug('Payment Information: {0}', JSON.stringify(mappedPaymentInfo));
 
-    // // Reset usingMultiShip after successful Order placement
-	// req.session.privacyCache.set('usingMultiShipping', false);
+	if (req.currentCustomer.addressBook) {
+        // save all used shipping addresses to address book of the logged in customer
+		let allAddresses = addressHelpers.gatherShippingAddresses(order);
+		allAddresses.forEach(function (address) {
+			if (!addressHelpers.checkIfAddressStored(address, req.currentCustomer.addressBook.addresses)) {
+				addressHelpers.saveAddress(address, req.currentCustomer, addressHelpers.generateAddressName(address));
+			}
+		});
+	}
 
-    // // TODO: Exposing a direct route to an Order, without at least encoding the orderID
-    // //  is a serious PII violation.  It enables looking up every customers orders, one at a
-    // //  time.
-	// res.json({
-	// 	error: false,
-	// 	orderID: order.orderNo,
-	// 	orderToken: order.orderToken,
-	// 	continueUrl: URLUtils.url('Order-Confirm').toString()
-	// });
+    // Reset usingMultiShip after successful Order placement
+	req.session.privacyCache.set('usingMultiShipping', false);
+
+	// save the payment id in a custom attribute on the Order object
+	let paymentId = paymentData.getObject().response.imp_uid;
+	if (HookMgr.hasHook('app.payment.processor.iamport')) {
+		HookMgr.callHook('app.payment.processor.iamport',
+			'updatePaymentIdOnOrder',
+			order,
+			paymentId
+		);
+	}
+
+    // TODO: Exposing a direct route to an Order, without at least encoding the orderID
+    //  is a serious PII violation.  It enables looking up every customers orders, one at a
+    //  time.
+	res.json({
+		error: false,
+		orderID: order.orderNo,
+		orderToken: order.orderToken,
+		continueUrl: URLUtils.url('Order-Confirm').toString()
+	});
 
 	return next();
 });

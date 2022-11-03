@@ -4,12 +4,13 @@ const server = require('server');
 
 server.post('SfNotifyHook', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
-	const iamportConstants = require('*/cartridge/constants/iamportConstants');
-	const iamportServices = require('*/cartridge/scripts/service/iamportService');
 	const HookMgr = require('dw/system/HookMgr');
 	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
-	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 	const Resource = require('dw/web/Resource');
+	const iamportConstants = require('*/cartridge/constants/iamportConstants');
+	const iamportServices = require('*/cartridge/scripts/service/iamportService');
+	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 
 	let webhookData = JSON.parse(req.body);
 	let status = webhookData.status;
@@ -19,19 +20,10 @@ server.post('SfNotifyHook', function (req, res, next) {
 	let paymentData;
 	let postAuthorization;
 	let orderCancellation;
+	let mappedPaymentInfo;
 	let whatToTest = 'payment';
 
 	try {
-		order = OrderMgr.getOrder(orderId);
-		paymentData = iamportServices.getPaymentInformation.call({
-			paymentID: paymentId
-		});
-
-		if (!paymentData.isOk()) {
-			Logger.error('No payment data retrieved. Check the payment service');
-			return next();
-		}
-
 		switch (status) {
 			// testing and virtual payments. TODO: remove test codes
 			case 'ready':
@@ -40,17 +32,21 @@ server.post('SfNotifyHook', function (req, res, next) {
 					paymentID: iamportConstants.TEST_PAYMENT
 				});
 
+				if (!paymentData.isOk()) {
+					Logger.error('No payment data retrieved in webhook. Check the payment service');
+					return next();
+				}
+
 				if (whatToTest === 'payment') {
 					// Test payment authorization
-					postAuthorization = HookMgr.callHook('app.payment.processor.iamport',
-						'postAuthorize',
-						order,
-						paymentData,
-						req
-					);
-
-					Logger.debug('merchant_uid: ' + webhookData.merchant_uid);
-					Logger.debug('imp_uid: ' + webhookData.imp_uid);
+					if (HookMgr.hasHook('app.payment.processor.iamport')) {
+						postAuthorization = HookMgr.callHook('app.payment.processor.iamport',
+							'postAuthorize',
+							order,
+							paymentData,
+							req
+						);
+					}
 
 					if (postAuthorization.success) {
 						if (order.getCustomerEmail()) {
@@ -58,15 +54,20 @@ server.post('SfNotifyHook', function (req, res, next) {
 						}
 					}
 
+					mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
+					Logger.debug('Webhook: Payment Information: {0}', JSON.stringify(mappedPaymentInfo));
+
 					COHelpers.addOrderNote(order,
 						Resource.msg('order.note.payment.complete.subject', 'order', null),
 						Resource.msg('order.note.payment.complete.body', 'order', null));
 				} else if (whatToTest === 'cancellation') {
 					// Test cancellation
-					orderCancellation = HookMgr.callHook('app.payment.processor.iamport',
-						'cancelOrder',
-						order
-					);
+					if (HookMgr.hasHook('app.payment.processor.iamport')) {
+						orderCancellation = HookMgr.callHook('app.payment.processor.iamport',
+							'cancelOrder',
+							order
+						);
+					}
 
 					if (orderCancellation.success) {
 						if (order.getCustomerEmail()) {
@@ -86,22 +87,33 @@ server.post('SfNotifyHook', function (req, res, next) {
 				break;
 			// when payment is successful
 			case 'paid':
-				postAuthorization = HookMgr.callHook('app.payment.processor.iamport',
-					'postAuthorize',
-					order,
-					paymentData,
-					req
-				);
+				order = OrderMgr.getOrder(orderId);
+				paymentData = iamportServices.getPaymentInformation.call({
+					paymentID: paymentId
+				});
 
-				Logger.debug('merchant_uid: ' + webhookData.merchant_uid);
-				Logger.debug('imp_uid: ' + webhookData.imp_uid);
-				Logger.debug('paymentInfo: ' + JSON.stringify(paymentData));
+				if (!paymentData.isOk()) {
+					Logger.error('No payment data retrieved in webhook. Check the payment service');
+					return next();
+				}
+
+				if (HookMgr.hasHook('app.payment.processor.iamport')) {
+					postAuthorization = HookMgr.callHook('app.payment.processor.iamport',
+						'postAuthorize',
+						order,
+						paymentData,
+						req
+					);
+				}
 
 				if (postAuthorization.success) {
 					if (order.getCustomerEmail()) {
 						COHelpers.sendConfirmationEmail(order, req.locale.id, true);
 					}
 				}
+
+				mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
+				Logger.debug('Webhook: Payment Information: {0}', JSON.stringify(mappedPaymentInfo));
 
 				COHelpers.addOrderNote(order,
 					Resource.msg('order.note.payment.complete.subject', 'order', null),
@@ -110,11 +122,14 @@ server.post('SfNotifyHook', function (req, res, next) {
 				break;
 			// payment cancelled and refund initiated
 			case 'cancelled':
+				order = OrderMgr.getOrder(orderId);
 
-				orderCancellation = HookMgr.callHook('app.payment.processor.iamport',
-					'cancelOrder',
-					order
-				);
+				if (HookMgr.hasHook('app.payment.processor.iamport')) {
+					orderCancellation = HookMgr.callHook('app.payment.processor.iamport',
+						'cancelOrder',
+						order
+					);
+				}
 
 				if (orderCancellation.success) {
 					if (order.getCustomerEmail()) {
@@ -131,7 +146,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 				break;
 		}
 
-		Logger.debug('Webhook called successfully. Webhook response: ', JSON.stringify(webhookData));
+		Logger.debug('Webhook called successfully. Webhook response: {0}', JSON.stringify(webhookData));
 		// return success message to the import server
 		res.setStatusCode(200).print('WebhookCall: success');
 		return next();
