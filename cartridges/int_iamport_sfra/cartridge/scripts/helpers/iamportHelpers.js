@@ -62,7 +62,24 @@ function checkFraudPayments(paymentData, order) {
 		!== order.paymentTransaction.amount.value;
 }
 
+/**
+ * Maps the payment information from Iamport removing all sensitive data
+ * @param {Object} paymentResponse - Payment Information from Iamport
+ * @returns {Object} - Mapped payment information
+ */
+function mapPaymentResponseForLogging(paymentResponse) {
+	return {
+		paymentID: paymentResponse.getObject().response.imp_uid,
+		orderID: paymentResponse.getObject().response.merchant_uid,
+		paymentMethod: paymentResponse.getObject().response.pay_method,
+		paymentGateway: paymentResponse.getObject().response.pg_provider,
+		amountPaid: paymentResponse.getObject().response.amount,
+		isEscrow: paymentResponse.getObject().response.escrow
+	};
+}
+
 module.exports = {
 	preparePaymentResources: preparePaymentResources,
-	checkFraudPayments: checkFraudPayments
+	checkFraudPayments: checkFraudPayments,
+	mapPaymentResponseForLogging: mapPaymentResponseForLogging
 };
