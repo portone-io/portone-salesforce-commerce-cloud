@@ -674,8 +674,8 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	if (HookMgr.hasHook('app.payment.processor.iamport')) {
 		HookMgr.callHook('app.payment.processor.iamport',
 			'updatePaymentIdOnOrder',
-			order,
-			paymentId
+			paymentId,
+			order
 		);
 	}
 
