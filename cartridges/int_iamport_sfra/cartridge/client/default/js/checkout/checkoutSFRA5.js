@@ -147,8 +147,12 @@ const baseCheckout = require('base/checkout/checkout');
 						type: 'post',
 						data: shippingFormData,
 						success: function (data) {
-							// enable the next:Payment button here
-							$('body').trigger('checkout:enableButton', '.next-step-button button');
+								// Don't enable the next-step-button when moving to payment method
+								// $('body').trigger('checkout:enableButton', '.next-step-button button');
+							let hasPaymentMethodSelected = $('.payment-method:input:radio:checked').length > 0;
+							if (hasPaymentMethodSelected) {
+								$('body').trigger('checkout:enableButton', '.next-step-button button');
+							}
 							shippingHelpers.methods.shippingFormResponse(defer, data);
 						},
 						error: function (err) {
@@ -412,6 +416,23 @@ const baseCheckout = require('base/checkout/checkout');
 					// Forward button  pressed
 					members.handleNextStage(false);
 				}
+			});
+
+			//
+			// Payment method selection handling
+			//
+
+			// On load disable next button in payments
+			$(window).on('load', function (e) {
+				let stage = checkoutStages[members.currentStage];
+				if (stage === 'payment') {
+					$('body').trigger('checkout:disableButton', '.next-step-button button');
+				}
+			});
+
+			// Payment method selected enables the button
+			$('input[name=paymentOption]').on('change', function (e) {
+				$('body').trigger('checkout:enableButton', '.next-step-button button');
 			});
 
 			//
