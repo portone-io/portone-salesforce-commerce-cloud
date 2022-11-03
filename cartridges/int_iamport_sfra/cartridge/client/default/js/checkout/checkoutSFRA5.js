@@ -311,17 +311,20 @@ const baseCheckout = require('base/checkout/checkout');
 			} else if (stage === 'placeOrder') {
 				// disable the placeOrder button here
 				$('body').trigger('checkout:disableButton', '.next-step-button button');
+				$.spinner().start();
 				$.ajax({
 					url: $('.place-order').data('action'),
 					method: 'POST',
 					success: function (data) {
-						// enable the placeOrder button here
-						$('body').trigger('checkout:enableButton', '.next-step-button button');
+						// not enable the placeOrder button here in order to user do only one
+						// $('body').trigger('checkout:enableButton', '.next-step-button button');
 						if (data.error) {
 							if (data.cartError) {
 								window.location.href = data.redirectUrl;
+								$('body').trigger('checkout:enableButton', '.next-step-button button');
 								defer.reject();
 							} else {
+								$('body').trigger('checkout:enableButton', '.next-step-button button');
 								// go to appropriate stage and display error message
 								defer.reject(data);
 							}
