@@ -119,11 +119,11 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 			} else {
 				console.log('failed: ' + JSON.stringify(paymentResponse)); // TODO: remove log
 				// handle payment failure
-				// handlePaymentFailure(paymentResponse, paymentOptions);
+				handlePaymentFailure(paymentResponse, paymentOptions);
 			}
 
 			// POC only TODO: Remove
-			sendPaymentInformation(paymentResponse, paymentOptions);
+			// sendPaymentInformation(paymentResponse, paymentOptions);
 		});
 	}
 };
