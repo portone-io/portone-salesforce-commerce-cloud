@@ -341,7 +341,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 					$('body').trigger('checkout:disableButton', '.next-step-button button');
 					$.spinner().start();
 					$.ajax({
-						url: $('.place-order').data('action'),
+						url: $('.place-orderr').data('action'),
 						method: 'POST',
 						success: function (data) {
 							// not enable the placeOrder button here in order to user do only one click
@@ -362,17 +362,20 @@ const iamportPayment = require('../iamport/paymentLoader');
 							}
 						},
 						error: function (error) {
-							let errorMsg = error.responseJSON.message;
-							let paymentErrorHtml = '<div class="alert alert-danger alert-dismissible valid-cart-error '
-                                        + 'fade show" role="alert">'
-                                        + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'
-                                        + '<span aria-hidden="true">&times;</span>'
-                                        + '</button>' + errorMsg + '</div>';
-							$('.payments-error').append(paymentErrorHtml);
-							scrollAnimate($('.payments-error'));
 							$.spinner().stop();
+							let errorMsg = error.responseJSON.message;
+							if ($('.payments-error .alert-danger').length < 1) {
+								let paymentErrorHtml = '<div class="alert alert-danger alert-dismissible valid-cart-error '
+											+ 'fade show" role="alert">'
+											+ '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'
+											+ '<span aria-hidden="true">&times;</span>'
+											+ '</button>' + errorMsg + '</div>';
+								$('.payments-error').append(paymentErrorHtml);
+								scrollAnimate($('.payments-error'));
+							}
 							// Enable the placeOrder button here in order to have the user trying the action again
 							$('body').trigger('checkout:enableButton', $('.next-step-button button'));
+									defer.reject();
 						}
 					});
 
