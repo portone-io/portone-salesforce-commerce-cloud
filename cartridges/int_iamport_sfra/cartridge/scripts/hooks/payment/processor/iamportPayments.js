@@ -154,7 +154,11 @@ function postAuthorize(order, paymentData, req) {
 					'USD'
 				)
 			);
-			order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+
+			if (order.getPaymentStatus() !== Order.PAYMENT_STATUS_PAID) {
+				order.setPaymentStatus(Order.PAYMENT_STATUS_PAID);
+			}
+
 			let paymentId = paymentData.getObject().response.imp_uid;
 			updatePaymentIdOnOrder(paymentId, order);
 		}
