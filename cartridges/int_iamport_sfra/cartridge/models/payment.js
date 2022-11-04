@@ -46,7 +46,7 @@ function getPaymentMethods(paymentGatewayID) {
 	let paymentGateway = pgValidators[paymentGatewayID];
 
 	if (empty(paymentGateway)) {
-		Logger.error('No payment gateway was specified');
+		Logger.error('No payment gateway was specified.');
 	}
 
 	let customSitePrefAttributes = Site.getCurrent().getPreferences().getCustom();

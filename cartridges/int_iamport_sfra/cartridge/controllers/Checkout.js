@@ -38,7 +38,7 @@ server.post('HandleCancel', function (req, res, next) {
 	let iamportErrorMessage = req.form.errorMsg;
 	let order = null;
 
-	Logger.error('Iamport server responded with an error: ' + iamportErrorMessage);
+	Logger.error('Iamport server responded with an error: {0}.', iamportErrorMessage);
 
 	if (orderId && orderToken) {
 		order = OrderMgr.getOrder(orderId, orderToken);

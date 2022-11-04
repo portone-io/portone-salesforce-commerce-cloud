@@ -33,7 +33,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 				});
 
 				if (!paymentData.isOk()) {
-					Logger.error('No payment data retrieved in webhook. Check the payment service');
+					Logger.error('No payment data retrieved in webhook. Check the payment service.');
 					return next();
 				}
 
@@ -55,7 +55,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 					}
 
 					mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
-					Logger.debug('Webhook: Payment Information: {0}', JSON.stringify(mappedPaymentInfo));
+					Logger.debug('Webhook: Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
 
 					COHelpers.addOrderNote(order,
 						Resource.msg('order.note.payment.complete.subject', 'order', null),
@@ -93,7 +93,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 				});
 
 				if (!paymentData.isOk()) {
-					Logger.error('No payment data retrieved in webhook. Check the payment service');
+					Logger.error('No payment data retrieved in webhook. Check the payment service.');
 					return next();
 				}
 
@@ -113,7 +113,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 				}
 
 				mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
-				Logger.debug('Webhook: Payment Information: {0}', JSON.stringify(mappedPaymentInfo));
+				Logger.debug('Webhook: Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
 
 				COHelpers.addOrderNote(order,
 					Resource.msg('order.note.payment.complete.subject', 'order', null),
@@ -146,7 +146,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 				break;
 		}
 
-		Logger.debug('Webhook called successfully. Webhook response: {0}', JSON.stringify(webhookData));
+		Logger.debug('Webhook called successfully. Webhook response: {0}.', JSON.stringify(webhookData));
 		// return success message to the import server
 		res.setStatusCode(200).print('WebhookCall: success');
 		return next();

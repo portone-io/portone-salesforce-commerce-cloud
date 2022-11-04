@@ -471,7 +471,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	// Expected server error codes: 401
 	if (!paymentRegistered.isOk()) {
 		customError = new CustomError({ status: paymentRegistered.getError() });
-		Logger.error('Payment registration and validation failed: ' + JSON.stringify(paymentRegistered));
+		Logger.error('Payment registration and validation failed: {0}.', JSON.stringify(paymentRegistered));
 		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
 
 		res.json({
@@ -484,7 +484,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		});
 		return next();
 	} else if (paymentRegistered.getObject().message) {
-		Logger.error('Payment registration and validation failed: ' + JSON.stringify(paymentRegistered));
+		Logger.error('Payment registration and validation failed: {0}.', JSON.stringify(paymentRegistered));
 		COHelpers.recreateCurrentBasket(order,
 			'Order failed',
 			Resource.msgf('error.payment.forgery', 'checkout', null, paymentResources.merchant_uid));
@@ -543,7 +543,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 
 	let paymentInformation = req.form;
 	if (empty(paymentInformation)) {
-		Logger.error('Payment must contain a unique id and and an order id' + paymentInformation.error);
+		Logger.error('Payment must contain a unique id and and an order id {0}.', paymentInformation.error);
 		return next();
 	}
 
@@ -612,7 +612,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	});
 
 	if (!paymentData.isOk()) {
-		Logger.error('Server failed to retrieve payment data for "{0}": {1}', paymentID, JSON.stringify(paymentData));
+		Logger.error('Server failed to retrieve payment data for "{0}": {1}.', paymentID, JSON.stringify(paymentData));
 		customError = new CustomError({ status: paymentData.getError() });
 
 		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
@@ -657,7 +657,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	}
 
 	let mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
-	Logger.debug('Payment Information: {0}', JSON.stringify(mappedPaymentInfo));
+	Logger.debug('Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
 
 	if (req.currentCustomer.addressBook) {
         // save all used shipping addresses to address book of the logged in customer

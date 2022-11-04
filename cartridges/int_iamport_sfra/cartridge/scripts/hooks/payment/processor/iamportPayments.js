@@ -59,7 +59,7 @@ function Handle(basket, paymentInformation, paymentMethodID, req) {
 			};
 		});
 	} catch (e) {
-		Logger.error('Error on payment "Handle" hook: {0}', e.message);
+		Logger.error('Error on payment "Handle" hook: {0}.', e.message);
 		result = {
 			paymentInstrument: null,
 			success: false,
@@ -109,7 +109,7 @@ function updatePaymentIdOnOrder(paymentId, order) {
 			order.custom.imp_uid = paymentId;
 		});
 	} catch (e) {
-		Logger.error('imp_uid custom attribute is not defined on the Order system object');
+		Logger.error('imp_uid custom attribute is not defined on the Order system object.');
 	}
 }
 
@@ -136,7 +136,7 @@ function postAuthorize(order, paymentData, req) {
 		}
 
 		if (empty(paymentInstrument)) {
-			Logger.error('Payment Instrument is empty');
+			Logger.error('Payment Instrument is empty.');
 			return {
 				success: false,
 				error: true
