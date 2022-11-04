@@ -105,13 +105,12 @@ const requestPayment = function requestPayment(item, paymentResources, validatio
 module.exports = {
 	generalPayment: function (paymentResources, validationUrl) {
 		try {
-			$.spinner().start();
 			deferLoader.defer('IMP', requestPayment, paymentResources, validationUrl);
 		} catch (err) {
 			// TODO: handle errors with meaningful error messages
 			iamportUtilities.createErrorNotification(err.message);
 		} finally {
-			$.spinner().stop();
+			setTimeout(() => { $.spinner().stop(); }, 1300);
 		}
 	},
 

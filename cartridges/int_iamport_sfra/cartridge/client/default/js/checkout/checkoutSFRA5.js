@@ -311,17 +311,19 @@ const baseCheckout = require('base/checkout/checkout');
 			} else if (stage === 'placeOrder') {
 				// disable the placeOrder button here
 				$('body').trigger('checkout:disableButton', '.next-step-button button');
+				$.spinner().start();
 				$.ajax({
 					url: $('.place-order').data('action'),
 					method: 'POST',
 					success: function (data) {
-						// enable the placeOrder button here
-						$('body').trigger('checkout:enableButton', '.next-step-button button');
+						// not enable the placeOrder button here in order to user do only one
+						// $('body').trigger('checkout:enableButton', '.next-step-button button');
 						if (data.error) {
 							if (data.cartError) {
 								window.location.href = data.redirectUrl;
 								defer.reject();
 							} else {
+								$.spinner().stop();
 								// go to appropriate stage and display error message
 								defer.reject(data);
 							}
@@ -342,7 +344,8 @@ const baseCheckout = require('base/checkout/checkout');
 						}
 					},
 					error: function () {
-						// enable the placeOrder button here
+						$.spinner().stop();
+						// Enable the placeOrder button here in order to have the user trying the action again
 						$('body').trigger('checkout:enableButton', $('.next-step-button button'));
 					}
 				});
