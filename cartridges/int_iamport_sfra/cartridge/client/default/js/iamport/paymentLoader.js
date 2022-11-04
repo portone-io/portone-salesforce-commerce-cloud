@@ -132,7 +132,9 @@ module.exports = {
 				deferLoader.defer('IMP', requestPayment, payload);
 			}
 		} catch (err) {
-			// TODO: handle iamport errors
+			// TODO: handle iamport errors. Send the error to the backend logs
+			// eslint-disable-next-line no-console
+			console.log(err);
 		} finally {
 			$.spinner().stop();
 		}
