@@ -321,9 +321,9 @@ const baseCheckout = require('base/checkout/checkout');
 						if (data.error) {
 							if (data.cartError) {
 								window.location.href = data.redirectUrl;
-								$('body').trigger('checkout:enableButton', '.next-step-button button');
 								defer.reject();
 							} else {
+								$.spinner().stop();
 								$('body').trigger('checkout:enableButton', '.next-step-button button');
 								// go to appropriate stage and display error message
 								defer.reject(data);
@@ -345,7 +345,8 @@ const baseCheckout = require('base/checkout/checkout');
 						}
 					},
 					error: function () {
-						// enable the placeOrder button here
+						$.spinner().stop();
+						// Enable the placeOrder button here in order to have the user trying the action again
 						$('body').trigger('checkout:enableButton', $('.next-step-button button'));
 					}
 				});
