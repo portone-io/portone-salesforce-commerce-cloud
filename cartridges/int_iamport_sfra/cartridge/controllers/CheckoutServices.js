@@ -5,7 +5,6 @@ let csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 const server = require('server');
 server.extend(module.superModule);
 
-
 /**
  *  Handle Ajax payment (and billing) form submit
  */
@@ -340,7 +339,11 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 	const validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
+	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
+	const iamportServices = require('*/cartridge/scripts/service/iamportService');
+	const CustomError = require('*/cartridge/errors/customError');
+	let customError;
 
 	let currentBasket = BasketMgr.getCurrentBasket();
 
@@ -461,6 +464,45 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	let selectedPaymentMethod = req.session.privacyCache.get('iamportPaymentMethod');
 	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod);
 
+	// Pre-register payment before the client call for forgery protection
+	let paymentRegistered = iamportServices.registerAndValidatePayment.call({
+		merchant_uid: paymentResources.merchant_uid,
+		amount: paymentResources.amount
+	});
+
+	// when Iamport server call (service) fails
+	// Expected server error codes: 401
+	if (!paymentRegistered.isOk()) {
+		customError = new CustomError({ status: paymentRegistered.getError() });
+		Logger.error('Payment registration and validation failed: ' + JSON.stringify(paymentRegistered));
+		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
+
+		res.json({
+			error: true,
+			errorStage: {
+				stage: 'shipping',
+				step: 'shippingAddress'
+			},
+			errorMessage: customError.message
+		});
+		return next();
+	} else if (paymentRegistered.getObject().message) {
+		Logger.error('Payment registration and validation failed: ' + JSON.stringify(paymentRegistered));
+		COHelpers.recreateCurrentBasket(order,
+			'Order failed',
+			Resource.msgf('error.payment.forgery', 'checkout', null, paymentResources.merchant_uid));
+
+		res.json({
+			error: true,
+			errorStage: {
+				stage: 'shipping',
+				step: 'billingAddress'
+			},
+			errorMessage: Resource.msgf('error.payment.forgery', 'checkout', null, '00002853' || paymentResources.merchant_uid)
+		});
+		return next();
+	}
+
     // TODO: Exposing a direct route to an Order, without at least encoding the orderID
     //  is a serious PII violation.  It enables looking up every customers orders, one at a
     //  time.
@@ -469,6 +511,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		orderID: order.orderNo,
 		orderToken: order.orderToken,
 		validationUrl: URLUtils.url('CheckoutServices-ValidatePlaceOrder').toString(),
+		cancelUrl: URLUtils.url('Checkout-HandleCancel').toString(),
 		paymentResources: paymentResources
 	});
 
@@ -493,20 +536,42 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	const URLUtils = require('dw/web/URLUtils');
 	const Transaction = require('dw/system/Transaction');
 	const BasketMgr = require('dw/order/BasketMgr');
+	const HookMgr = require('dw/system/HookMgr');
+	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	const addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
+	const CustomError = require('*/cartridge/errors/customError');
+	let customError;
 
-
-	let currentBasket = BasketMgr.getCurrentBasket();
 	let paymentInformation = req.form;
 	if (empty(paymentInformation)) {
-		// TODO: Log the message before returning
+		Logger.error('Payment must contain a unique id and and an order id' + paymentInformation.error);
 		return next();
 	}
 
 	let orderID = paymentInformation.merchant_uid;
 	let order = OrderMgr.getOrder(orderID);
+
+	let currentBasket = null;
+	try {
+		Transaction.wrap(function () {
+			currentBasket = BasketMgr.createBasketFromOrder(order);
+		});
+	} catch (e) {
+		Logger.error(e);
+	}
+
+	if (!currentBasket) {
+		res.json({
+			error: true,
+			cartError: true,
+			fieldErrors: [],
+			serverErrors: [],
+			redirectUrl: URLUtils.url('Cart-Show').toString()
+		});
+		return next();
+	}
 
 	// Handles payment authorization
 	let handlePaymentResult = COHelpers.handlePayments(order, order.orderNo);
@@ -549,28 +614,33 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	}
 
 	let paymentID = paymentInformation.imp_uid;
-
-	// TODO: pre-register payment before the client call. Move it up
-	// let validPayment = IamportServices.validatePayment.call();
-
-	// if (!validPayment.isOk()) {
-	// 	return next(); // TODO: throw an error
-	// }
-
 	let paymentData = iamportServices.getPaymentInformation.call({
 		paymentID: paymentID
 	});
 
 	if (!paymentData.isOk()) {
-		return next();  // TODO: log an error
+		Logger.error('Server failed to retrieve payment data for "{0}": {1}', paymentID, JSON.stringify(paymentData));
+		customError = new CustomError({ status: paymentData.getError() });
+
+		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
+
+		res.json({
+			error: true,
+			errorStage: {
+				stage: 'shipping',
+				step: 'billingAddress'
+			},
+			errorMessage: customError.message
+		});
+		return next();
 	}
 
-	// TODO: compare prices for fraud checks
+	// Compare prices for fraud checks
 	let iamportFraudFlagged = iamportHelpers.checkFraudPayments(paymentData, order);
 	if (iamportFraudFlagged) {
 		Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
 
-        // fraud detection failed
+        // fraud detected
 		req.session.privacyCache.set('fraudDetectionStatus', true);
 
 		res.json({
@@ -593,6 +663,9 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		return next();
 	}
 
+	let mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
+	Logger.debug('Payment Information: {0}', JSON.stringify(mappedPaymentInfo));
+
 	if (req.currentCustomer.addressBook) {
         // save all used shipping addresses to address book of the logged in customer
 		let allAddresses = addressHelpers.gatherShippingAddresses(order);
@@ -605,6 +678,16 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 
     // Reset usingMultiShip after successful Order placement
 	req.session.privacyCache.set('usingMultiShipping', false);
+
+	// save the payment id in a custom attribute on the Order object
+	let paymentId = paymentData.getObject().response.imp_uid;
+	if (HookMgr.hasHook('app.payment.processor.iamport')) {
+		HookMgr.callHook('app.payment.processor.iamport',
+			'updatePaymentIdOnOrder',
+			paymentId,
+			order
+		);
+	}
 
     // TODO: Exposing a direct route to an Order, without at least encoding the orderID
     //  is a serious PII violation.  It enables looking up every customers orders, one at a

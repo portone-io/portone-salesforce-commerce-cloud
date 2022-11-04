@@ -10,14 +10,17 @@ const IAMPORT_ARGS = { MID: $('input[name="merchantID"]').val()
 /**
  * Send payment information to the server for validation
  *
- * @param {Object} paymentInformation - Payment information response upon payment request
+ * @param {Object} paymentResponse - Payment response upon payment request
  * @param {Object} paymentOptions - Additional payment information
+ * @param {Object} paymentOptions.validationUrl - Url for payment post validation
  */
-function sendPaymentInformation(paymentInformation, paymentOptions) {
-	jQuery.ajax({
+function sendPaymentInformation(paymentResponse, paymentOptions) {
+	let defer = $.Deferred(); // eslint-disable-line
+
+	$.ajax({
 		url: paymentOptions.validationUrl,
 		method: 'POST',
-		data: paymentInformation,
+		data: paymentResponse,
 		success: function (data) {
 			if (data.error) {
 				if (data.cartError) {
@@ -61,52 +64,80 @@ function sendPaymentInformation(paymentInformation, paymentOptions) {
 }
 
 /**
+ * Send payment information to the server for validation
+ *
+ * @param {Object} paymentResources - Payment response upon payment request
+ * @param {Object} paymentOptions - Additional payment information
+ * @param {Object} paymentOptions.cancelUrl - Url for handling payment failure cases
+ */
+function handlePaymentFailure(paymentResources, paymentOptions) {
+	let defer = $.Deferred(); // eslint-disable-line
+
+	$.ajax({
+		url: paymentOptions.cancelUrl,
+		method: 'POST',
+		data: {
+			merchant_uid: paymentResources.merchant_uid,
+			imp_uid: paymentResources.imp_uid,
+			errorMsg: paymentResources.error_msg,
+			orderToken: paymentOptions.orderToken
+		},
+		success: function (data) {
+			defer.reject();
+			window.location.href = data.redirectUrl;
+		},
+		error: function (error) {
+			//
+		}
+	});
+}
+
+/**
  * Request payment to Iamport server using the payment information
  *
  * @param {string} item Iamport global object
- * @param {Object} paymentResources The payment resources
- * @param {string} validationUrl  the url to validate payment and place order
+ * @param {Object} paymentPayload The payment resources
  */
-const requestPayment = function requestPayment(item, paymentResources, validationUrl) {
-	if (paymentResources) {
+const requestPayment = function requestPayment(item, paymentPayload) {
+	if (paymentPayload.paymentResources) {
 		let IMP = window[item];
 		if (!IMP || !IAMPORT_ARGS.MID) {
 			throw new Error('Merchant code not set');
 		}
 
 		IMP.init(IAMPORT_ARGS.MID);
-		IMP.request_pay(paymentResources, function (paymentResponse) {
+		IMP.request_pay(paymentPayload.paymentResources, function (paymentResponse) {
 			let paymentOptions = {
-				validationUrl: validationUrl
+				validationUrl: paymentPayload.validationUrl,
+				cancelUrl: paymentPayload.cancelUrl,
+				orderToken: paymentPayload.orderToken
 			};
 
 			if (paymentResponse.success) {
-				// TODO: Remove log
-				// eslint-disable-next-line no-console
-				console.log('success');
-				sendPaymentInformation({
-					imp_uid: paymentResponse.imp_uid,
-					merchant_uid: paymentResponse.merchant_uid
-				}, paymentOptions);
+				console.log('success: ' + JSON.stringify(paymentResponse)); // TODO: Remove log
+				sendPaymentInformation(paymentResponse, paymentOptions);
 			} else {
-				// TODO: use a toast instead
-				iamportUtilities.createErrorNotification(paymentResponse.error_msg);
+				console.log('failed: ' + JSON.stringify(paymentResponse)); // TODO: remove log
+				// handle payment failure
+				handlePaymentFailure(paymentResponse, paymentOptions);
 			}
 
 			// POC only TODO: Remove
-			sendPaymentInformation({
-				imp_uid: paymentResponse.imp_uid || '',
-				merchant_uid: paymentResponse.merchant_uid || ''
-			}, paymentOptions);
+			// sendPaymentInformation(paymentResponse, paymentOptions);
 		});
 	}
 };
 
 module.exports = {
-	generalPayment: function (paymentResources, validationUrl) {
+	generalPayment: function (payload) {
 		try {
-			deferLoader.defer('IMP', requestPayment, paymentResources, validationUrl);
+			$.spinner().start();
+
+			if (payload) {
+				deferLoader.defer('IMP', requestPayment, payload);
+			}
 		} catch (err) {
+			console.error(err); // TODO: remove log
 			// TODO: handle errors with meaningful error messages
 			iamportUtilities.createErrorNotification(err.message);
 		} finally {

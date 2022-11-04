@@ -340,8 +340,9 @@ const iamportPayment = require('../iamport/paymentLoader');
 					// disable the placeOrder button here
 					$('body').trigger('checkout:disableButton', '.next-step-button button');
 					$.spinner().start();
+					$('.payments-error .alert-danger').remove();
 					$.ajax({
-						url: $('.place-orderr').data('action'),
+						url: $('.place-order').data('action'),
 						method: 'POST',
 						success: function (data) {
 							// not enable the placeOrder button here in order to user do only one click
@@ -357,25 +358,32 @@ const iamportPayment = require('../iamport/paymentLoader');
 								}
 							} else {
 								if (data.paymentResources) {
-									iamportPayment.generalPayment(data.paymentResources, data.validationUrl);
+									let payload = {
+										paymentResources: data.paymentResources,
+										validationUrl: data.validationUrl,
+										cancelUrl: data.cancelUrl,
+										orderToken: data.orderToken
+									};
+									iamportPayment.generalPayment(payload);
 								}
 							}
 						},
 						error: function (error) {
 							$.spinner().stop();
+
 							let errorMsg = error.responseJSON.message;
-							if ($('.payments-error .alert-danger').length < 1) {
-								let paymentErrorHtml = '<div class="alert alert-danger alert-dismissible valid-cart-error '
+							let paymentErrorHtml = '<div class="alert alert-danger alert-dismissible '
 											+ 'fade show" role="alert">'
 											+ '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'
 											+ '<span aria-hidden="true">&times;</span>'
 											+ '</button>' + errorMsg + '</div>';
-								$('.payments-error').append(paymentErrorHtml);
-								scrollAnimate($('.payments-error'));
-							}
+							$('.payments-error').append(paymentErrorHtml);
+							scrollAnimate($('.payments-error'));
+
 							// Enable the placeOrder button here in order to have the user trying the action again
-							$('body').trigger('checkout:enableButton', $('.next-step-button button'));
-									defer.reject();
+							$('body').trigger('checkout:enableButton', '.next-step-button button');
+
+							defer.reject();
 						}
 					});
 
