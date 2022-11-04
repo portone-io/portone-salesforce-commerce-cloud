@@ -1,7 +1,5 @@
 'use strict';
 
-const iamportUtilities = require('./utils/common');
-
 /**
  * Util that will check if an element is present as part of the window object and if so, will invoke a function
  * @param {string} item element to verify, defer will loop until this element gets available on window object
@@ -23,8 +21,7 @@ const defer = function (item, callback, paymentPayload, max, waitTime) {
 				defer(item, callback, paymentPayload, max, iter);
 			}, waitTime);
 		} else {
-			let message = 'Couldn\'\t establish a connection. Please check you internet connection and try again';
-			iamportUtilities.createErrorNotification(message);
+			throw new Error('Couldn\'\t establish a connection. Please check you internet connection and try again');
 		}
 	}
 };
