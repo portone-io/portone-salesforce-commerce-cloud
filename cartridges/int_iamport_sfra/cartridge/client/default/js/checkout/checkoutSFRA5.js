@@ -324,7 +324,6 @@ const baseCheckout = require('base/checkout/checkout');
 								defer.reject();
 							} else {
 								$.spinner().stop();
-								$('body').trigger('checkout:enableButton', '.next-step-button button');
 								// go to appropriate stage and display error message
 								defer.reject(data);
 							}
