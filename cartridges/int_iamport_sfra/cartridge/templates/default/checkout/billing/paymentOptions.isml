@@ -18,7 +18,7 @@
                 <isloop items="${pdict.order.billing.payment.iamportPaymentMethods}" alias="paymentMethod" status="payment">
 
                     <div class="payment-options__payment d-flex align-items-center justify-content-start">
-                        <input type="radio" class="btn-check payment-method" name="paymentOption" value="${paymentMethod.value + '&' + paymentMethod.displayValue}" id="${paymentMethod.value}" autocomplete="off" data-poc-action="${URLUtils.url('Checkout-BeginPOC', 'pm', paymentMethod.value).toString()}" />
+                        <input type="radio" class="btn-check payment-method" name="paymentOption" value="${paymentMethod.value + '&' + paymentMethod.displayValue}" id="${paymentMethod.value}" autocomplete="off" />
 
                         <isif condition="${paymentMethod.value === 'card'}">
                             <img class="payment-option_img" src="${URLUtils.staticURL('/images/credit.png')}" alt="${Resource.msg('global.storename', 'common', null)}" />

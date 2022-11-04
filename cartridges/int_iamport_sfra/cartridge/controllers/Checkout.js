@@ -57,22 +57,4 @@ server.post('HandleCancel', function (req, res, next) {
 	return next();
 });
 
-server.post('BeginPOC', function (req, res, next) {
-	const URLUtils = require('dw/web/URLUtils');
-	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
-	const iamportConstants = require('*/cartridge/constants/iamportConstants');
-	const OrderMgr = require('dw/order/OrderMgr');
-
-	let order = OrderMgr.getOrder(iamportConstants.TEST_ORDER);
-	let selectedPaymentMethod = req.querystring.pm;
-	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod);
-
-	res.json({
-		validationUrl: URLUtils.url('CheckoutServices-ValidatePlaceOrder').toString(),
-		paymentResources: paymentResources
-	});
-
-	return next();
-});
-
 module.exports = server.exports();
