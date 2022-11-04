@@ -5,7 +5,7 @@ var ExtractTextPlugin = require('sgmf-scripts')['extract-text-webpack-plugin'];
 var sgmfScripts = require('sgmf-scripts');
 
 module.exports = [{
-	mode: 'development',
+	mode: 'production',
 	name: 'js',
 	entry: sgmfScripts.createJsPath(),
 	output: {

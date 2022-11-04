@@ -3,7 +3,7 @@
 'use strict';
 
 const deferLoader = require('../scripts/deferPayment');
-const iamportUtilities = require('../scripts/utils/common');
+const iamportUtilities = require('../scripts/utils/index');
 const IAMPORT_ARGS = { MID: $('input[name="merchantID"]').val()
 	.toString().replace(/['"]+/g, '') };
 
@@ -87,7 +87,7 @@ function handlePaymentFailure(paymentResources, paymentOptions) {
 			window.location.href = data.redirectUrl;
 		},
 		error: function (error) {
-			//
+			defer.reject();
 		}
 	});
 }
@@ -114,16 +114,11 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 			};
 
 			if (paymentResponse.success) {
-				console.log('success: ' + JSON.stringify(paymentResponse)); // TODO: Remove log
 				sendPaymentInformation(paymentResponse, paymentOptions);
 			} else {
-				console.log('failed: ' + JSON.stringify(paymentResponse)); // TODO: remove log
 				// handle payment failure
 				handlePaymentFailure(paymentResponse, paymentOptions);
 			}
-
-			// POC only TODO: Remove
-			// sendPaymentInformation(paymentResponse, paymentOptions);
 		});
 	}
 };
@@ -137,33 +132,18 @@ module.exports = {
 				deferLoader.defer('IMP', requestPayment, payload);
 			}
 		} catch (err) {
-			console.error(err); // TODO: remove log
-			// TODO: handle errors with meaningful error messages
-			iamportUtilities.createErrorNotification(err.message);
+			// TODO: handle iamport errors. Send the error to the backend logs
+			// eslint-disable-next-line no-console
+			console.log(err);
 		} finally {
 			setTimeout(() => { $.spinner().stop(); }, 1300);
 		}
 	},
 
-	handlePaymentMethodSelection: function () {
-		$('body').on('click', '.payment-method', function () {
-			//
-		});
-	},
-
-	// Get the selected payment method
-	getSelectedPaymentMethod: function () {
-		let paymentMethods = $('.payment-method');
-		let selectedPaymentMethod = '';
-
-		for (let i = 0; i < paymentMethods.length; i++) {
-			let paymentMethod = paymentMethods[i];
-
-			if (paymentMethod.checked) {
-				selectedPaymentMethod = paymentMethod.value;
-			}
-		}
-
-		return selectedPaymentMethod;
+	// Render the selected payment method
+	renderSelectedPaymentMethod: function () {
+		$('.iamport-payment-method-name span')
+			.html(iamportUtilities.getCookie('pm')
+			.toString().replace(/['"]+/g, ''));
 	}
 };

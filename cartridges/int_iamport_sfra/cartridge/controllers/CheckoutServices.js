@@ -43,11 +43,11 @@ server.replace(
     server.middleware.https,
     csrfProtection.validateAjaxRequest,
     function (req, res, next) {
-	let PaymentManager = require('dw/order/PaymentMgr');
-	let HookManager = require('dw/system/HookMgr');
-	let Resource = require('dw/web/Resource');
-	let COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-	let iamportConstants = require('*/cartridge/constants/iamportConstants');
+	const PaymentManager = require('dw/order/PaymentMgr');
+	const HookManager = require('dw/system/HookMgr');
+	const Resource = require('dw/web/Resource');
+	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 
 	let viewData = {};
 	let paymentForm = server.forms.getForm('billing');
@@ -290,13 +290,16 @@ server.replace(
 		let basketModel = new OrderModel(currentBasket, {
 			usingMultiShipping: usingMultiShipping,
 			countryCode: currentLocale.country,
-			containerView: 'basket',
-			iamportPaymentOption: req.form.paymentOption || iamportConstants.DEFAULT_PAYMENT_METHOD
+			containerView: 'basket'
 		});
 
-		// save the selected payment method in the session
-		req.session.privacyCache.set('iamportPaymentMethod', req.form.paymentOption
-			|| iamportConstants.DEFAULT_PAYMENT_METHOD);
+		let selectedPaymentMethod = req.form.paymentOption
+			.toString().trim().split('&');
+
+		// save the selected payment method id to the session
+		req.session.privacyCache.set('iamportPaymentMethod', selectedPaymentMethod[0]);
+		// save the selected payment method name to cookies
+		iamportHelpers.setSelectedPaymentMethodToCookies(selectedPaymentMethod[1]);
 
 		let accountModel = new AccountModel(req.currentCustomer);
 		let renderedStoredPaymentInstrument = COHelpers.getRenderedPaymentInstruments(
@@ -474,7 +477,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	// Expected server error codes: 401
 	if (!paymentRegistered.isOk()) {
 		customError = new CustomError({ status: paymentRegistered.getError() });
-		Logger.error('Payment registration and validation failed: ' + JSON.stringify(paymentRegistered));
+		Logger.error('Payment registration and validation failed: {0}.', JSON.stringify(paymentRegistered));
 		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
 
 		res.json({
@@ -487,7 +490,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		});
 		return next();
 	} else if (paymentRegistered.getObject().message) {
-		Logger.error('Payment registration and validation failed: ' + JSON.stringify(paymentRegistered));
+		Logger.error('Payment registration and validation failed: {0}.', JSON.stringify(paymentRegistered));
 		COHelpers.recreateCurrentBasket(order,
 			'Order failed',
 			Resource.msgf('error.payment.forgery', 'checkout', null, paymentResources.merchant_uid));
@@ -546,7 +549,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 
 	let paymentInformation = req.form;
 	if (empty(paymentInformation)) {
-		Logger.error('Payment must contain a unique id and and an order id' + paymentInformation.error);
+		Logger.error('Payment must contain a unique id and and an order id {0}.', paymentInformation.error);
 		return next();
 	}
 
@@ -619,7 +622,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	});
 
 	if (!paymentData.isOk()) {
-		Logger.error('Server failed to retrieve payment data for "{0}": {1}', paymentID, JSON.stringify(paymentData));
+		Logger.error('Server failed to retrieve payment data for "{0}": {1}.', paymentID, JSON.stringify(paymentData));
 		customError = new CustomError({ status: paymentData.getError() });
 
 		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
@@ -664,7 +667,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	}
 
 	let mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
-	Logger.debug('Payment Information: {0}', JSON.stringify(mappedPaymentInfo));
+	Logger.debug('Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
 
 	if (req.currentCustomer.addressBook) {
         // save all used shipping addresses to address book of the logged in customer

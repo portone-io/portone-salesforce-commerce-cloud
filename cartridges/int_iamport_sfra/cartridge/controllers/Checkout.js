@@ -38,7 +38,7 @@ server.post('HandleCancel', function (req, res, next) {
 	let iamportErrorMessage = req.form.errorMsg;
 	let order = null;
 
-	Logger.error('Iamport server responded with an error: ' + iamportErrorMessage);
+	Logger.error('Iamport server responded with an error: {0}.', iamportErrorMessage);
 
 	if (orderId && orderToken) {
 		order = OrderMgr.getOrder(orderId, orderToken);
@@ -52,24 +52,6 @@ server.post('HandleCancel', function (req, res, next) {
 		redirectUrl: URLUtils.url('Cart-Show', 'error', true,
 			'errorMessage',
 			Resource.msg('error.payment.incomplete', 'checkout', null)).toString()
-	});
-
-	return next();
-});
-
-server.post('BeginPOC', function (req, res, next) {
-	const URLUtils = require('dw/web/URLUtils');
-	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
-	const iamportConstants = require('*/cartridge/constants/iamportConstants');
-	const OrderMgr = require('dw/order/OrderMgr');
-
-	let order = OrderMgr.getOrder(iamportConstants.TEST_ORDER);
-	let selectedPaymentMethod = req.querystring.pm;
-	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod);
-
-	res.json({
-		validationUrl: URLUtils.url('CheckoutServices-ValidatePlaceOrder').toString(),
-		paymentResources: paymentResources
 	});
 
 	return next();

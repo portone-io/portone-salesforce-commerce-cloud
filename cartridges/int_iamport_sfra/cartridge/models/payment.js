@@ -46,7 +46,7 @@ function getPaymentMethods(paymentGatewayID) {
 	let paymentGateway = pgValidators[paymentGatewayID];
 
 	if (empty(paymentGateway)) {
-		Logger.error('No payment gateway was specified');
+		Logger.error('No payment gateway was specified.');
 	}
 
 	let customSitePrefAttributes = Site.getCurrent().getPreferences().getCustom();
@@ -59,41 +59,14 @@ function getPaymentMethods(paymentGatewayID) {
 }
 
 /**
- * Extend the payment instrument with the payment option from the storefront payment method selection
- *
- * @param {Array<Object>} paymentInstruments - List of payment instruments
- * @param {string} paymentOption - Iamport payment option chosen on the storefront
- * @returns {Array<Object>} Payment instrument with the payment option parameter
- */
-function extendPaymentInstrument(paymentInstruments, paymentOption) {
-	let results = [];
-
-	paymentInstruments.forEach(function (paymentInstrument) {
-		let result = paymentInstrument;
-
-		if (paymentInstrument.paymentMethod === 'Iamport') {
-			result.paymentOption = paymentOption;
-		}
-		results.push(result);
-	});
-
-	return results;
-}
-
-/**
  * Payment class that represents payment information for the current basket
  * @param {dw.order.Basket} currentBasket - the target Basket object
  * @param {dw.customer.Customer} currentCustomer - the associated Customer object
  * @param {string} countryCode - the associated Site countryCode
- * @param {string} paymentOption - Iamport payment option
  * @constructor
  */
-function Payment(currentBasket, currentCustomer, countryCode, paymentOption) {
+function Payment(currentBasket, currentCustomer, countryCode) {
 	basePayment.call(this, currentBasket, currentCustomer, countryCode);
-
-	let paymentInstruments = this.selectedPaymentInstruments;
-	this.selectedPaymentInstruments = paymentInstruments && paymentOption
-		? extendPaymentInstrument(paymentInstruments, paymentOption) : null;
 
 	let paymentGateway = Site.getCurrent().getCustomPreferenceValue(IamportConstants.PG_ATTRIBUTE_ID)
 		|| IamportConstants.PG_DEFAULT_FALLBACK;
