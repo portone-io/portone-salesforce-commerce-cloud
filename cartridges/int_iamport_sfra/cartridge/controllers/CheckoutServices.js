@@ -378,7 +378,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 			error: true,
 			cartError: true,
 			redirectUrl: URLUtils.url('Error-ErrorCode', 'err', '01').toString(),
-			errorMessage: Resource.msg('error.technical', 'checkout', null)
+			errorMessage: Resource.msg('error.technical', 'checkout', null),
+			serverErrors: [Resource.msg('error.technical', 'checkout', null)]
 		});
 
 		return next();
@@ -388,7 +389,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	if (validationOrderStatus.error) {
 		res.json({
 			error: true,
-			errorMessage: validationOrderStatus.message
+			errorMessage: validationOrderStatus.message,
+			serverErrors: [Resource.msg('error.technical', 'checkout', null)]
 		});
 		return next();
 	}
@@ -414,7 +416,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 				stage: 'payment',
 				step: 'billingAddress'
 			},
-			errorMessage: Resource.msg('error.no.billing.address', 'checkout', null)
+			errorMessage: Resource.msg('error.no.billing.address', 'checkout', null),
+			serverErrors: [Resource.msg('error.technical', 'checkout', null)]
 		});
 		return next();
 	}
@@ -433,7 +436,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 				stage: 'payment',
 				step: 'paymentInstrument'
 			},
-			errorMessage: Resource.msg('error.payment.not.valid', 'checkout', null)
+			errorMessage: Resource.msg('error.payment.not.valid', 'checkout', null),
+			serverErrors: [Resource.msg('error.technical', 'checkout', null)]
 		});
 		return next();
 	}
@@ -443,7 +447,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	if (calculatedPaymentTransactionTotal.error) {
 		res.json({
 			error: true,
-			errorMessage: Resource.msg('error.technical', 'checkout', null)
+			errorMessage: Resource.msg('error.technical', 'checkout', null),
+			serverErrors: [Resource.msg('error.technical', 'checkout', null)]
 		});
 		return next();
 	}
@@ -453,7 +458,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	if (!order) {
 		res.json({
 			error: true,
-			errorMessage: Resource.msg('error.technical', 'checkout', null)
+			errorMessage: Resource.msg('error.technical', 'checkout', null),
+			serverErrors: [Resource.msg('error.technical', 'checkout', null)]
 		});
 		return next();
 	}
@@ -584,7 +590,11 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	if (handlePaymentResult.error) {
 		res.json({
 			error: true,
-			errorMessage: Resource.msg('error.technical', 'checkout', null)
+			errorMessage: Resource.msg('error.technical', 'checkout', null),
+			errorStage: {
+				stage: 'payment',
+				step: 'paymentInstrument'
+			}
 		});
 		return next();
 	}

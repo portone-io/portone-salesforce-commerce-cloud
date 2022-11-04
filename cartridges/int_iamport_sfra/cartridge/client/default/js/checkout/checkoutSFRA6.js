@@ -343,6 +343,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 					// disable the placeOrder button here
 					$('body').trigger('checkout:disableButton', '.next-step-button button');
 					$.spinner().start();
+					$('.payments-error .alert-danger').remove();
 					$.ajax({
 						url: $('.place-order').data('action'),
 						method: 'POST',
@@ -370,10 +371,22 @@ const iamportPayment = require('../iamport/paymentLoader');
 								}
 							}
 						},
-						error: function () {
+						error: function (error) {
 							$.spinner().stop();
+
+							let errorMsg = error.responseJSON.message;
+							let paymentErrorHtml = '<div class="alert alert-danger alert-dismissible '
+											+ 'fade show" role="alert">'
+											+ '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'
+											+ '<span aria-hidden="true">&times;</span>'
+											+ '</button>' + errorMsg + '</div>';
+							$('.payments-error').append(paymentErrorHtml);
+							scrollAnimate($('.payments-error'));
+
 							// Enable the placeOrder button here in order to have the user trying the action again
-							$('body').trigger('checkout:enableButton', $('.next-step-button button'));
+							$('body').trigger('checkout:enableButton', '.next-step-button button');
+
+							defer.reject();
 						}
 					});
 

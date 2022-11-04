@@ -343,8 +343,16 @@ const baseCheckout = require('base/checkout/checkout');
 							defer.resolve(data);
 						}
 					},
-					error: function () {
+					error: function (error) {
 						$.spinner().stop();
+						let errorMsg = error.responseJSON.message;
+						let paymentErrorHtml = '<div class="alert alert-danger alert-dismissible valid-cart-error '
+                            + 'fade show" role="alert">'
+                            + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'
+                            + '<span aria-hidden="true">&times;</span>'
+                            + '</button>' + errorMsg + '</div>';
+						$('.payments-error').append(paymentErrorHtml);
+						scrollAnimate($('.payments-error'));
 						// Enable the placeOrder button here in order to have the user trying the action again
 						$('body').trigger('checkout:enableButton', $('.next-step-button button'));
 					}
