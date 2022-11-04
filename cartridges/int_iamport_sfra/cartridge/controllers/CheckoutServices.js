@@ -43,11 +43,11 @@ server.replace(
     server.middleware.https,
     csrfProtection.validateAjaxRequest,
     function (req, res, next) {
-	let PaymentManager = require('dw/order/PaymentMgr');
-	let HookManager = require('dw/system/HookMgr');
-	let Resource = require('dw/web/Resource');
-	let COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-	let iamportConstants = require('*/cartridge/constants/iamportConstants');
+	const PaymentManager = require('dw/order/PaymentMgr');
+	const HookManager = require('dw/system/HookMgr');
+	const Resource = require('dw/web/Resource');
+	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 
 	let viewData = {};
 	let paymentForm = server.forms.getForm('billing');
@@ -290,13 +290,16 @@ server.replace(
 		let basketModel = new OrderModel(currentBasket, {
 			usingMultiShipping: usingMultiShipping,
 			countryCode: currentLocale.country,
-			containerView: 'basket',
-			iamportPaymentOption: req.form.paymentOption || iamportConstants.DEFAULT_PAYMENT_METHOD
+			containerView: 'basket'
 		});
 
-		// save the selected payment method in the session
-		req.session.privacyCache.set('iamportPaymentMethod', req.form.paymentOption
-			|| iamportConstants.DEFAULT_PAYMENT_METHOD);
+		let selectedPaymentMethod = req.form.paymentOption
+			.toString().trim().split('&');
+
+		// save the selected payment method id to the session
+		req.session.privacyCache.set('iamportPaymentMethod', selectedPaymentMethod[0]);
+		// save the selected payment method name to cookies
+		iamportHelpers.setSelectedPaymentMethodToCookies(selectedPaymentMethod[1]);
 
 		let accountModel = new AccountModel(req.currentCustomer);
 		let renderedStoredPaymentInstrument = COHelpers.getRenderedPaymentInstruments(
