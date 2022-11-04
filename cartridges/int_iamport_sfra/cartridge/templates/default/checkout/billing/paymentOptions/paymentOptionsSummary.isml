@@ -5,8 +5,7 @@
         </isif>
 
         <isif condition="${payment.paymentMethod === 'Iamport'}">
-            <isinclude template="checkout/billing/paymentOptions/iamportPaymentSummary" />
+            <div class="iamport-payment-method-name"></div>
         </isif>
     </isloop>
-    <p> Name: card </p>
 </div>

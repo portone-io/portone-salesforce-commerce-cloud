@@ -26,19 +26,32 @@ server.append('Begin', function (req, res, next) {
 	next();
 });
 
-server.post('BeginPOC', function (req, res, next) {
-	const URLUtils = require('dw/web/URLUtils');
-	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
-	const iamportConstants = require('*/cartridge/constants/iamportConstants');
+server.post('HandleCancel', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
+	const URLUtils = require('dw/web/URLUtils');
+	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	const Resource = require('dw/web/Resource');
 
-	let order = OrderMgr.getOrder(iamportConstants.TEST_ORDER);
-	let selectedPaymentMethod = req.querystring.pm;
-	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod);
+	let orderToken = req.form.orderToken;
+	let orderId = req.form.merchant_uid;
+	let iamportErrorMessage = req.form.errorMsg;
+	let order = null;
+
+	Logger.error('Iamport server responded with an error: {0}.', iamportErrorMessage);
+
+	if (orderId && orderToken) {
+		order = OrderMgr.getOrder(orderId, orderToken);
+	}
+
+	COHelpers.recreateCurrentBasket(order,
+		Resource.msg('order.note.payment.incomplete.subject', 'order', null),
+		Resource.msg('order.note.payment.incomplete.body', 'order', null));
 
 	res.json({
-		validationUrl: URLUtils.url('CheckoutServices-ValidatePlaceOrder').toString(),
-		paymentResources: paymentResources
+		redirectUrl: URLUtils.url('Cart-Show', 'error', true,
+			'errorMessage',
+			Resource.msg('error.payment.incomplete', 'checkout', null)).toString()
 	});
 
 	return next();

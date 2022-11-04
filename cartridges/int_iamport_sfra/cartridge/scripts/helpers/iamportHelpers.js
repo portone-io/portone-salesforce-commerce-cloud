@@ -1,5 +1,6 @@
 'use strict';
 
+const Cookie = require('dw/web/Cookie');
 const iamportConstants = require('*/cartridge/constants/iamportConstants');
 const Site = require('dw/system/Site');
 
@@ -62,7 +63,40 @@ function checkFraudPayments(paymentData, order) {
 		!== order.paymentTransaction.amount.value;
 }
 
+/**
+ * Maps the payment information from Iamport removing all sensitive data
+ * @param {Object} paymentResponse - Payment Information from Iamport
+ * @returns {Object} - Mapped payment information
+ */
+function mapPaymentResponseForLogging(paymentResponse) {
+	return {
+		paymentID: paymentResponse.getObject().response.imp_uid,
+		orderID: paymentResponse.getObject().response.merchant_uid,
+		paymentMethod: paymentResponse.getObject().response.pay_method,
+		paymentGateway: paymentResponse.getObject().response.pg_provider,
+		amountPaid: paymentResponse.getObject().response.amount,
+		isEscrow: paymentResponse.getObject().response.escrow
+	};
+}
+
+/**
+ * Set the name of the selected payment method to cookies
+ * @param {string} selectedPaymentMethod - Name of the selected payment method
+ */
+function setSelectedPaymentMethodToCookies(selectedPaymentMethod) {
+	if (selectedPaymentMethod !== request.session.custom.pm) {
+		let cookie = new Cookie('pm', selectedPaymentMethod);
+		cookie.setDomain(['.', request.getHttpHost()].join(''));
+		cookie.setPath('/');
+		cookie.setMaxAge(365 * 86400);
+
+		response.addHttpCookie(cookie);
+	}
+}
+
 module.exports = {
 	preparePaymentResources: preparePaymentResources,
-	checkFraudPayments: checkFraudPayments
+	checkFraudPayments: checkFraudPayments,
+	mapPaymentResponseForLogging: mapPaymentResponseForLogging,
+	setSelectedPaymentMethodToCookies: setSelectedPaymentMethodToCookies
 };
