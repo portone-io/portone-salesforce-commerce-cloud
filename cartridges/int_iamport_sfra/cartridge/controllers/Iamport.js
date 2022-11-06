@@ -23,6 +23,8 @@ server.post('SfNotifyHook', function (req, res, next) {
 	let mappedPaymentInfo;
 	let whatToTest = 'payment';
 
+	// status = 'cancelled';
+
 	try {
 		switch (status) {
 			// testing and virtual payments. TODO: remove test codes
@@ -122,6 +124,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 				break;
 			// payment cancelled and refund initiated
 			case 'cancelled':
+				// order = OrderMgr.getOrder('00000302');
 				order = OrderMgr.getOrder(orderId);
 
 				if (HookMgr.hasHook('app.payment.processor.iamport')) {
@@ -134,6 +137,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 				if (orderCancellation.success) {
 					if (order.getCustomerEmail()) {
 						// send cancellation email to customer
+						COHelpers.sendPaymentOrderCancellationEmail(order, req.locale.id, true);
 					}
 				}
 

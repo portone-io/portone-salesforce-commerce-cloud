@@ -1,0 +1,10 @@
+<body>
+    <div>
+        <p>YOUR ORDER WAS CANCELLED</p>
+    </div>
+    <p>
+        <strong>${Resource.msg('label.order.number', 'confirmation', null)}</strong>
+        <br/>
+        <span>${pdict.order.orderNumber}</span>
+    </p>
+</body>
