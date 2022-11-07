@@ -23,7 +23,7 @@
         <h1 class="page-title">${Resource.msg('title.cart','cart',null)}</h1>
         <div class="cart-error-messaging cart-error" style="position: relative">
         <isif condition="${pdict.iamportRedirect.error && pdict.items.length !== 0}">
-            <div class="alert alert-danger alert-dismissible valid-cart-error show fade-in" role="alert">
+            <div class="alert alert-danger alert-dismissible valid-cart-error show fade-in d-flex align-items-center" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
