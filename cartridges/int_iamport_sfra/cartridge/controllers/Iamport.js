@@ -23,6 +23,8 @@ server.post('SfNotifyHook', function (req, res, next) {
 	let mappedPaymentInfo;
 	let whatToTest = 'payment';
 
+	status = 'ready';
+
 	try {
 		switch (status) {
 			// testing and virtual payments. TODO: remove test codes
@@ -71,7 +73,8 @@ server.post('SfNotifyHook', function (req, res, next) {
 
 					if (orderCancellation.success) {
 						if (order.getCustomerEmail()) {
-							// send cancellation email to customer
+						// send cancellation email to customer
+							COHelpers.sendPaymentOrderCancellationEmail(order, req.locale.id, true);
 						}
 					}
 
@@ -134,6 +137,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 				if (orderCancellation.success) {
 					if (order.getCustomerEmail()) {
 						// send cancellation email to customer
+						COHelpers.sendPaymentOrderCancellationEmail(order, req.locale.id, true);
 					}
 				}
 
