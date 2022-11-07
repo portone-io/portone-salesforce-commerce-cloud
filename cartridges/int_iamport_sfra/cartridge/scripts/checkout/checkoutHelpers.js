@@ -49,7 +49,7 @@ function recreateCurrentBasket(order, subject, reason) {
 }
 
 /**
- * Sends a confirmation to the current user
+ * Send order confirmation email
  * @param {dw.order.Order} order - The current user's order
  * @param {string} locale - the current request's locale id
  * @returns {void}
@@ -76,7 +76,7 @@ function sendConfirmationEmail(order, locale) {
 }
 
 /**
- * Sends a confirmation of the order cancellation to the current user
+ * Send order cancellation email
  * @param {dw.order.Order} order - The current user's order
  * @param {string} locale - the current request's locale id
  * @returns {void}
