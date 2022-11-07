@@ -1,38 +1,161 @@
-    <body>
-    <div>
+<iscontent type="text/html " charset="UTF-8"></iscontent>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            @font-face {
+                font-family:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                font-style: normal;
+                font-weight: 300;
+                font-display: swap;
+            }
+
+            @font-face {
+                font-family:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                font-style: normal;
+                font-weight: 400;
+                font-display: swap;
+            }
+
+            @font-face {
+                font-family:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                font-style: normal;
+                font-weight: 500;
+                font-display: swap;
+            }
+
+            @font-face {
+                font-family:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                font-style: normal;
+                font-weight: 600;
+            }
+
+            @font-face {
+                font-family:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                font-style: normal;
+                font-weight: 700;
+                font-display: swap;
+            }
+
+
+            @font-face {
+                font-family:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                font-style: normal;
+                font-weight: 300;
+                font-display: swap;
+            }
+
+            @font-face {
+                font-family:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                font-style: normal;
+                font-weight: 400;
+                font-display: swap;
+
+            }
+
+            @font-face {
+                font-family:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                font-style: normal;
+                font-weight: 500;
+                font-display: swap;
+
+            }
+
+            @font-face {
+                font-family:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                font-style: normal;
+                font-weight: 600;
+                font-display: swap;
+
+            }
+
+            @font-face {
+                font-family:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                font-style: normal;
+                font-weight: 700;
+                font-display: swap;
+
+            }
+
+            .cancellation-mail__title {
+                font-size: 16px;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+
+            .cancellation-mail__table {
+                display: grid;
+                grid-auto-columns: 1fr;
+                padding: 2px;
+                margin-bottom: 12px
+            }
+
+            .cancellation-mail__table__main-cell {
+                background-color: #414141c4;;
+                color: white;
+                text-align: left;
+                padding: 3px 3px 3px 6px
+            }
+
+        </style>
+    </head>
+
+    <body class="bg--email" style="-webkit-font-smoothing: antialiased;font-size: 16px;line-height: 28px;letter-spacing: 0.5px;margin: 0;padding: 0;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;color: #414141;background-color: #f1f1f126;">
+
+    <div class="cancellation-mail__title">
         <strong><p>${Resource.msg('order.payment.cancellation.subject', 'order', null)}</p></strong>
-        <p>${Resource.msgf('order.payment.cancellation.message', 'order', null, pdict.order.orderNumber)}</p>
     </div>
-    <p>
-        <strong>${Resource.msg('label.order.number', 'confirmation', null)}</strong>
-        <br/>
-        <span>${pdict.order.orderNumber}</span>
-    </p>
-    <p>
-        <strong>${Resource.msg('order.payment.cancellation.label.order.date', 'order', null)}</strong>
-        <br/>
-        <span><isprint value="${pdict.order.creationDate}" style="DATE_LONG"/></span>
-    </p>
+        <p class="cancellation-mail__msg">${Resource.msgf('order.payment.cancellation.message', 'order', null, pdict.order.orderNumber)}</p>
+
+    <div class="cancellation-mail__orderno cancellation-mail__table">
+        <div class="cancellation-mail__table__main-cell"><strong>${Resource.msg('label.order.number', 'confirmation', null)}</strong></div>
+        <div>${pdict.order.orderNumber}</div>
+    </div>
+
+    <div class="cancellation-mail__table">
+        <div class="cancellation-mail__table__main-cell"><strong>${Resource.msg('order.payment.cancellation.label.order.date', 'order', null)}</strong></div>
+        <div><isprint value="${pdict.order.creationDate}" style="DATE_LONG"/></div>
+    </div>
 
     <!--- Shipping Address --->
     <isloop items="${pdict.order.shipping}" var="shippingModel" status="shippingLoop">
-        <isinclude template="checkout/confirmation/shippingTitle"/>
-        <isset name="address" value="${shippingModel.shippingAddress}" scope="page"/>
-        <isinclude template="checkout/addressSummary" />
-        <br/>
-        <p>
-            <strong>${Resource.msg('label.order.shipping.method', 'confirmation', null)}</strong>
-            <br/>
-            ${shippingModel.selectedShippingMethod.displayName}
-            <isif condition="${shippingModel.selectedShippingMethod.estimatedArrivalTime}">
-                (${shippingModel.selectedShippingMethod.estimatedArrivalTime})
-            </isif>
-        </p>
 
-        <isif condition="${pdict.order.shipping.length > 1}">
-            <strong>${Resource.msg('label.order.products', 'confirmation', null)}:</strong> <br/>
-            <isloop items="${shippingModel.productLineItems.items}" var="lineItem">
-                <p>
+    <div class="cancellation-mail__table">
+        <isset name="address" value="${shippingModel.shippingAddress}" scope="page"/>
+        <div class="cancellation-mail__table__main-cell">
+            <isinclude template="checkout/confirmation/shippingTitle"/>
+        </div>
+        <div>
+            <isinclude template="checkout/addressSummary" />
+        </div>
+    </div>
+
+    <div class="cancellation-mail__table">
+        <div class="cancellation-mail__table__main-cell">
+            <strong>${Resource.msg('label.order.shipping.method', 'confirmation', null)}</strong>
+        </div>
+            ${shippingModel.selectedShippingMethod.displayName}
+    </div>
+
+    <isif condition="${pdict.order.shipping.length > 1}">
+
+
+
+        <div class="cancellation-mail__table">
+            <div class="cancellation-mail__table__main-cell"> <strong>${Resource.msg('label.order.products', 'confirmation', null)}:</strong></div>
+                 <isloop items="${shippingModel.productLineItems.items}" var="lineItem">
+                <p class="PRODUCT-LINE-ITEM">
                     ${Resource.msg('label.order.product.name', 'confirmation', null)}: ${lineItem.productName}
                     <br/>
 
@@ -67,79 +190,83 @@
                     <br/>
                 </p>
             </isloop>
+                <p>${pdict.order.totals.totalShippingCost}</p>
+        </div>
+
         </isif>
     </isloop>
-    <p>${pdict.order.totals.totalShippingCost}</p>
-    <!--- Billing Address --->
-    <strong>${Resource.msg('label.order.billing.address', 'confirmation', null)}</strong>
-    <br/>
-    <isset name="address" value="${pdict.order.billing.billingAddress.address}" scope="page"/>
-    <isinclude template="checkout/addressSummary" />
 
-    <br/>
+
+    <!--- Billing Address --->
+    <div class="cancellation-mail__table">
+        <div class="cancellation-mail__table__main-cell"><strong>${Resource.msg('label.order.billing.address', 'confirmation', null)}</strong></div>
+        <isset name="address" value="${pdict.order.billing.billingAddress.address}" scope="page"/>
+        <div><isinclude template="checkout/addressSummary" /></div>
+    </div>
 
     <!--- Payment information --->
-    <div>
-        <strong>${Resource.msg('order.payment.label.cancelled', 'order', null)}</strong>
-        <br/>
+    <div class="cancellation-mail__table">
+        <div class="cancellation-mail__table__main-cell"><strong>${Resource.msg('order.payment.label.cancelled', 'order', null)}</strong></div>
+
+        <div><isinclude template="checkout/confirmation/confirmationPaymentInfo"/></div>
         <div>
-            <isinclude template="checkout/confirmation/confirmationPaymentInfo"/>
+            ${Resource.msgf('label.number.items.in.cart','cart', null, pdict.order.items.totalQuantity)}
+        </div>
+        <div>
+             ${pdict.order.totals.subTotal}
         </div>
     </div>
 
-    <p>
-        ${Resource.msgf('label.number.items.in.cart','cart', null, pdict.order.items.totalQuantity)}
-        <br/>
-        ${pdict.order.totals.subTotal}
-    </p>
-
-    <br/>
     <isif condition="${pdict.order.shipping.length === 1}">
-        <strong>${Resource.msg('label.order.products', 'confirmation', null)}:</strong> <br/>
+
+        <div class="cancellation-mail__table">
+            <div class="cancellation-mail__table__main-cell"><strong>${Resource.msg('label.order.products', 'confirmation', null)}:</strong></div>
+        </div>
+        <iscomment> <strong>${Resource.msg('label.order.products', 'confirmation', null)}:</strong> <br/> </iscomment>
         <isloop items="${pdict.order.items.items}" var="lineItem">
             <p>
                 ${Resource.msg('label.order.product.name', 'confirmation', null)}: ${lineItem.productName}
-                <br/>
+
 
                 <isif condition="${lineItem.productType === 'bundle'}">
                     <isloop items="${lineItem.bundledProductLineItems}" var="bundledLineItem">
                         ${Resource.msg('label.order.bundled.item.name', 'confirmation', null)}: ${bundledLineItem.productName}
-                            <br/>
+
                             <isloop items="${bundledLineItem.variationAttributes}" var="attribute">
                                 ${attribute.displayName}: ${attribute.displayValue}
-                                <br/>
+
                             </isloop>
                     </isloop>
                 <iselse/>
                     <isloop items="${lineItem.variationAttributes}" var="attribute">
                         ${attribute.displayName}: ${attribute.displayValue}
-                        <br/>
+
                     </isloop>
                 </isif>
 
                 <isif condition="${lineItem.bonusProductLineItemUUID === 'bonus'}">
                     <isloop items="${lineItem.bonusProducts}" var="bonusProduct" status="loopState">
                         <isif condition="${loopState.first}">
-                            <br/>
+
                             ${Resource.msg('text.lineitem.bonus.msg','cart',null)}
                         </isif>
                         ${bonusProduct.productName}
                         <isloop items="${bonusProduct.variationAttributes}" var="attribute">
                             ${attribute.displayName}: ${attribute.displayValue}
-                            <br/>
+
                         </isloop>
 
                         <!--- item price --->
                         ${Resource.msg('label.each.item.price','cart',null)} -
                         ${bonusProduct.priceTotal.price}
-                        <br/>
+
 
                         <!--- quantity --->
                         ${Resource.msg('field.selectquantity','cart',null)}
                             - <isprint value="${bonusProduct.quantity}" formatter="##" />
-                        <br/>
+
                         <isif condition="${loopState.last}">
-                            <br/>
+
                         </isif>
                     </isloop>
                 </isif>
@@ -160,5 +287,8 @@
             </p>
         </isloop>
     </isif>
+
     <isinclude template="checkout/confirmation/confirmationOrderTotal" />
+
     </body>
+</html>
