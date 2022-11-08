@@ -106,10 +106,20 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
 function updatePaymentIdOnOrder(paymentId, order) {
 	try {
 		Transaction.wrap(function () {
+			let paymentInstruments = order.getPaymentInstruments();
+
+			if (!empty(paymentInstruments)) {
+				let paymentTransaction = paymentInstruments[0].paymentTransaction;
+
+				if (paymentTransaction) {
+					order.paymentInstruments[0].paymentTransaction.setTransactionID(paymentId);
+				}
+			}
+
 			order.custom.imp_uid = paymentId;
 		});
 	} catch (e) {
-		Logger.error('imp_uid custom attribute is not defined on the Order system object.');
+		Logger.error('Could not update iamport payment id on the order object: {0}', e);
 	}
 }
 
@@ -190,8 +200,8 @@ function cancelOrder(order) {
 
 		orderStatus = order.getStatus().getValue();
 		return {
-			success: orderStatus === Order.ORDER_STATUS_FAILED,
-			error: orderStatus !== Order.ORDER_STATUS_FAILED
+			success: orderStatus === Order.ORDER_STATUS_CANCELLED,
+			error: orderStatus !== Order.ORDER_STATUS_CANCELLED
 		};
 	});
 }
