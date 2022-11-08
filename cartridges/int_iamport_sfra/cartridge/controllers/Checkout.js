@@ -13,12 +13,15 @@ server.append('Begin', function (req, res, next) {
 	const preferences = require('*/cartridge/config/preferences');
 	const iamportConstants = require('*/cartridge/constants/iamportConstants');
 	const Site = require('dw/system/Site');
+	const BasketMgr = require('dw/order/BasketMgr');
 
 	let viewData = res.getViewData();
+	let currentBasket = BasketMgr.getCurrentBasket();
 
 	Object.assign(viewData, {
 		merchantID: Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_MID_ATTRIBUTE_ID),
-		useIamportSFRA5: preferences.SFRA5_ENABLED
+		useIamportSFRA5: preferences.SFRA5_ENABLED,
+		selectedPaymentMethod: currentBasket.custom.pay_method
 	});
 
 	res.setViewData(viewData);
