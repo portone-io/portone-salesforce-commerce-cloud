@@ -150,11 +150,11 @@ server.post('SfNotifyHook', function (req, res, next) {
 
 		Logger.debug('Webhook called successfully. Webhook response: {0}.', JSON.stringify(webhookData));
 		// return success message to the import server
-		res.setStatusCode(200).print('WebhookCall: success');
+		res.print('WebhookCall: success');
 		return next();
 	} catch (err) {
-		Logger.error('Webhook failed: ' + JSON.stringify(err));
-		res.setStatusCode(500).print(err.message);
+		Logger.error('Webhook failed: {0}', JSON.stringify(err));
+		res.print(err.message);
 		return next();
 	}
 });
