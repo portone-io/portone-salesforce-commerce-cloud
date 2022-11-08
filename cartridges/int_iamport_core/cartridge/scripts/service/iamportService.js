@@ -58,7 +58,6 @@ const registerAndValidatePayment = LocalServiceRegistry.createService('iamport_v
 		svc.setRequestMethod('POST');
 		svc.addHeader('Content-Type', 'application/json');
 		svc.addHeader('Authorization', 'Bearer ' + token);
-		svc.addHeader('Content-Language', 'en');
 
 		return JSON.stringify(args);
 	},
@@ -85,7 +84,6 @@ const getPaymentInformation = LocalServiceRegistry.createService('iamport_getPay
 		svc.setRequestMethod('GET');
 		svc.addHeader('Content-Type', 'application/json');
 		svc.addHeader('Authorization', 'Bearer ' + token);
-		svc.addHeader('Content-Language', 'en');
 	},
 	parseResponse: function (svc, response) {
 		return JSON.parse(response.text);
