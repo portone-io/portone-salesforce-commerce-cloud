@@ -31,7 +31,6 @@ server.append('Begin', function (req, res, next) {
 server.post('HandleCancel', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
 	const URLUtils = require('dw/web/URLUtils');
-	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 	const Resource = require('dw/web/Resource');
 
@@ -40,7 +39,7 @@ server.post('HandleCancel', function (req, res, next) {
 	let iamportErrorMessage = req.form.errorMsg;
 	let order = null;
 
-	Logger.error('Iamport server responded with an error: {0}.', iamportErrorMessage);
+	iamportLogger.error('Iamport server responded with an error: {0}.', iamportErrorMessage);
 
 	if (orderId && orderToken) {
 		order = OrderMgr.getOrder(orderId, orderToken);
@@ -62,7 +61,6 @@ server.post('HandleCancel', function (req, res, next) {
 server.post('HandlePaymentRequestFailure', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
 	const URLUtils = require('dw/web/URLUtils');
-
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 	const Resource = require('dw/web/Resource');
 
