@@ -3,9 +3,11 @@
         <isif condition="${payment.paymentMethod === 'CREDIT_CARD'}">
             <isinclude template="checkout/billing/paymentOptions/creditCardSummary" />
         </isif>
-
-        <isif condition="${payment.paymentMethod === 'Iamport'}">
-            <div class="iamport-payment-method-name"></div>
-        </isif>
     </isloop>
+
+    <div class="iamport-payment-method-name">
+        <isif condition="${pdict.selectedPaymentMethod}">
+            <span> ${pdict.selectedPaymentMethod} </span>
+        </isif>
+    </div>
 </div>

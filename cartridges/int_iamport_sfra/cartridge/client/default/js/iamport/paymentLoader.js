@@ -3,7 +3,6 @@
 'use strict';
 
 const deferLoader = require('../scripts/deferPayment');
-const iamportUtilities = require('../scripts/utils/index');
 const IAMPORT_ARGS = { MID: $('input[name="merchantID"]').val()
 	.toString().replace(/['"]+/g, '') };
 
@@ -118,6 +117,8 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 			} else {
 				// handle payment failure
 				handlePaymentFailure(paymentResponse, paymentOptions);
+
+				// sendPaymentInformation(paymentResponse, paymentOptions);
 			}
 		});
 	}
@@ -141,9 +142,10 @@ module.exports = {
 	},
 
 	// Render the selected payment method
-	renderSelectedPaymentMethod: function () {
-		$('.iamport-payment-method-name span')
-			.html(iamportUtilities.getCookie('pm')
-			.toString().replace(/['"]+/g, ''));
+	renderSelectedPaymentMethod: function (selectedPaymentMethod) {
+		if (selectedPaymentMethod) {
+			let paymentMethod = selectedPaymentMethod.toString().replace(/['"]+/g, '');
+			$('.iamport-payment-method-name').empty().html('<span>' + paymentMethod + '</span>');
+		}
 	}
 };

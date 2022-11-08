@@ -1,6 +1,5 @@
 'use strict';
 
-const Cookie = require('dw/web/Cookie');
 const iamportConstants = require('*/cartridge/constants/iamportConstants');
 const Site = require('dw/system/Site');
 
@@ -79,24 +78,8 @@ function mapPaymentResponseForLogging(paymentResponse) {
 	};
 }
 
-/**
- * Set the name of the selected payment method to cookies
- * @param {string} selectedPaymentMethod - Name of the selected payment method
- */
-function setSelectedPaymentMethodToCookies(selectedPaymentMethod) {
-	if (selectedPaymentMethod !== request.session.custom.pm) {
-		let cookie = new Cookie('pm', selectedPaymentMethod);
-		cookie.setDomain(['.', request.getHttpHost()].join(''));
-		cookie.setPath('/');
-		cookie.setMaxAge(365 * 86400);
-
-		response.addHttpCookie(cookie);
-	}
-}
-
 module.exports = {
 	preparePaymentResources: preparePaymentResources,
 	checkFraudPayments: checkFraudPayments,
-	mapPaymentResponseForLogging: mapPaymentResponseForLogging,
-	setSelectedPaymentMethodToCookies: setSelectedPaymentMethodToCookies
+	mapPaymentResponseForLogging: mapPaymentResponseForLogging
 };
