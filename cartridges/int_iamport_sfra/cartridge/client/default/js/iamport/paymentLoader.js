@@ -73,23 +73,49 @@ function sendPaymentInformation(paymentResponse, paymentOptions) {
 function handlePaymentFailure(paymentResources, paymentOptions) {
 	let defer = $.Deferred(); // eslint-disable-line
 
-	$.ajax({
-		url: paymentOptions.cancelUrl,
-		method: 'POST',
-		data: {
-			merchant_uid: paymentResources.merchant_uid,
-			imp_uid: paymentResources.imp_uid,
-			errorMsg: paymentResources.error_msg,
-			orderToken: paymentOptions.orderToken
-		},
-		success: function (data) {
-			defer.reject();
-			window.location.href = data.redirectUrl;
-		},
-		error: function (error) {
-			defer.reject();
-		}
-	});
+	if (paymentResources.error_code) {
+		// If there is an error code in the response, the cancellation belongs from a bad request, and the PG popup couldn't be opened. Executes requestPayFailureUrl method
+		$.ajax({
+			url: paymentOptions.requestPayFailureUrl,
+			method: 'POST',
+			data: {
+				merchant_uid: paymentOptions.merchant_uid,
+				imp_uid: paymentResources.imp_uid,
+				orderToken: paymentOptions.orderToken,
+				errorMsg: paymentResources.error_msg,
+				errorCode: paymentResources.error_code,
+				status: paymentOptions.status
+			},
+			success: function (data) {
+				defer.reject();
+				window.location.href = data.redirectUrl;
+			},
+			error: function (error) {
+				defer.reject();
+			}
+		});
+	} else {
+		// If there is not any error code in the response, the cancellation belongs from the popup (User cancelled the payment form the popup)
+		$.ajax({
+			url: paymentOptions.cancelUrl,
+			method: 'POST',
+			data: {
+				merchant_uid: paymentResources.merchant_uid,
+				imp_uid: paymentResources.imp_uid,
+				orderToken: paymentOptions.orderToken,
+				errorMsg: paymentResources.error_msg,
+				errorCode: paymentResources.error_code,
+				status: paymentOptions.status
+			},
+			success: function (data) {
+				defer.reject();
+				window.location.href = data.redirectUrl;
+			},
+			error: function (error) {
+				defer.reject();
+			}
+		});
+	}
 }
 
 /**
@@ -110,7 +136,9 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 			let paymentOptions = {
 				validationUrl: paymentPayload.validationUrl,
 				cancelUrl: paymentPayload.cancelUrl,
-				orderToken: paymentPayload.orderToken
+				orderToken: paymentPayload.orderToken,
+				requestPayFailureUrl: paymentPayload.requestPayFailureUrl,
+				merchant_uid: paymentPayload.merchantID
 			};
 
 			if (paymentResponse.success) {
@@ -129,14 +157,14 @@ module.exports = {
 			$.spinner().start();
 
 			if (payload) {
+			// eslint-disable-next-line no-console
 				deferLoader.defer('IMP', requestPayment, payload);
 			}
 		} catch (err) {
-			// TODO: handle iamport errors. Send the error to the backend logs
 			// eslint-disable-next-line no-console
-			console.log(err);
+			console.error('Error on the request calling to PG server:', err);
 		} finally {
-			setTimeout(() => { $.spinner().stop(); }, 1300);
+			$.spinner().stop();
 		}
 	},
 
