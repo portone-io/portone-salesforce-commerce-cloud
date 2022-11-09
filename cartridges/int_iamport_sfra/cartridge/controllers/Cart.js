@@ -8,7 +8,7 @@ server.append('Show', function (req, res, next) {
 	let iamportRedirectError = req.querystring.error;
 	let errorMessage = req.querystring.errorMessage || '';
 
-	if (iamportRedirectError === 'true') {
+	if (iamportRedirectError === 'true' && !viewData.valid.error) {
 		viewData.iamportRedirect = {
 			error: true,
 			message: errorMessage

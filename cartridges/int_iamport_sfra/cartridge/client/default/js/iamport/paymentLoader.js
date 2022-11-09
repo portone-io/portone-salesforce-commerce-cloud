@@ -79,7 +79,7 @@ function handlePaymentFailure(paymentResources, paymentOptions) {
 			url: paymentOptions.requestPayFailureUrl,
 			method: 'POST',
 			data: {
-				merchant_uid: paymentResources.merchant_uid,
+				merchant_uid: paymentOptions.merchant_uid,
 				imp_uid: paymentResources.imp_uid,
 				orderToken: paymentOptions.orderToken,
 				errorMsg: paymentResources.error_msg,
@@ -137,7 +137,8 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 				validationUrl: paymentPayload.validationUrl,
 				cancelUrl: paymentPayload.cancelUrl,
 				orderToken: paymentPayload.orderToken,
-				requestPayFailureUrl: paymentPayload.requestPayFailureUrl
+				requestPayFailureUrl: paymentPayload.requestPayFailureUrl,
+				merchant_uid: paymentPayload.merchantID
 			};
 
 			if (paymentResponse.success) {
