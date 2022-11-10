@@ -562,7 +562,6 @@ const iamportPayment = require('../iamport/paymentLoader');
 			handleNextStage: function (bPushState) {
 				if (members.currentStage < checkoutStages.length - 1) {
 					// move stage forward
-
 					members.currentStage += 1;
 
 					//
@@ -573,7 +572,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 					}
 				}
 
-				// // Set the next stage on the DOM
+				// Set the next stage on the DOM
 
 				$(plugin).attr('data-checkout-stage', checkoutStages[members.currentStage]);
 			},

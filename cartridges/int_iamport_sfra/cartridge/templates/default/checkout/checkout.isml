@@ -89,9 +89,7 @@
                 </div>
 
 
-                <div class="payments-error" role="alert">
-
-                </div>
+                <div class="payments-error" role="alert"></div>
 
                 <!----------------------------------------------------------------------------------->
                 <!-- Checkout Workflow Buttons -->
