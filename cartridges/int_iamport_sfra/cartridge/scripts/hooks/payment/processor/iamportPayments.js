@@ -119,7 +119,7 @@ function updatePaymentIdOnOrder(paymentId, order) {
 			order.custom.imp_uid = paymentId;
 		});
 	} catch (e) {
-		Logger.error('Could not update iamport payment id on the order object: {0}', e);
+		Logger.error('Could not update iamport payment id on the order object: {0}', e.stack);
 	}
 }
 
