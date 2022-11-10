@@ -145,6 +145,7 @@ const iamportPayment = require('../iamport/paymentLoader');
                                         + '<span aria-hidden="true">&times;</span>'
                                         + '</button>' + errorMsg + '</div>';
 									$('.shipping-error').append(errorHtml);
+									$('.shipping-error').addClass('mt-4');
 									scrollAnimate($('.shipping-error'));
 									defer.reject();
 								} else if (data.redirectUrl) {
@@ -466,6 +467,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 				//
 				// remember stage (e.g. shipping)
 				//
+
 				updateUrl(members.currentStage);
 
 				//
@@ -560,6 +562,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 			handleNextStage: function (bPushState) {
 				if (members.currentStage < checkoutStages.length - 1) {
 					// move stage forward
+
 					members.currentStage += 1;
 
 					//
@@ -570,7 +573,8 @@ const iamportPayment = require('../iamport/paymentLoader');
 					}
 				}
 
-				// Set the next stage on the DOM
+				// // Set the next stage on the DOM
+
 				$(plugin).attr('data-checkout-stage', checkoutStages[members.currentStage]);
 			},
 
