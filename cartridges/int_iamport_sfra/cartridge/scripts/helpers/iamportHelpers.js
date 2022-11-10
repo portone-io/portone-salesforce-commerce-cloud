@@ -1,5 +1,6 @@
 'use strict';
 
+const Resource = require('dw/web/Resource');
 const iamportConstants = require('*/cartridge/constants/iamportConstants');
 const Site = require('dw/system/Site');
 
@@ -86,7 +87,7 @@ function mapPaymentResponseForLogging(paymentResponse) {
  */
 function handleErrorFromPaymentGateway(errorCode, errorMessage) {
 	if (errorCode === 'NOT_READY') {
-		return 'This user is not a registered user, or there is no PG information set on the Import Manager page.';
+		return Resource.msg('payment.gateway.error', 'iamport', null);
 	}
 	// This message from the PG response will be in korean. It should to be translated if
 	return errorMessage;
