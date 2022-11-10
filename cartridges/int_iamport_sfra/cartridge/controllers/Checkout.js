@@ -52,9 +52,7 @@ server.post('HandleCancel', function (req, res, next) {
 		Resource.msg('order.note.payment.incomplete.body', 'order', null));
 
 	res.json({
-		redirectUrl: URLUtils.url('Cart-Show', 'error', true,
-			'errorMessage',
-			Resource.msg('error.payment.incomplete', 'checkout', null)).toString()
+		redirectUrl: URLUtils.url('Cart-Show', 'err', '02').toString()
 	});
 
 	return next();

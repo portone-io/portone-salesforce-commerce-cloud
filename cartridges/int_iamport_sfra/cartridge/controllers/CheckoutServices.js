@@ -634,11 +634,8 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 
 		res.json({
 			error: true,
-			errorStage: {
-				stage: 'shipping',
-				step: 'billingAddress'
-			},
-			errorMessage: customError.message
+			cartError: true,
+			redirectUrl: URLUtils.url('Cart-Show', 'err', paymentData.getError().toString()).toString()
 		});
 		return next();
 	}
