@@ -146,6 +146,7 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 				// handle payment failure
 				handlePaymentFailure(paymentResponse, paymentOptions);
 
+				// TODO: remove it. This line is just for testing purposes
 				// sendPaymentInformation(paymentResponse, paymentOptions);
 			}
 		});
