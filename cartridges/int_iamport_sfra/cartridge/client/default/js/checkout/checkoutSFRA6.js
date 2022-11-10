@@ -177,8 +177,13 @@ const iamportPayment = require('../iamport/paymentLoader');
 							success: function (data) {
 								// Don't enable the next-step-button when moving to payment method
 								// $('body').trigger('checkout:enableButton', '.next-step-button button');
+
 								let hasPaymentMethodSelected = $('.payment-method:input:radio:checked').length > 0;
 								if (hasPaymentMethodSelected) {
+									$('body').trigger('checkout:enableButton', '.next-step-button button');
+								}
+
+								if (data.error && (data.fieldErrors.length || (data.serverErrors && data.serverErrors.length) || data.cartError)) {
 									$('body').trigger('checkout:enableButton', '.next-step-button button');
 								}
 
@@ -342,8 +347,8 @@ const iamportPayment = require('../iamport/paymentLoader');
 				} if (stage === 'placeOrder') {
 					// disable the placeOrder button here
 					$('body').trigger('checkout:disableButton', '.next-step-button button');
-					$.spinner().start();
 					$('.payments-error .alert-danger').remove();
+					$.spinner().start();
 					$.ajax({
 						url: $('.place-order').data('action'),
 						method: 'POST',
@@ -351,6 +356,9 @@ const iamportPayment = require('../iamport/paymentLoader');
 							// not enable the placeOrder button here in order to user do only one click
 							// $('body').trigger('checkout:enableButton', '.next-step-button button');
 							if (data.error) {
+								// Response success but there is a request error
+								$('body').trigger('checkout:enableButton', '.next-step-button button');
+
 								if (data.cartError) {
 									window.location.href = data.redirectUrl;
 									defer.reject();
@@ -506,6 +514,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 				promise.done(function () {
 					// Update UI with new stage
 					$('.error-message').hide();
+					$('.payments-error').hide();
 					members.handleNextStage(true);
 				});
 
@@ -525,7 +534,17 @@ const iamportPayment = require('../iamport/paymentLoader');
 							}
 						}
 
-						if (data.errorMessage) {
+						if (data.action === 'CheckoutServices-PlaceOrder') {
+							let errorMsg = data.errorMessage;
+							let paymentErrorHtml = '<div class="alert alert-danger alert-dismissible '
+								+ 'fade show" role="alert">'
+								+ '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'
+								+ '<span aria-hidden="true">&times;</span>'
+								+ '</button>' + errorMsg + '</div>';
+
+							$('.payments-error').append(paymentErrorHtml);
+							$('.payments-error').show();
+						} else if (data.errorMessage) {
 							$('.error-message').show();
 							$('.error-message-text').text(data.errorMessage);
 						}
@@ -564,6 +583,8 @@ const iamportPayment = require('../iamport/paymentLoader');
 					members.currentStage -= 1;
 					updateUrl(members.currentStage);
 				}
+
+				$('body').trigger('checkout:enableButton', '.next-step-button button');
 
 				$(plugin).attr('data-checkout-stage', checkoutStages[members.currentStage]);
 			},

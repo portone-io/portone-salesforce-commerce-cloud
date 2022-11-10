@@ -89,6 +89,10 @@
                 </div>
 
 
+                <div class="payments-error" role="alert">
+
+                </div>
+
                 <!----------------------------------------------------------------------------------->
                 <!-- Checkout Workflow Buttons -->
                 <!----------------------------------------------------------------------------------->
@@ -100,10 +104,6 @@
                             </button>
 
 
-                <div class="alert alert-danger error-message" role="alert">
-                    <iscomment> <p class="error-message-text"></p> </iscomment>
-                </div>
-                    <div class="payments-error"></div>
 
 
                             <button class="TESTING btn btn-primary btn-block submit-payment" type="submit" name="submit" value="submit-payment">
