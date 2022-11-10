@@ -139,10 +139,11 @@ server.replace(
 		.toString().trim().split('&');
 
 		// save the selected payment method id to the session.
-		// It will be retrieved later to prepare the payment resources to request fpr payment
+		// It will be retrieved later to prepare the payment resources to request for payment
 		req.session.privacyCache.set('iamportPaymentMethod',
 			selectedPaymentMethod[0]);
 
+		// save the payment method name to the current basket which will be transferred to the order object
 		Transaction.wrap(function () {
 			currentBasket.custom.pay_method = selectedPaymentMethod[1];
 		});
@@ -466,6 +467,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		return next();
 	}
 
+	// retrieved the payment method id from the session
 	let selectedPaymentMethod = req.session.privacyCache.get('iamportPaymentMethod');
 	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod);
 
