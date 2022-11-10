@@ -47,7 +47,6 @@ server.replace(
 	const HookManager = require('dw/system/HookMgr');
 	const Resource = require('dw/web/Resource');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 
 	let viewData = {};
 	let paymentForm = server.forms.getForm('billing');
@@ -135,8 +134,19 @@ server.replace(
 		const validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
 
 		let currentBasket = BasketMgr.getCurrentBasket();
-
 		let billingData = res.getViewData();
+		let selectedPaymentMethod = req.form.paymentOption
+		.toString().trim().split('&');
+
+		// save the selected payment method id to the session.
+		// It will be retrieved later to prepare the payment resources to request for payment
+		req.session.privacyCache.set('iamportPaymentMethod',
+			selectedPaymentMethod[0]);
+
+		// save the payment method name to the current basket which will be transferred to the order object
+		Transaction.wrap(function () {
+			currentBasket.custom.pay_method = selectedPaymentMethod[1];
+		});
 
 		if (!currentBasket) {
 			delete billingData.paymentInformation;
@@ -293,14 +303,6 @@ server.replace(
 			containerView: 'basket'
 		});
 
-		let selectedPaymentMethod = req.form.paymentOption
-			.toString().trim().split('&');
-
-		// save the selected payment method id to the session
-		req.session.privacyCache.set('iamportPaymentMethod', selectedPaymentMethod[0]);
-		// save the selected payment method name to cookies
-		iamportHelpers.setSelectedPaymentMethodToCookies(selectedPaymentMethod[1]);
-
 		let accountModel = new AccountModel(req.currentCustomer);
 		let renderedStoredPaymentInstrument = COHelpers.getRenderedPaymentInstruments(
                 req,
@@ -314,7 +316,8 @@ server.replace(
 			customer: accountModel,
 			order: basketModel,
 			form: billingForm,
-			error: false
+			error: false,
+			selectedPaymentMethod: selectedPaymentMethod[1]
 		});
 	});
 
@@ -464,6 +467,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		return next();
 	}
 
+	// retrieved the payment method id from the session
 	let selectedPaymentMethod = req.session.privacyCache.get('iamportPaymentMethod');
 	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod);
 

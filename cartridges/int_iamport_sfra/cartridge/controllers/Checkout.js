@@ -2,8 +2,7 @@
 
 const server = require('server');
 server.extend(module.superModule);
-const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
-var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 
 /**
  * Checkout-Begin : The Checkout-Begin endpoint will render the checkout shipping page for both guest shopper and returning shopper
@@ -15,12 +14,15 @@ server.append('Begin', function (req, res, next) {
 	const preferences = require('*/cartridge/config/preferences');
 	const iamportConstants = require('*/cartridge/constants/iamportConstants');
 	const Site = require('dw/system/Site');
+	const BasketMgr = require('dw/order/BasketMgr');
 
 	let viewData = res.getViewData();
+	let currentBasket = BasketMgr.getCurrentBasket();
 
 	Object.assign(viewData, {
 		merchantID: Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_MID_ATTRIBUTE_ID),
-		useIamportSFRA5: preferences.SFRA5_ENABLED
+		useIamportSFRA5: preferences.SFRA5_ENABLED,
+		selectedPaymentMethod: currentBasket.custom.pay_method
 	});
 
 	res.setViewData(viewData);
@@ -62,6 +64,7 @@ server.post('HandlePaymentRequestFailure', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
 	const URLUtils = require('dw/web/URLUtils');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	const Resource = require('dw/web/Resource');
 
 	let orderToken = req.form.orderToken;
