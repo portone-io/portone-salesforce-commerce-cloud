@@ -78,8 +78,23 @@ function mapPaymentResponseForLogging(paymentResponse) {
 	};
 }
 
+/**
+ * Returns the correct error message from the Payment Gateway, or exactly the same message
+ * @param {string} errorCode - Error code from the PG response
+ * @param {string} errorMessage - Error message content from the PG response
+ * @return {string} - Error message
+ */
+function handleErrorFromPaymentGateway(errorCode, errorMessage) {
+	if (errorCode === 'NOT_READY') {
+		return 'This user is not a registered user, or there is no PG information set on the Import Manager page.';
+	}
+	// This message from the PG response will be in korean. It should to be translated if
+	return errorMessage;
+}
+
 module.exports = {
 	preparePaymentResources: preparePaymentResources,
 	checkFraudPayments: checkFraudPayments,
-	mapPaymentResponseForLogging: mapPaymentResponseForLogging
+	mapPaymentResponseForLogging: mapPaymentResponseForLogging,
+	handleErrorFromPaymentGateway: handleErrorFromPaymentGateway
 };

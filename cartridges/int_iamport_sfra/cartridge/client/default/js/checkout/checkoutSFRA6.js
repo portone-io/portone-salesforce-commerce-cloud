@@ -365,7 +365,9 @@ const iamportPayment = require('../iamport/paymentLoader');
 										paymentResources: data.paymentResources,
 										validationUrl: data.validationUrl,
 										cancelUrl: data.cancelUrl,
-										orderToken: data.orderToken
+										orderToken: data.orderToken,
+										requestPayFailureUrl: data.requestPayFailureUrl,
+										merchantID: data.paymentResources.merchant_uid
 									};
 									iamportPayment.generalPayment(payload);
 								}

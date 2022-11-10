@@ -516,6 +516,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		orderID: order.orderNo,
 		orderToken: order.orderToken,
 		validationUrl: URLUtils.url('CheckoutServices-ValidatePlaceOrder').toString(),
+		requestPayFailureUrl: URLUtils.url('Checkout-HandlePaymentRequestFailure').toString(),
 		cancelUrl: URLUtils.url('Checkout-HandleCancel').toString(),
 		paymentResources: paymentResources
 	});
@@ -693,7 +694,6 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 			order
 		);
 	}
-
     // TODO: Exposing a direct route to an Order, without at least encoding the orderID
     //  is a serious PII violation.  It enables looking up every customers orders, one at a
     //  time.
