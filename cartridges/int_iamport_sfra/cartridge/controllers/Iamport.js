@@ -109,6 +109,14 @@ server.post('SfNotifyTest', function (req, res, next) {
 	}
 });
 
+/**
+ * Iamport-SfNotifyHook : this endpoint will be responsible for receiving all real-time iamport webhook notifications
+ * @base Iamport/Iamport-SfNotifyHook
+ * @function
+ * @memberof Iamport
+ * @param {returns} - text
+ * @param {serverfunction} - post
+ */
 server.post('SfNotifyHook', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
 	const HookMgr = require('dw/system/HookMgr');
