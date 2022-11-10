@@ -27,8 +27,12 @@ function CustomError(error) {
 			this.note = Resource.msg('note.server.error', 'iamport', null);
 			break;
 		default:
-			this.message = Resource.msg('msg.general.error', 'iamport', null);
-			this.note = Resource.msg('note.general.error', 'iamport', null);
+			if (error.status === 2) {
+				this.message = Resource.msg('error.payment.incomplete', 'checkout', null);
+			} else {
+				this.message = Resource.msg('msg.general.error', 'iamport', null);
+				this.note = Resource.msg('note.general.error', 'iamport', null);
+			}
 			break;
 	}
 }
