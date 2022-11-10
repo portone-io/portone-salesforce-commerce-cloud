@@ -1,6 +1,6 @@
 'use strict';
 
-const Cookie = require('dw/web/Cookie');
+const Resource = require('dw/web/Resource');
 const iamportConstants = require('*/cartridge/constants/iamportConstants');
 const Site = require('dw/system/Site');
 
@@ -80,28 +80,14 @@ function mapPaymentResponseForLogging(paymentResponse) {
 }
 
 /**
- * Set the name of the selected payment method to cookies
- * @param {string} selectedPaymentMethod - Name of the selected payment method
- */
-function setSelectedPaymentMethodToCookies(selectedPaymentMethod) {
-	if (selectedPaymentMethod !== request.session.custom.pm) {
-		let cookie = new Cookie('pm', selectedPaymentMethod);
-		cookie.setDomain(['.', request.getHttpHost()].join(''));
-		cookie.setPath('/');
-		cookie.setMaxAge(365 * 86400);
-
-		response.addHttpCookie(cookie);
-	}
-}
-
-/**
  * Returns the correct error message from the Payment Gateway, or exactly the same message
  * @param {string} errorCode - Error code from the PG response
  * @param {string} errorMessage - Error message content from the PG response
+ * @return {string} - Error message
  */
 function handleErrorFromPaymentGateway(errorCode, errorMessage) {
 	if (errorCode === 'NOT_READY') {
-		return 'This user is not a registered user, or there is no PG information set on the Import Manager page.';
+		return Resource.msg('payment.gateway.error', 'iamport', null);
 	}
 	// This message from the PG response will be in korean. It should to be translated if
 	return errorMessage;
@@ -111,6 +97,5 @@ module.exports = {
 	preparePaymentResources: preparePaymentResources,
 	checkFraudPayments: checkFraudPayments,
 	mapPaymentResponseForLogging: mapPaymentResponseForLogging,
-	setSelectedPaymentMethodToCookies: setSelectedPaymentMethodToCookies,
 	handleErrorFromPaymentGateway: handleErrorFromPaymentGateway
 };

@@ -306,7 +306,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 								defer.reject();
 							} else {
 								// populate the payment method in the payment summary
-								iamportPayment.renderSelectedPaymentMethod();
+								iamportPayment.renderSelectedPaymentMethod(data.selectedPaymentMethod);
 
 								//
 								// Populate the Address Summary
