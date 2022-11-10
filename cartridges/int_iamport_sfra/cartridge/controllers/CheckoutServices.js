@@ -469,7 +469,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 
 	// retrieved the payment method id from the session
 	let selectedPaymentMethod = req.session.privacyCache.get('iamportPaymentMethod');
-	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod);
+	let generalPaymentWebhookUrl = URLUtils.abs('Iamport-SfNotifyHook').toString();
+	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod, generalPaymentWebhookUrl);
 
 	// Pre-register payment before the client call for forgery protection
 	let paymentRegistered = iamportServices.registerAndValidatePayment.call({

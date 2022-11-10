@@ -8,9 +8,10 @@ const Site = require('dw/system/Site');
  * Prepares the payment resources needed to request payment to Iamport server
  * @param {Object} order - Customer order data
  * @param {string} selectedPaymentMethod - Id of the selected payment method
+ * @param {string} noticeUrl - webhook receive URL. Default is undefined
  * @returns {Object} - The payment resources
  */
-function preparePaymentResources(order, selectedPaymentMethod) {
+function preparePaymentResources(order, selectedPaymentMethod, noticeUrl) {
 	let paymentInformation = {
 		pg: Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value,
 		pay_method: selectedPaymentMethod,
@@ -47,6 +48,10 @@ function preparePaymentResources(order, selectedPaymentMethod) {
 
 	if (order.billingAddress.postalCode) {
 		paymentInformation.buyer_postcode = order.billingAddress.postalCode;
+	}
+
+	if (noticeUrl) {
+		paymentInformation.notice_url = noticeUrl;
 	}
 
 	return paymentInformation;
