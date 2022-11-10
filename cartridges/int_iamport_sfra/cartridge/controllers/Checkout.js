@@ -2,8 +2,7 @@
 
 const server = require('server');
 server.extend(module.superModule);
-const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
-var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 
 /**
  * Checkout-Begin : The Checkout-Begin endpoint will render the checkout shipping page for both guest shopper and returning shopper
@@ -65,6 +64,7 @@ server.post('HandlePaymentRequestFailure', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
 	const URLUtils = require('dw/web/URLUtils');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	const Resource = require('dw/web/Resource');
 
 	let orderToken = req.form.orderToken;
