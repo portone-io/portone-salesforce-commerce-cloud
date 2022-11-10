@@ -143,12 +143,16 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 			if (paymentResponse.success) {
 				sendPaymentInformation(paymentResponse, paymentOptions);
 			} else {
+				// You have to comment this line of code out to simulate a successful payment
 				// handle payment failure
 				handlePaymentFailure(paymentResponse, paymentOptions);
-
-				// TODO: remove it. This line is just for testing purposes
-				// sendPaymentInformation(paymentResponse, paymentOptions);
 			}
+
+			// TODO: remove this line of code.
+			// This line is just for testing purposes.
+			// Since we cannot make a successful payment always, this line is used to
+			// simulate a successful payment no matter the outcome of the payment
+			// sendPaymentInformation(paymentResponse, paymentOptions);
 		});
 	}
 };
