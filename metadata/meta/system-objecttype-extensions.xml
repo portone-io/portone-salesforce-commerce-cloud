@@ -628,4 +628,55 @@
             </attribute-group>
         </group-definitions>
     </type-extension>
+
+     <type-extension type-id="Basket">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="pay_method">
+                <display-name xml:lang="x-default">Iamport Payment Method</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="iamport">
+                <display-name xml:lang="x-default">Iamport</display-name>
+                <attribute attribute-id="pay_method"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="Order">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="escrow">
+                <display-name xml:lang="x-default">Escrow Payment</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="imp_uid">
+                <display-name xml:lang="x-default">Iamport Payment ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="pay_method">
+                <display-name xml:lang="x-default">Iamport Payment Method</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="iamport">
+                <display-name xml:lang="x-default">Iamport</display-name>
+                <attribute attribute-id="escrow"/>
+                <attribute attribute-id="imp_uid"/>
+                <attribute attribute-id="pay_method"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
 </metadata>

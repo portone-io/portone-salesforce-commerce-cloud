@@ -26,6 +26,9 @@ function CustomError(error) {
 			this.message = Resource.msg('msg.server.error', 'iamport', null);
 			this.note = Resource.msg('note.server.error', 'iamport', null);
 			break;
+		case 2:
+			this.message = Resource.msg('error.payment.incomplete', 'checkout', null);
+			break;
 		default:
 			this.message = Resource.msg('msg.general.error', 'iamport', null);
 			this.note = Resource.msg('note.general.error', 'iamport', null);
