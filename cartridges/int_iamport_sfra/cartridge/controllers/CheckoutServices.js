@@ -487,8 +487,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		res.json({
 			error: true,
 			errorStage: {
-				stage: 'shipping',
-				step: 'shippingAddress'
+				stage: 'placeOrder',
+				step: 'paymentInstrument'
 			},
 			errorMessage: customError.message
 		});
@@ -502,8 +502,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		res.json({
 			error: true,
 			errorStage: {
-				stage: 'shipping',
-				step: 'billingAddress'
+				stage: 'placeOrder',
+				step: 'paymentInstrument'
 			},
 			errorMessage: Resource.msgf('error.payment.forgery', 'checkout', null, '00002853' || paymentResources.merchant_uid)
 		});
