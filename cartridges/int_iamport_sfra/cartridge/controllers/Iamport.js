@@ -132,9 +132,11 @@ server.post('SfNotifyHook', function (req, res, next) {
 	let paymentId = webhookData.imp_uid;
 	let postAuthorization;
 	let orderCancellation;
+	let vbankIssued;
 	let mappedPaymentInfo;
 
 	let order = OrderMgr.getOrder(orderId);
+
 	let paymentData = iamportServices.getPaymentInformation.call({
 		paymentID: paymentId
 	});
@@ -148,11 +150,59 @@ server.post('SfNotifyHook', function (req, res, next) {
 		switch (status) {
 			// when virtual account is issued
 			case 'ready':
-				orderId = '00000';
+				if (HookMgr.hasHook('app.payment.processor.iamport')) {
+					vbankIssued = HookMgr.callHook('app.payment.processor.iamport',
+						'vbankIssued',
+						order
+					);
+				}
+
+				if (vbankIssued.error) {
+					Logger.error('The order must be in the CREATED status when vbank accounts are issued');
+					throw new Error('Incorrect Order Status');
+				}
+
+				if (order.getCustomerEmail()) {
+					// TODO: send the customer an email of the virtual account details
+				}
+
+				mappedPaymentInfo = iamportHelpers.mapVbankResponseForLogging(paymentData);
+				Logger.debug('Webhook: Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
+
+				COHelpers.addOrderNote(order,
+					Resource.msg('order.note.vbank.issued.subject', 'order', null),
+					Resource.msg('order.note.vbank.issued.body', 'order', null));
+
 				break;
 
 			// when payment is approved or payment amount is deposited into virtual account
 			case 'paid':
+				if (paymentData.getObject().response.pay_method === 'vbank') {
+					let placeOrderResult = COHelpers.placeOrder(order);
+					if (placeOrderResult.error) {
+						Logger.error('Order could not be placed: {0}', JSON.stringify(placeOrderResult));
+						throw new Error(Resource.msg('error.technical', 'checkout', null));
+					}
+
+					// Reset usingMultiShip after successful Order placement
+					req.session.privacyCache.set('usingMultiShipping', false);
+
+					mappedPaymentInfo = iamportHelpers.mapVbankResponseForLogging(paymentData);
+					Logger.debug('data: {0}', JSON.stringify(paymentData));
+					Logger.debug('Webhook: Virtual Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
+
+					COHelpers.addOrderNote(order,
+						Resource.msg('order.note.vbank.subject', 'order', null),
+						Resource.msg('order.note.vbank.payment.complete.body', 'order', null));
+				} else {
+					mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
+					Logger.debug('Webhook: Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
+
+					COHelpers.addOrderNote(order,
+						Resource.msg('order.note.payment.complete.subject', 'order', null),
+						Resource.msg('order.note.payment.complete.body', 'order', null));
+				}
+
 				if (HookMgr.hasHook('app.payment.processor.iamport')) {
 					postAuthorization = HookMgr.callHook('app.payment.processor.iamport',
 						'postAuthorize',
@@ -167,13 +217,6 @@ server.post('SfNotifyHook', function (req, res, next) {
 						COHelpers.sendConfirmationEmail(order, req.locale.id, true);
 					}
 				}
-
-				mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
-				Logger.debug('Webhook: Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
-
-				COHelpers.addOrderNote(order,
-					Resource.msg('order.note.payment.complete.subject', 'order', null),
-					Resource.msg('order.note.payment.complete.body', 'order', null));
 
 				break;
 
@@ -204,10 +247,12 @@ server.post('SfNotifyHook', function (req, res, next) {
 
 		Logger.debug('Webhook called successfully. Webhook response: {0}.', JSON.stringify(webhookData));
 		// return success message to the import server
+		res.setStatusCode(200);
 		res.print('WebhookCall: success');
 		return next();
 	} catch (err) {
 		Logger.error('Webhook failed: {0}', JSON.stringify(err));
+		res.setStatusCode(500);
 		res.print(err.message);
 		return next();
 	}
