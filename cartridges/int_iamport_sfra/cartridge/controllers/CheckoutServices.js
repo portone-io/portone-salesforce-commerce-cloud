@@ -351,7 +351,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	const CustomError = require('*/cartridge/errors/customError');
 	let customError;
 
-	let currentBasket = BasketMgr.getCurrentBasket();
+	let currentBasket = BasketMgr.getCurrentBasket(); // AQUI NO PUEDE COGER LA BASKET
 
 	if (!currentBasket) {
 		res.json({
@@ -393,7 +393,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		res.json({
 			error: true,
 			errorMessage: validationOrderStatus.message,
-			serverErrors: [Resource.msg('error.technical', 'checkout', null)]
+			serverErrors: [Resource.msg('error.technical', 'checkout', null)],
+			redirectUrl: URLUtils.url('Cart-Show').toString()
 		});
 		return next();
 	}
@@ -481,16 +482,34 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	// Expected server error codes: 401
 	if (!paymentRegistered.isOk()) {
 		customError = new CustomError({ status: paymentRegistered.getError() });
+
 		Logger.error('Payment registration and validation failed: {0}.', JSON.stringify(paymentRegistered));
+
 		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
 
+		// res.json({
+		// 	error: true,
+		// 	errorStage: {
+		// 		stage: 'placeOrder',
+		// 		step: 'paymentInstrument'
+		// 	},
+		// 	errorMessage: customError.message,
+		// 	redirectUrl: URLUtils.url('Cart-Show').toString()
+		// });
 		res.json({
 			error: true,
+			orderID: order.orderNo,
+			orderToken: order.orderToken,
+			validationUrl: URLUtils.url('CheckoutServices-ValidatePlaceOrder').toString(),
+			requestPayFailureUrl: URLUtils.url('Checkout-HandlePaymentRequestFailure').toString(),
+			cancelUrl: URLUtils.url('Checkout-HandleCancel').toString(),
+			paymentResources: paymentResources,
 			errorStage: {
 				stage: 'placeOrder',
-				step: 'paymentInstrument'
+				step: 'paymentIstrument'
 			},
-			errorMessage: customError.message
+			serverErrors: [customError],
+			serverStatus: 401
 		});
 		return next();
 	} else if (paymentRegistered.getObject().message) {

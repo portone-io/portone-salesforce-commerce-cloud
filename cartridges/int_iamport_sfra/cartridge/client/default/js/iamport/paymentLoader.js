@@ -16,6 +16,9 @@ const IAMPORT_ARGS = { MID: $('input[name="merchantID"]').val()
 function sendPaymentInformation(paymentResponse, paymentOptions) {
 	let defer = $.Deferred(); // eslint-disable-line
 
+	console.log('paymentResponse senpayinfo', paymentResponse);
+	console.log('paymentOptions senpayinfo', paymentOptions);
+
 	$.ajax({
 		url: paymentOptions.validationUrl,
 		method: 'POST',
@@ -72,6 +75,9 @@ function sendPaymentInformation(paymentResponse, paymentOptions) {
 function handlePaymentFailure(paymentResources, paymentOptions) {
 	let defer = $.Deferred(); // eslint-disable-line
 
+	console.log('paymentResources handlePaymentFailure-->', paymentResources);
+	console.log('paymentOptions handlePaymentFailure-->', paymentOptions);
+
 	if (paymentResources.error_code) {
 		// If there is an error code in the response, the cancellation belongs from a bad request, and the PG popup couldn't be opened. Executes requestPayFailureUrl method
 		$.ajax({
@@ -124,13 +130,22 @@ function handlePaymentFailure(paymentResources, paymentOptions) {
  * @param {Object} paymentPayload The payment resources
  */
 const requestPayment = function requestPayment(item, paymentPayload) {
+	console.log('const requestPayment');
 	if (paymentPayload.paymentResources) {
 		let IMP = window[item];
 		if (!IMP || !IAMPORT_ARGS.MID) {
 			throw new Error('Merchant code not set');
 		}
 
+		console.log('paymentPayload 7--', paymentPayload);
+
+		if (paymentPayload.paymentResources.serverStatusError === 401) {
+			// handlePaymentFailure(paymentResponse, paymentOptions);
+			paymentPayload.merchantID = '';
+		}
+
 		IMP.init(IAMPORT_ARGS.MID);
+
 		IMP.request_pay(paymentPayload.paymentResources, function (paymentResponse) {
 			let paymentOptions = {
 				validationUrl: paymentPayload.validationUrl,
@@ -140,11 +155,15 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 				merchant_uid: paymentPayload.merchantID
 			};
 
+			console.log('paymentResponse-', paymentResponse);
+
 			if (paymentResponse.success) {
+				console.log('paymentResponse-', paymentResponse);
 				sendPaymentInformation(paymentResponse, paymentOptions);
 			} else {
 				// You have to comment this line of code out to simulate a successful payment
 				// handle payment failure
+				console.log('handlePaymentFailure PASA POR AQUI');
 				handlePaymentFailure(paymentResponse, paymentOptions);
 			}
 
@@ -164,6 +183,7 @@ module.exports = {
 
 			if (payload) {
 			// eslint-disable-next-line no-console
+			console.log('payload general', payload);
 				deferLoader.defer('IMP', requestPayment, payload);
 			}
 		} catch (err) {

@@ -59,6 +59,7 @@ const iamportPayment = require('../iamport/paymentLoader');
          * @param {number} currentStage - The current stage the user is currently on in the checkout
          */
 		function updateUrl(currentStage) {
+			console.log('updateUrl currentStage->', currentStage);
 			history.pushState( // eslint-disable-line no-restricted-globals
 				checkoutStages[currentStage],
 				document.title,
@@ -68,6 +69,7 @@ const iamportPayment = require('../iamport/paymentLoader');
                 + '#'
                 + checkoutStages[currentStage]
 			);
+			console.log('history->', history);
 		}
 
 		/**
@@ -85,18 +87,22 @@ const iamportPayment = require('../iamport/paymentLoader');
 			updateStage: function () {
 				let stage = checkoutStages[members.currentStage];
                 let defer = $.Deferred(); // eslint-disable-line
+				console.log('updateStage + stage ->', stage);
 
 				if (stage === 'customer') {
+					console.log('stage === customer');
 					// Clear Previous Errors
 					customerHelpers.methods.clearErrors();
 					// Submit the Customer Form
 					let customerFormSelector = customerHelpers.methods.isGuestFormActive() ? customerHelpers.vars.GUEST_FORM : customerHelpers.vars.REGISTERED_FORM;
 					let customerForm = $(customerFormSelector);
+					console.log('customerForm-', customerForm);
 					$.ajax({
 						url: customerForm.attr('action'),
 						type: 'post',
 						data: customerForm.serialize(),
 						success: function (data) {
+							console.log('success + data-', data);
 							if (data.redirectUrl) {
 								window.location.href = data.redirectUrl;
 							} else {
@@ -104,6 +110,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 							}
 						},
 						error: function (err) {
+							console.log('customer error-', err);
 							if (err.responseJSON && err.responseJSON.redirectUrl) {
 								window.location.href = err.responseJSON.redirectUrl;
 							}
@@ -114,6 +121,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 					return defer;
 				} if (stage === 'shipping') {
 					// Clear Previous Errors
+					console.log('stage === shipping');
 					formHelpers.clearPreviousErrors('.shipping-form');
 
 					// Submit the Shipping Address Form
@@ -161,6 +169,8 @@ const iamportPayment = require('../iamport/paymentLoader');
 						});
 					} else {
 						let shippingFormData = form.serialize();
+
+						console.log('shippingFormData->', shippingFormData);
 
 						$('body').trigger('checkout:serializeShipping', {
 							form: form,
@@ -249,6 +259,10 @@ const iamportPayment = require('../iamport/paymentLoader');
 
 					let paymentForm = billingAddressForm + '&' + contactInfoForm + '&' + paymentInfoForm;
 
+					console.log('billingAddressForm->', billingAddressForm);
+					console.log('contactInfoForm->', contactInfoForm);
+					console.log('paymentInfoForm->', paymentInfoForm);
+
 					if ($('.data-checkout-stage').data('customer-type') === 'registered') {
 						// if payment method is credit card
 						if ($('.payment-information').data('payment-method-id') === 'CREDIT_CARD') {
@@ -289,6 +303,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 							// look for field validation errors
 
 							if (data.error) {
+								console.log('hay errors 1->', data);
 								if (data.fieldErrors.length) {
 									data.fieldErrors.forEach(function (error) {
 										if (Object.keys(error).length) {
@@ -356,9 +371,27 @@ const iamportPayment = require('../iamport/paymentLoader');
 						success: function (data) {
 							// not enable the placeOrder button here in order to user do only one click
 							// $('body').trigger('checkout:enableButton', '.next-step-button button');
+							console.log('dataaaaaaaaaa sfra6-', data);
 							if (data.error) {
 								// Response success but there is a request error
 								$('body').trigger('checkout:enableButton', '.next-step-button button');
+
+							// 	else if (data.serverStatus === 401) {
+							// 	if (data.paymentResources) {
+							// 		console.log('data.paymentResources--->', data.paymentResources);
+							// 		data.paymentResources.serverStatusError = 401;
+							// 		data.paymentResources.error_code = 401;
+							// 		let payload = {
+							// 			paymentResources: data.paymentResources,
+							// 			validationUrl: data.validationUrl,
+							// 			cancelUrl: data.cancelUrl,
+							// 			orderToken: data.orderToken,
+							// 			requestPayFailureUrl: data.requestPayFailureUrl,
+							// 			merchantID: data.paymentResources.merchant_uid
+							// 		};
+							// 		iamportPayment.generalPayment(payload);
+							// 	}
+							// }
 
 								if (data.cartError) {
 									window.location.href = data.redirectUrl;
@@ -370,6 +403,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 								}
 							} else {
 								if (data.paymentResources) {
+									console.log('data.paymentResources--->', data.paymentResources);
 									let payload = {
 										paymentResources: data.paymentResources,
 										validationUrl: data.validationUrl,
@@ -384,6 +418,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 						},
 						error: function (error) {
 							$.spinner().stop();
+							console.log('error PO->', error);
 
 							let errorMsg = error.responseJSON.message;
 							let paymentErrorHtml = '<div class="alert alert-danger alert-dismissible '
@@ -397,14 +432,19 @@ const iamportPayment = require('../iamport/paymentLoader');
 							// Enable the placeOrder button here in order to have the user trying the action again
 							$('body').trigger('checkout:enableButton', '.next-step-button button');
 
-							defer.reject();
+							// defer.reject();
 						}
 					});
 
 					return defer;
 				}
+
+				if (stage === 'submitted') {
+					$('body').trigger('checkout:enableButton', '.next-step-button button');
+				}
                 let p = $('<div>').promise(); // eslint-disable-line
 				setTimeout(function () {
+					console.log('???');
                     p.done(); // eslint-disable-line
 				}, 500);
                 return p; // eslint-disable-line
@@ -492,6 +532,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 				$(window).on('load', function (e) {
 					let stage = checkoutStages[members.currentStage];
 					if (stage === 'payment') {
+						console.log('On load disable next button in payments', e);
 						$('body').trigger('checkout:disableButton', '.next-step-button button');
 					}
 				});
@@ -517,13 +558,16 @@ const iamportPayment = require('../iamport/paymentLoader');
 					// Update UI with new stage
 					$('.error-message').hide();
 					$('.payments-error').hide();
+					console.log('va a llamar al next step');
 					members.handleNextStage(true);
 				});
 
 				promise.fail(function (data) {
+					console.log('nextStage promise fail->', data);
 					// show errors
 					if (data) {
 						if (data.errorStage) {
+							console.log('data.errorStage->', data.errorStage);
 							members.gotoStage(data.errorStage.stage);
 
 							if (data.errorStage.step === 'billingAddress') {
@@ -538,6 +582,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 
 						if (data.action === 'CheckoutServices-PlaceOrder') {
 							let errorMsg = data.errorMessage;
+							console.log('errorMsg PO2->', errorMsg);
 							let paymentErrorHtml = '<div class="alert alert-danger alert-dismissible '
 								+ 'fade show" role="alert">'
 								+ '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'
@@ -597,6 +642,7 @@ const iamportPayment = require('../iamport/paymentLoader');
              * @param {string} stageName - the checkout state to goto
              */
 			gotoStage: function (stageName) {
+				console.log('stageName--->', stageName);
 				members.currentStage = checkoutStages.indexOf(stageName);
 				updateUrl(members.currentStage);
 				$(plugin).attr('data-checkout-stage', checkoutStages[members.currentStage]);
@@ -625,6 +671,7 @@ baseCheckout.updateCheckoutView = function () {
 		shippingHelpers.methods.updateMultiShipInformation(data.order);
 		summaryHelpers.updateTotals(data.order.totals);
 		data.order.shipping.forEach(function (shipping) {
+			console.log('shipping--->', shipping);
 			shippingHelpers.methods.updateShippingInformation(
 				shipping,
 				data.order,
