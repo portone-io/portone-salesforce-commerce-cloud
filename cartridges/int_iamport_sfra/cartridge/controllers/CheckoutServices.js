@@ -605,21 +605,14 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		return next();
 	}
 
-	let fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', currentBasket, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
-	if (fraudDetectionStatus.status === 'fail') {
-		Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
-
-        // fraud detection failed
-		req.session.privacyCache.set('fraudDetectionStatus', true);
-
-		res.json({
-			error: true,
-			cartError: true,
-			redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
-			errorMessage: Resource.msg('error.technical', 'checkout', null)
+	if (req.currentCustomer.addressBook) {
+        // save all used shipping addresses to address book of the logged in customer
+		let allAddresses = addressHelpers.gatherShippingAddresses(order);
+		allAddresses.forEach(function (address) {
+			if (!addressHelpers.checkIfAddressStored(address, req.currentCustomer.addressBook.addresses)) {
+				addressHelpers.saveAddress(address, req.currentCustomer, addressHelpers.generateAddressName(address));
+			}
 		});
-
-		return next();
 	}
 
 	let paymentID = paymentInformation.imp_uid;
@@ -641,7 +634,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		return next();
 	}
 
-	// Compare prices for fraud checks
+	// Compare prices for iamport fraud checks
 	let iamportFraudFlagged = iamportHelpers.checkFraudPayments(paymentData, order);
 	if (iamportFraudFlagged) {
 		Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
@@ -659,7 +652,71 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		return next();
 	}
 
-    // Places the order
+	let fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', currentBasket, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
+	if (fraudDetectionStatus.status === 'fail') {
+		Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
+
+        // fraud detection failed
+		req.session.privacyCache.set('fraudDetectionStatus', true);
+
+		res.json({
+			error: true,
+			cartError: true,
+			redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
+			errorMessage: Resource.msg('error.technical', 'checkout', null)
+		});
+
+		return next();
+	}
+
+	// save the payment id in a custom attribute on the Order object
+	let paymentResponse = paymentData.getObject().response;
+	let paymentId = paymentResponse.imp_uid;
+	if (HookMgr.hasHook('app.payment.processor.iamport')) {
+		HookMgr.callHook('app.payment.processor.iamport',
+			'updatePaymentIdOnOrder',
+			paymentId,
+			order
+		);
+	}
+
+	let validationResponse = {
+		error: false,
+		orderID: order.orderNo,
+		orderToken: order.orderToken,
+		continueUrl: URLUtils.url('Order-Confirm').toString()
+	};
+
+	if (paymentResponse.pay_method === 'vbank') {
+		Object.assign(validationResponse, {
+			vbank: true,
+			vbankPayload: {
+				vbankName: paymentResponse.vbank_name,
+				vbankNumber: paymentResponse.vbank_num,
+				vbankExpiration: paymentResponse.vbank_date,
+				vbankCode: paymentResponse.vbank_code,
+				vbankIssuedAt: paymentResponse.vbank_issued_at,
+				vbankHolder: paymentResponse.vbank_holder
+			}
+		});
+
+		if (HookMgr.hasHook('app.payment.processor.iamport')) {
+			HookMgr.callHook('app.payment.processor.iamport',
+				'updateVbankOnOrder',
+				validationResponse.vbank,
+				validationResponse.vbankPayload,
+				order
+			);
+		}
+
+		let mappedPaymentInfo = iamportHelpers.mapVbankResponseForLogging(paymentData);
+		Logger.debug('Virtual Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
+
+		res.json(validationResponse);
+		return next();
+	}
+
+	// Places the order
 	let placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
 	if (placeOrderResult.error) {
 		res.json({
@@ -669,41 +726,13 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		return next();
 	}
 
+	// Reset usingMultiShip after successful Order placement
+	req.session.privacyCache.set('usingMultiShipping', false);
+
 	let mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
 	Logger.debug('Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
 
-	if (req.currentCustomer.addressBook) {
-        // save all used shipping addresses to address book of the logged in customer
-		let allAddresses = addressHelpers.gatherShippingAddresses(order);
-		allAddresses.forEach(function (address) {
-			if (!addressHelpers.checkIfAddressStored(address, req.currentCustomer.addressBook.addresses)) {
-				addressHelpers.saveAddress(address, req.currentCustomer, addressHelpers.generateAddressName(address));
-			}
-		});
-	}
-
-    // Reset usingMultiShip after successful Order placement
-	req.session.privacyCache.set('usingMultiShipping', false);
-
-	// save the payment id in a custom attribute on the Order object
-	let paymentId = paymentData.getObject().response.imp_uid;
-	if (HookMgr.hasHook('app.payment.processor.iamport')) {
-		HookMgr.callHook('app.payment.processor.iamport',
-			'updatePaymentIdOnOrder',
-			paymentId,
-			order
-		);
-	}
-    // TODO: Exposing a direct route to an Order, without at least encoding the orderID
-    //  is a serious PII violation.  It enables looking up every customers orders, one at a
-    //  time.
-	res.json({
-		error: false,
-		orderID: order.orderNo,
-		orderToken: order.orderToken,
-		continueUrl: URLUtils.url('Order-Confirm').toString()
-	});
-
+	res.json(validationResponse);
 	return next();
 });
 
