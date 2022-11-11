@@ -10,4 +10,17 @@
             <span> ${pdict.selectedPaymentMethod} </span>
         </isif>
     </div>
+
+    <iscomment> TODO: display them nicely </iscomment>
+    <isif condition="${pdict.vbank === 'true'}">
+        <p> Account Details: </p>
+        <ul>
+            <li> Name: <span> ${pdict.vbankName} </span> </li>
+            <li> Number: <span> ${pdict.vbankNumber} </span> </li>
+            <li> Code: <span> ${pdict.vbankCode} </span> </li>
+            <li> Deposite Date: <span> <isprint value="${pdict.vbankExpiration}" style="DATE_LONG"/> </span> </li>
+            <li> Issuance Date: <span> <isprint value="${pdict.vbankIssuedAt}" style="DATE_LONG"/> </span> </li>
+            <li> Holder: <span> ${pdict.vbankHolder} </span> </li>
+        </ul>
+    </isif>
 </div>
