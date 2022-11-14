@@ -485,7 +485,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 
 		customError = new CustomError({ status: iamportResponseError.code });
 
-		Logger.error('Payment registration and validation failed: {0}.', JSON.stringify(paymentRegistered));
+		Logger.error('Payment registration and validation failed: {0}.', JSON.stringify(paymentRegistered.errorMessage));
 
 		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
 
@@ -499,7 +499,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 			paymentResources: paymentResources,
 			errorStage: {
 				stage: 'placeOrder',
-				step: 'paymentIstrument'
+				step: 'paymentInstrument'
 			},
 			serverErrors: [customError]
 		});
