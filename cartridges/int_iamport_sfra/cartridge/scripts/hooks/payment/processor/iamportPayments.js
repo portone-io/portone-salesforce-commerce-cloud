@@ -132,20 +132,12 @@ function updatePaymentIdOnOrder(paymentId, order) {
 function updateVbankOnOrder(status, vbankPayload, order) {
 	try {
 		Transaction.wrap(function () {
-			if (order.custom.vbank) {
-				order.custom.vbank = status;
-			}
-
-			if (order.custom.vbankNumber) {
-				order.custom.vbankNumber = vbankPayload.vbankNumber;
-			}
-
-			if (order.custom.vbankExpiration) {
-				order.custom.vbankExpiration = vbankPayload.vbankExpiration;
-			}
+			order.custom.vbankPaymentStatus = status;
+			order.custom.vbankNumber = vbankPayload.vbankNumber;
+			order.custom.vbankExpiration = vbankPayload.vbankExpiration;
 		});
 	} catch (e) {
-		Logger.error('Could not update iamport payment id on the order object: {0}', e.stack);
+		Logger.error('Could not update vbank data on the order object: {0}', e.stack);
 	}
 }
 
