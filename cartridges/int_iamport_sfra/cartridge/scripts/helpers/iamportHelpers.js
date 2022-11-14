@@ -127,7 +127,6 @@ function getTranslatedMessage(pgType, errorMessage) {
 	if (pgType === 'payment') {
 		return Resource.msg('error.payment.incomplete', 'checkout', null);
 	}
-	// This message from the PG response will be in korean when there is a cancellation. It should to be translated
 	return errorMessage;
 }
 
