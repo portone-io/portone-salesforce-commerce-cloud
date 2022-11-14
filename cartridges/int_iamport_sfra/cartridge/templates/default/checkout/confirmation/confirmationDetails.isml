@@ -12,10 +12,8 @@
             <span class="summary-details order-date"><isprint value="${pdict.order.creationDate}" style="DATE_SHORT"/></span>
         </p>
 
-		<iscomment> add a vbank order notice </iscomment>
-		<iscomment> TODO: move string to resources and style it </iscomment>
 		<isif condition="${pdict.vbank === 'true'}">
-			<p> * Order will be created but will not be processed untill payment is made to the issued virtual account. Check your virtual account details under payment section below </p>
+			<p> ${Resource.msg('virtual.payment.notice', 'checkout', null)} </p>
 		</isif>
 
         <isinclude template="checkout/shipping/shippingSummary" />

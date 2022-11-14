@@ -11,16 +11,15 @@
         </isif>
     </div>
 
-    <iscomment> TODO: display them nicely </iscomment>
     <isif condition="${pdict.vbank === 'true'}">
-        <p> Account Details: </p>
+        <p> ${Resource.msg('label.virtual.account.details', 'checkout', null)} </p>
         <ul>
-            <li> Name: <span> ${pdict.vbankName} </span> </li>
-            <li> Number: <span> ${pdict.vbankNumber} </span> </li>
-            <li> Code: <span> ${pdict.vbankCode} </span> </li>
-            <li> Deposite Date: <span> <isprint value="${pdict.vbankExpiration}" style="DATE_LONG"/> </span> </li>
-            <li> Issuance Date: <span> <isprint value="${pdict.vbankIssuedAt}" style="DATE_LONG"/> </span> </li>
-            <li> Holder: <span> ${pdict.vbankHolder} </span> </li>
+            <li> ${Resource.msg('label.virtual.account.name', 'checkout', null)} <span> ${pdict.vbankName} </span> </li>
+            <li> ${Resource.msg('label.virtual.account.number', 'checkout', null)} <span> ${pdict.vbankNumber} </span> </li>
+            <li> ${Resource.msg('label.virtual.account.code', 'checkout', null)} <span> ${pdict.vbankCode} </span> </li>
+            <li> ${Resource.msg('label.virtual.account.deposite.date', 'checkout', null)} <span> <isprint value="${pdict.vbankExpiration}" style="DATE_LONG"/> </span> </li>
+            <li> ${Resource.msg('label.virtual.account.issuance.date', 'checkout', null)} <span> <isprint value="${pdict.vbankIssuedAt}" style="DATE_LONG"/> </span> </li>
+            <li> ${Resource.msg('label.virtual.account.holder', 'checkout', null)} <span> ${pdict.vbankHolder} </span> </li>
         </ul>
     </isif>
 </div>
