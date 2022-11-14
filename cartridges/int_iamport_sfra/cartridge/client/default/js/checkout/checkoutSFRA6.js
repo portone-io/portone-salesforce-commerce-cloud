@@ -356,6 +356,8 @@ const iamportPayment = require('../iamport/paymentLoader');
 						success: function (data) {
 							// not enable the placeOrder button here in order to user do only one click
 							// $('body').trigger('checkout:enableButton', '.next-step-button button');
+
+							// Response of CheckoutServices-PlaceOrder
 							if (data.error) {
 								// Response success but there is a request error
 								$('body').trigger('checkout:enableButton', '.next-step-button button');
@@ -363,6 +365,24 @@ const iamportPayment = require('../iamport/paymentLoader');
 								if (data.cartError) {
 									window.location.href = data.redirectUrl;
 									defer.reject();
+								} else if (data.paymentError) {
+									// Any payment error when trying to create it
+
+									data.paymentResources.paymentError = true;
+									data.paymentResources.error_code = data.paymentErrorCode;
+									if (data.serverErrors) {
+										data.paymentResources.error_msg = data.serverErrors[0].message;
+									}
+
+									let payload = {
+										paymentError: true,
+										paymentErrorCode: data.paymentErrorCode,
+										paymentResources: data.paymentResources,
+										orderToken: data.orderToken,
+										requestPayFailureUrl: data.requestPayFailureUrl,
+										merchantID: data.paymentResources.merchant_uid
+									};
+									iamportPayment.generalPayment(payload);
 								} else {
 									$.spinner().stop();
 									// go to appropriate stage and display error message
@@ -402,6 +422,10 @@ const iamportPayment = require('../iamport/paymentLoader');
 					});
 
 					return defer;
+				}
+
+				if (stage === 'submitted') {
+					$('body').trigger('checkout:enableButton', '.next-step-button button');
 				}
                 let p = $('<div>').promise(); // eslint-disable-line
 				setTimeout(function () {
@@ -521,8 +545,9 @@ const iamportPayment = require('../iamport/paymentLoader');
 				});
 
 				promise.fail(function (data) {
-					// show errors
 					if (data) {
+						// Error creating the payment before paying and show error on Place Order
+
 						if (data.errorStage) {
 							members.gotoStage(data.errorStage.stage);
 
@@ -538,17 +563,16 @@ const iamportPayment = require('../iamport/paymentLoader');
 
 						if (data.action === 'CheckoutServices-PlaceOrder') {
 							let errorMsg = data.errorMessage;
-							let paymentErrorHtml = '<div class="alert alert-danger alert-dismissible '
+							if (data.errorMessage) {
+								let paymentErrorHtml = '<div class="alert alert-danger alert-dismissible '
 								+ 'fade show" role="alert">'
 								+ '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'
 								+ '<span aria-hidden="true">&times;</span>'
 								+ '</button>' + errorMsg + '</div>';
 
-							$('.payments-error').append(paymentErrorHtml);
-							$('.payments-error').show();
-						} else if (data.errorMessage) {
-							$('.error-message').show();
-							$('.error-message-text').text(data.errorMessage);
+								$('.payments-error').append(paymentErrorHtml);
+								$('.payments-error').show();
+							}
 						}
 					}
 				});
