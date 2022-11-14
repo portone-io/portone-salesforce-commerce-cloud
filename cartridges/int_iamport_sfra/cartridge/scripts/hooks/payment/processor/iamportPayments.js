@@ -134,7 +134,7 @@ function updateVbankOnOrder(status, vbankPayload, order) {
 		Transaction.wrap(function () {
 			order.custom.vbankPaymentStatus = status;
 			order.custom.vbankNumber = vbankPayload.vbankNumber;
-			order.custom.vbankExpiration = vbankPayload.vbankExpiration;
+			order.custom.vbankExpiration = vbankPayload.vbankExpiration.toString();
 		});
 	} catch (e) {
 		iamportLogger.error('Could not update vbank data on the order object: {0}', e.stack);
