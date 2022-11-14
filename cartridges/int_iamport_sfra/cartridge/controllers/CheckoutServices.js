@@ -1,6 +1,7 @@
 'use strict';
 
 let csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 
 const server = require('server');
 server.extend(module.superModule);
@@ -345,7 +346,6 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 	const validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
-	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
 	const CustomError = require('*/cartridge/errors/customError');
@@ -486,7 +486,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 
 		customError = new CustomError({ status: iamportResponseError.code });
 
-		Logger.error('Payment registration and validation failed: {0}.', JSON.stringify(paymentRegistered.errorMessage));
+		iamportLogger.error('Payment registration and validation failed: {0}.', JSON.stringify(paymentRegistered.errorMessage));
 
 		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
 
@@ -506,7 +506,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		});
 		return next();
 	} else if (paymentRegistered.getObject().message) {
-		Logger.error('Payment registration and validation failed: {0}.', JSON.stringify(paymentRegistered));
+		iamportLogger.error('Payment registration and validation failed: {0}.', JSON.stringify(paymentRegistered));
 		COHelpers.recreateCurrentBasket(order,
 			'Order failed',
 			Resource.msgf('error.payment.forgery', 'checkout', null, paymentResources.merchant_uid));
@@ -557,7 +557,6 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	const Transaction = require('dw/system/Transaction');
 	const BasketMgr = require('dw/order/BasketMgr');
 	const HookMgr = require('dw/system/HookMgr');
-	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	const addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
@@ -566,7 +565,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 
 	let paymentInformation = req.form;
 	if (empty(paymentInformation)) {
-		Logger.error('Payment must contain a unique id and and an order id {0}.', paymentInformation.error);
+		iamportLogger.error('Payment must contain a unique id and and an order id {0}.', paymentInformation.error);
 		return next();
 	}
 
@@ -579,7 +578,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 			currentBasket = BasketMgr.createBasketFromOrder(order);
 		});
 	} catch (e) {
-		Logger.error(e);
+		iamportLogger.error(e);
 	}
 
 	if (!currentBasket) {
@@ -632,7 +631,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	});
 
 	if (!paymentData.isOk()) {
-		Logger.error('Server failed to retrieve payment data for "{0}": {1}.', paymentID, JSON.stringify(paymentData));
+		iamportLogger.error('Server failed to retrieve payment data for "{0}": {1}.', paymentID, JSON.stringify(paymentData));
 		customError = new CustomError({ status: paymentData.getError() });
 
 		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
@@ -721,7 +720,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		}
 
 		let mappedPaymentInfo = iamportHelpers.mapVbankResponseForLogging(paymentData);
-		Logger.debug('Virtual Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
+		iamportLogger.debug('Virtual Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
 
 		res.json(validationResponse);
 		return next();
@@ -741,7 +740,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	req.session.privacyCache.set('usingMultiShipping', false);
 
 	let mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
-	Logger.debug('Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
+	iamportLogger.debug('Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
 
 	res.json(validationResponse);
 	return next();

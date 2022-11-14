@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 const Transaction = require('dw/system/Transaction');
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
@@ -59,7 +59,7 @@ function Handle(basket, paymentInformation, paymentMethodID, req) {
 			};
 		});
 	} catch (e) {
-		Logger.error('Error on payment "Handle" hook: {0}.', e.message);
+		iamportLogger.error('Error on payment "Handle" hook: {0}.', e.message);
 		result = {
 			paymentInstrument: null,
 			success: false,
@@ -119,7 +119,7 @@ function updatePaymentIdOnOrder(paymentId, order) {
 			order.custom.imp_uid = paymentId;
 		});
 	} catch (e) {
-		Logger.error('Could not update iamport payment id on the order object: {0}', e.stack);
+		iamportLogger.error('Could not update iamport payment id on the order object: {0}', e.stack);
 	}
 }
 
@@ -137,7 +137,7 @@ function updateVbankOnOrder(status, vbankPayload, order) {
 			order.custom.vbankExpiration = vbankPayload.vbankExpiration;
 		});
 	} catch (e) {
-		Logger.error('Could not update vbank data on the order object: {0}', e.stack);
+		iamportLogger.error('Could not update vbank data on the order object: {0}', e.stack);
 	}
 }
 
@@ -164,7 +164,7 @@ function postAuthorize(order, paymentData, req) {
 		}
 
 		if (empty(paymentInstrument)) {
-			Logger.error('Payment Instrument is empty.');
+			iamportLogger.error('Payment Instrument is empty.');
 			return {
 				success: false,
 				error: true

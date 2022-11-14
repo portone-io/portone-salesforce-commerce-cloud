@@ -3,7 +3,7 @@
 const Site = require('dw/system/Site');
 const IamportConstants = require('*/cartridge/constants/iamportConstants');
 const pgValidators = require('*/cartridge/config/pgValidators');
-const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 
 const basePayment = module.superModule;
 
@@ -46,7 +46,7 @@ function getPaymentMethods(paymentGatewayID) {
 	let paymentGateway = pgValidators[paymentGatewayID];
 
 	if (empty(paymentGateway)) {
-		Logger.error('No payment gateway was specified.');
+		iamportLogger.error('No payment gateway was specified.');
 	}
 
 	let customSitePrefAttributes = Site.getCurrent().getPreferences().getCustom();
