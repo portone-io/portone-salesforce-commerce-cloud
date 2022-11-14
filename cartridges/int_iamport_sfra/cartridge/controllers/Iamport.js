@@ -170,7 +170,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 				Logger.debug('Webhook: Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
 
 				COHelpers.addOrderNote(order,
-					Resource.msg('order.note.vbank.issued.subject', 'order', null),
+					Resource.msg('order.note.vbank.subject', 'order', null),
 					Resource.msg('order.note.vbank.issued.body', 'order', null));
 
 				break;

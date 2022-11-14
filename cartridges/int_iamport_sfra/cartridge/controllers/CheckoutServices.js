@@ -634,6 +634,17 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		return next();
 	}
 
+	// save the payment id in a custom attribute on the Order object
+	let paymentResponse = paymentData.getObject().response;
+	let paymentId = paymentResponse.imp_uid;
+	if (HookMgr.hasHook('app.payment.processor.iamport')) {
+		HookMgr.callHook('app.payment.processor.iamport',
+			'updatePaymentIdOnOrder',
+			paymentId,
+			order
+		);
+	}
+
 	// Compare prices for iamport fraud checks
 	let iamportFraudFlagged = iamportHelpers.checkFraudPayments(paymentData, order);
 	if (iamportFraudFlagged) {
@@ -667,17 +678,6 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		});
 
 		return next();
-	}
-
-	// save the payment id in a custom attribute on the Order object
-	let paymentResponse = paymentData.getObject().response;
-	let paymentId = paymentResponse.imp_uid;
-	if (HookMgr.hasHook('app.payment.processor.iamport')) {
-		HookMgr.callHook('app.payment.processor.iamport',
-			'updatePaymentIdOnOrder',
-			paymentId,
-			order
-		);
 	}
 
 	let validationResponse = {
