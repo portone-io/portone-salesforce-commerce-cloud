@@ -479,37 +479,29 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	});
 
 	// when Iamport server call (service) fails
-	// Expected server error codes: 401
+	// Expected Iamport server error codes
 	if (!paymentRegistered.isOk()) {
-		customError = new CustomError({ status: paymentRegistered.getError() });
+		const iamportResponseError = JSON.parse(paymentRegistered.errorMessage);
+
+		customError = new CustomError({ status: iamportResponseError.code });
 
 		Logger.error('Payment registration and validation failed: {0}.', JSON.stringify(paymentRegistered));
 
 		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
 
-		// res.json({
-		// 	error: true,
-		// 	errorStage: {
-		// 		stage: 'placeOrder',
-		// 		step: 'paymentInstrument'
-		// 	},
-		// 	errorMessage: customError.message,
-		// 	redirectUrl: URLUtils.url('Cart-Show').toString()
-		// });
 		res.json({
 			error: true,
+			paymentError: true,
+			paymentErrorCode: paymentRegistered.getError(),
 			orderID: order.orderNo,
 			orderToken: order.orderToken,
-			validationUrl: URLUtils.url('CheckoutServices-ValidatePlaceOrder').toString(),
 			requestPayFailureUrl: URLUtils.url('Checkout-HandlePaymentRequestFailure').toString(),
-			cancelUrl: URLUtils.url('Checkout-HandleCancel').toString(),
 			paymentResources: paymentResources,
 			errorStage: {
 				stage: 'placeOrder',
 				step: 'paymentIstrument'
 			},
-			serverErrors: [customError],
-			serverStatus: 401
+			serverErrors: [customError]
 		});
 		return next();
 	} else if (paymentRegistered.getObject().message) {

@@ -75,10 +75,7 @@ function sendPaymentInformation(paymentResponse, paymentOptions) {
 function handlePaymentFailure(paymentResources, paymentOptions) {
 	let defer = $.Deferred(); // eslint-disable-line
 
-	console.log('paymentResources handlePaymentFailure-->', paymentResources);
-	console.log('paymentOptions handlePaymentFailure-->', paymentOptions);
-
-	if (paymentResources.error_code) {
+	if (paymentResources.error_code || paymentResources.paymentError) {
 		// If there is an error code in the response, the cancellation belongs from a bad request, and the PG popup couldn't be opened. Executes requestPayFailureUrl method
 		$.ajax({
 			url: paymentOptions.requestPayFailureUrl,
@@ -130,19 +127,12 @@ function handlePaymentFailure(paymentResources, paymentOptions) {
  * @param {Object} paymentPayload The payment resources
  */
 const requestPayment = function requestPayment(item, paymentPayload) {
-	console.log('const requestPayment');
 	if (paymentPayload.paymentResources) {
 		let IMP = window[item];
 		if (!IMP || !IAMPORT_ARGS.MID) {
 			throw new Error('Merchant code not set');
 		}
 
-		console.log('paymentPayload 7--', paymentPayload);
-
-		if (paymentPayload.paymentResources.serverStatusError === 401) {
-			// handlePaymentFailure(paymentResponse, paymentOptions);
-			paymentPayload.merchantID = '';
-		}
 
 		IMP.init(IAMPORT_ARGS.MID);
 
@@ -155,15 +145,10 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 				merchant_uid: paymentPayload.merchantID
 			};
 
-			console.log('paymentResponse-', paymentResponse);
-
 			if (paymentResponse.success) {
-				console.log('paymentResponse-', paymentResponse);
 				sendPaymentInformation(paymentResponse, paymentOptions);
 			} else {
 				// You have to comment this line of code out to simulate a successful payment
-				// handle payment failure
-				console.log('handlePaymentFailure PASA POR AQUI');
 				handlePaymentFailure(paymentResponse, paymentOptions);
 			}
 
@@ -176,14 +161,25 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 	}
 };
 
+const handlePaymentError = function handlePaymentError(item, paymentPayload) {
+	if (paymentPayload.paymentError) {
+		let paymentOptions = {
+			orderToken: paymentPayload.orderToken,
+			requestPayFailureUrl: paymentPayload.requestPayFailureUrl,
+			merchant_uid: paymentPayload.merchantID
+		};
+		handlePaymentFailure(paymentPayload.paymentResources, paymentOptions);
+	}
+};
+
 module.exports = {
 	generalPayment: function (payload) {
 		try {
 			$.spinner().start();
 
-			if (payload) {
-			// eslint-disable-next-line no-console
-			console.log('payload general', payload);
+			if (payload && payload.paymentError) {
+				deferLoader.defer('IMP', handlePaymentError, payload);
+			} else if (payload) {
 				deferLoader.defer('IMP', requestPayment, payload);
 			}
 		} catch (err) {
