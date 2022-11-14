@@ -645,7 +645,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		res.json({
 			error: true,
 			cartError: true,
-			redirectUrl: URLUtils.url('Error-ErrorCode', 'err', 'fraud detected').toString(),
+			redirectUrl: URLUtils.url('Error-ErrorCode', 'err', 'fraud.detected').toString(),
 			errorMessage: Resource.msg('error.technical', 'checkout', null)
 		});
 
