@@ -123,7 +123,7 @@ function handleErrorFromPaymentGateway(errorCode, errorMessage) {
  * @param {string} errorMessage - Error message content from the PG response
  * @return {string} - Error message
  */
-function handleErrorFromPaymentGatewayCancellation(pgType, errorMessage) {
+function handlePaymentGatewayCancellationResponse(pgType, errorMessage) {
 	if (pgType === 'payment') {
 		return Resource.msg('error.payment.incomplete', 'checkout', null);
 	}
@@ -135,7 +135,7 @@ module.exports = {
 	preparePaymentResources: preparePaymentResources,
 	checkFraudPayments: checkFraudPayments,
 	mapPaymentResponseForLogging: mapPaymentResponseForLogging,
+	mapVbankResponseForLogging: mapVbankResponseForLogging,
 	handleErrorFromPaymentGateway: handleErrorFromPaymentGateway,
-	handleErrorFromPaymentGatewayCancellation: handleErrorFromPaymentGatewayCancellation,
-	mapVbankResponseForLogging: mapVbankResponseForLogging
+	handlePaymentGatewayCancellationResponse: handlePaymentGatewayCancellationResponse
 };

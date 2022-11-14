@@ -44,7 +44,7 @@ server.post('HandleCancel', function (req, res, next) {
 	let iamportErrorMessage;
 
 	if (success === 'false') {
-		iamportErrorMessage = iamportHelpers.handleErrorFromPaymentGatewayCancellation(pgType, req.form.errorMsg);
+		iamportErrorMessage = iamportHelpers.handlePaymentGatewayCancellationResponse(pgType, req.form.errorMsg);
 	} else {
 		iamportErrorMessage = req.form.errorMsg;
 	}
