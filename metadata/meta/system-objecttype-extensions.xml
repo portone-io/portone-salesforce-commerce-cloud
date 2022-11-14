@@ -655,9 +655,21 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
-            <attribute-definition attribute-id="vbank">
-                <display-name xml:lang="x-default">Virtual Payment</display-name>
+            <attribute-definition attribute-id="vbankPaymentStatus">
+                <display-name xml:lang="x-default">Virtual Payment Status</display-name>
                 <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="vbankNumber">
+                <display-name xml:lang="x-default">Virtual Payment Number</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="vbankExpiration">
+                <display-name xml:lang="x-default">Virtual Payment Expiration</display-name>
+                <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
@@ -680,7 +692,9 @@
             <attribute-group group-id="iamport">
                 <display-name xml:lang="x-default">Iamport</display-name>
                 <attribute attribute-id="escrow"/>
-                <attribute attribute-id="vbank"/>
+                <attribute attribute-id="vbankPaymentStatus"/>
+                <attribute attribute-id="vbankNumber"/>
+                <attribute attribute-id="vbankExpiration"/>
                 <attribute attribute-id="imp_uid"/>
                 <attribute attribute-id="pay_method"/>
             </attribute-group>
