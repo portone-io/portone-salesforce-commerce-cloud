@@ -655,6 +655,12 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
+            <attribute-definition attribute-id="vbank">
+                <display-name xml:lang="x-default">Virtual Payment</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
             <attribute-definition attribute-id="imp_uid">
                 <display-name xml:lang="x-default">Iamport Payment ID</display-name>
                 <type>string</type>
@@ -674,6 +680,7 @@
             <attribute-group group-id="iamport">
                 <display-name xml:lang="x-default">Iamport</display-name>
                 <attribute attribute-id="escrow"/>
+                <attribute attribute-id="vbank"/>
                 <attribute attribute-id="imp_uid"/>
                 <attribute attribute-id="pay_method"/>
             </attribute-group>
