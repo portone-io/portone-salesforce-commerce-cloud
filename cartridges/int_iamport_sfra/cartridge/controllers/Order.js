@@ -13,12 +13,22 @@ server.append('Confirm', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
 
 	let viewData = res.getViewData();
-	let order = OrderMgr.getOrder(viewData.order.orderNumber);
+	let order = OrderMgr.getOrder(req.form.orderID, req.form.orderToken);
+	viewData.selectedPaymentMethod = order.custom.pay_method;
 
-	Object.assign(viewData, {
-		selectedPaymentMethod: order.custom.pay_method
-	});
+	if (req.form.vbank) {
+		Object.assign(viewData, {
+			vbank: req.form.vbank,
+			vbankName: req.form.vbankName,
+			vbankNumber: req.form.vbankNumber,
+			vbankExpiration: new Date(req.form.vbankExpiration),
+			vbankIssuedAt: new Date(req.form.vbankIssuedAt),
+			vbankCode: req.form.vbankCode,
+			vbankHolder: req.form.vbankHolder
+		});
+	}
 
+	res.setViewData(viewData);
 	return next();
 });
 

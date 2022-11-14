@@ -51,6 +51,24 @@ function sendPaymentInformation(paymentResponse, paymentOptions) {
 					value: data.orderToken
 				});
 
+				if (data.vbank) {
+					$('<input>')
+					.appendTo(redirect)
+					.attr({
+						name: 'vbank',
+						value: data.vbank
+					});
+
+					for (let vbankPayloadKey in data.vbankPayload) {
+						$('<input>')
+						.appendTo(redirect)
+						.attr({
+							name: vbankPayloadKey,
+							value: data.vbankPayload[vbankPayloadKey]
+						});
+					}
+				}
+
 				redirect.submit();
 				defer.resolve(data);
 			}

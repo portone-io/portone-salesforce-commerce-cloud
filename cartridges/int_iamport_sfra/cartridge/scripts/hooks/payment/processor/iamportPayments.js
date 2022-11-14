@@ -124,6 +124,24 @@ function updatePaymentIdOnOrder(paymentId, order) {
 }
 
 /**
+ * Updates the virtual bank attribute on the current order
+ * @param {boolean} status - Virtual payment status
+ * @param {Object} vbankPayload - The virtual payment data
+ * @param {Object} order - The current order
+ */
+function updateVbankOnOrder(status, vbankPayload, order) {
+	try {
+		Transaction.wrap(function () {
+			order.custom.vbankPaymentStatus = status;
+			order.custom.vbankNumber = vbankPayload.vbankNumber;
+			order.custom.vbankExpiration = vbankPayload.vbankExpiration;
+		});
+	} catch (e) {
+		Logger.error('Could not update vbank data on the order object: {0}', e.stack);
+	}
+}
+
+/**
  * Save Iamport data on payment transaction
  * @param {dw.order.Order} order The current order
  * @param {ServiceResult} paymentData The returned payment data
@@ -206,11 +224,29 @@ function cancelOrder(order) {
 	});
 }
 
+/**
+ * Save Iamport data on payment transaction
+ * @param {dw.order.Order} order The current order
+ * @returns {Object} Returns the post authorize result
+ */
+function vbankIssued(order) {
+	return Transaction.wrap(function () {
+		let orderStatus = order.getStatus().getValue();
+
+		return {
+			success: orderStatus === Order.ORDER_STATUS_CREATED,
+			error: orderStatus !== Order.ORDER_STATUS_CREATED
+		};
+	});
+}
+
 module.exports = {
 	processForm: processForm,
 	Handle: Handle,
 	Authorize: Authorize,
 	postAuthorize: postAuthorize,
 	cancelOrder: cancelOrder,
-	updatePaymentIdOnOrder: updatePaymentIdOnOrder
+	vbankIssued: vbankIssued,
+	updatePaymentIdOnOrder: updatePaymentIdOnOrder,
+	updateVbankOnOrder: updateVbankOnOrder
 };

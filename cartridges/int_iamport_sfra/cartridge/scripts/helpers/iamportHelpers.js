@@ -8,9 +8,10 @@ const Site = require('dw/system/Site');
  * Prepares the payment resources needed to request payment to Iamport server
  * @param {Object} order - Customer order data
  * @param {string} selectedPaymentMethod - Id of the selected payment method
+ * @param {string} noticeUrl - webhook receive URL. Default is undefined
  * @returns {Object} - The payment resources
  */
-function preparePaymentResources(order, selectedPaymentMethod) {
+function preparePaymentResources(order, selectedPaymentMethod, noticeUrl) {
 	let paymentInformation = {
 		pg: Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value,
 		pay_method: selectedPaymentMethod,
@@ -49,6 +50,10 @@ function preparePaymentResources(order, selectedPaymentMethod) {
 		paymentInformation.buyer_postcode = order.billingAddress.postalCode;
 	}
 
+	if (noticeUrl) {
+		paymentInformation.notice_url = noticeUrl;
+	}
+
 	return paymentInformation;
 }
 
@@ -65,18 +70,37 @@ function checkFraudPayments(paymentData, order) {
 
 /**
  * Maps the payment information from Iamport removing all sensitive data
- * @param {Object} paymentResponse - Payment Information from Iamport
+ * @param {Object} paymentData - Payment Information from Iamport
  * @returns {Object} - Mapped payment information
  */
-function mapPaymentResponseForLogging(paymentResponse) {
+function mapPaymentResponseForLogging(paymentData) {
+	let paymentResponse = paymentData.getObject().response;
 	return {
-		paymentID: paymentResponse.getObject().response.imp_uid,
-		orderID: paymentResponse.getObject().response.merchant_uid,
-		paymentMethod: paymentResponse.getObject().response.pay_method,
-		paymentGateway: paymentResponse.getObject().response.pg_provider,
-		amountPaid: paymentResponse.getObject().response.amount,
-		isEscrow: paymentResponse.getObject().response.escrow
+		paymentID: paymentResponse.imp_uid,
+		orderID: paymentResponse.merchant_uid,
+		paymentMethod: paymentResponse.pay_method,
+		paymentGateway: paymentResponse.pg_provider,
+		amountPaid: paymentResponse.amount,
+		isEscrow: paymentResponse.escrow
 	};
+}
+
+/**
+ * Maps the virtual account information from Iamport
+ * @param {Object} paymentData - Payment Information from Iamport
+ * @returns {Object} - Mapped payment information
+ */
+function mapVbankResponseForLogging(paymentData) {
+	let paymentResponse = paymentData.getObject().response;
+
+	return Object.assign(mapPaymentResponseForLogging(paymentData), {
+		vbankName: paymentResponse.vbank_name,
+		vbankNumber: paymentResponse.vbank_num,
+		vbankExpiration: paymentResponse.vbank_date,
+		vbankCode: paymentResponse.vbank_code,
+		vbankIssuedAt: paymentResponse.vbank_issued_at,
+		vbankHolder: paymentResponse.vbank_holder
+	});
 }
 
 /**
@@ -112,5 +136,6 @@ module.exports = {
 	checkFraudPayments: checkFraudPayments,
 	mapPaymentResponseForLogging: mapPaymentResponseForLogging,
 	handleErrorFromPaymentGateway: handleErrorFromPaymentGateway,
-	handleErrorFromPaymentGatewayCancellation: handleErrorFromPaymentGatewayCancellation
+	handleErrorFromPaymentGatewayCancellation: handleErrorFromPaymentGatewayCancellation,
+	mapVbankResponseForLogging: mapVbankResponseForLogging
 };
