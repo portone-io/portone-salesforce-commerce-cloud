@@ -16,9 +16,6 @@ const IAMPORT_ARGS = { MID: $('input[name="merchantID"]').val()
 function sendPaymentInformation(paymentResponse, paymentOptions) {
 	let defer = $.Deferred(); // eslint-disable-line
 
-	console.log('paymentResponse senpayinfo', paymentResponse);
-	console.log('paymentOptions senpayinfo', paymentOptions);
-
 	$.ajax({
 		url: paymentOptions.validationUrl,
 		method: 'POST',

@@ -59,8 +59,9 @@ function preparePaymentResources(order, selectedPaymentMethod) {
  * @returns {boolean} - if fraud is detected
  */
 function checkFraudPayments(paymentData, order) {
-	return paymentData.object.response.amount
-		!== order.paymentTransaction.amount.value;
+	// return paymentData.object.response.amount
+	// 	!== order.paymentTransaction.amount.value;
+	return true
 }
 
 /**
