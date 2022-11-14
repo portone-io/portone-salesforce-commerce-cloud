@@ -393,7 +393,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		res.json({
 			error: true,
 			errorMessage: validationOrderStatus.message,
-			serverErrors: [Resource.msg('error.technical', 'checkout', null)]
+			serverErrors: [Resource.msg('error.technical', 'checkout', null)],
+			redirectUrl: URLUtils.url('Cart-Show').toString()
 		});
 		return next();
 	}
@@ -479,19 +480,29 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	});
 
 	// when Iamport server call (service) fails
-	// Expected server error codes: 401
+	// Expected Iamport server error codes
 	if (!paymentRegistered.isOk()) {
-		customError = new CustomError({ status: paymentRegistered.getError() });
-		Logger.error('Payment registration and validation failed: {0}.', JSON.stringify(paymentRegistered));
+		const iamportResponseError = JSON.parse(paymentRegistered.errorMessage);
+
+		customError = new CustomError({ status: iamportResponseError.code });
+
+		Logger.error('Payment registration and validation failed: {0}.', JSON.stringify(paymentRegistered.errorMessage));
+
 		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
 
 		res.json({
 			error: true,
+			paymentError: true,
+			paymentErrorCode: paymentRegistered.getError(),
+			orderID: order.orderNo,
+			orderToken: order.orderToken,
+			requestPayFailureUrl: URLUtils.url('Checkout-HandlePaymentRequestFailure').toString(),
+			paymentResources: paymentResources,
 			errorStage: {
-				stage: 'shipping',
-				step: 'shippingAddress'
+				stage: 'placeOrder',
+				step: 'paymentInstrument'
 			},
-			errorMessage: customError.message
+			serverErrors: [customError]
 		});
 		return next();
 	} else if (paymentRegistered.getObject().message) {
@@ -503,8 +514,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		res.json({
 			error: true,
 			errorStage: {
-				stage: 'shipping',
-				step: 'billingAddress'
+				stage: 'placeOrder',
+				step: 'paymentInstrument'
 			},
 			errorMessage: Resource.msgf('error.payment.forgery', 'checkout', null, '00002853' || paymentResources.merchant_uid)
 		});
