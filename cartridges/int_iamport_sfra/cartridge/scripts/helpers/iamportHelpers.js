@@ -117,10 +117,24 @@ function handleErrorFromPaymentGateway(errorCode, errorMessage) {
 	return errorMessage;
 }
 
+/**
+ * Returns translated error message from the payment gateway, or exactly the same message sent from payment gateway
+ * @param {string} pgType - Payment Gateway step type from the PG response
+ * @param {string} errorMessage - Error message content from the PG response
+ * @return {string} - Error message
+ */
+function getTranslatedMessage(pgType, errorMessage) {
+	if (pgType === 'payment') {
+		return Resource.msg('error.payment.incomplete', 'checkout', null);
+	}
+	return errorMessage;
+}
+
 module.exports = {
 	preparePaymentResources: preparePaymentResources,
 	checkFraudPayments: checkFraudPayments,
 	mapPaymentResponseForLogging: mapPaymentResponseForLogging,
 	mapVbankResponseForLogging: mapVbankResponseForLogging,
-	handleErrorFromPaymentGateway: handleErrorFromPaymentGateway
+	handleErrorFromPaymentGateway: handleErrorFromPaymentGateway,
+	getTranslatedMessage: getTranslatedMessage
 };

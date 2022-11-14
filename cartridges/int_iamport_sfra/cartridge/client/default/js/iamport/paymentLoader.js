@@ -122,7 +122,9 @@ function handlePaymentFailure(paymentResources, paymentOptions) {
 				orderToken: paymentOptions.orderToken,
 				errorMsg: paymentResources.error_msg,
 				errorCode: paymentResources.error_code,
-				status: paymentOptions.status
+				status: paymentOptions.status,
+				pg_type: paymentResources.pg_type,
+				success: paymentResources.success
 			},
 			success: function (data) {
 				defer.reject();
