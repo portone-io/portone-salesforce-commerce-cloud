@@ -697,15 +697,20 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		continueUrl: URLUtils.url('Order-Confirm').toString()
 	};
 
+	let vbankExpiration = new Date(0);
+	vbankExpiration.setUTCSeconds(paymentResponse.vbank_date);
+	let vbankIssuedAt = new Date(0);
+	vbankIssuedAt.setUTCSeconds(paymentResponse.vbank_date);
+
 	if (paymentResponse.pay_method === 'vbank') {
 		Object.assign(validationResponse, {
 			vbank: true,
 			vbankPayload: {
 				vbankName: paymentResponse.vbank_name,
 				vbankNumber: paymentResponse.vbank_num,
-				vbankExpiration: paymentResponse.vbank_date,
+				vbankExpiration: vbankExpiration,
 				vbankCode: paymentResponse.vbank_code,
-				vbankIssuedAt: paymentResponse.vbank_issued_at,
+				vbankIssuedAt: vbankIssuedAt,
 				vbankHolder: paymentResponse.vbank_holder
 			}
 		});
