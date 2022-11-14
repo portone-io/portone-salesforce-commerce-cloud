@@ -546,7 +546,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 
 				promise.fail(function (data) {
 					if (data) {
-						// Error creating payment before paying and shoe error on Place Order
+						// Error creating the payment before paying and show error on Place Order
 
 						if (data.errorStage) {
 							members.gotoStage(data.errorStage.stage);

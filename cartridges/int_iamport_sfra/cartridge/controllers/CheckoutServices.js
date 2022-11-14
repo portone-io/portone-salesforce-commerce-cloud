@@ -351,7 +351,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	const CustomError = require('*/cartridge/errors/customError');
 	let customError;
 
-	let currentBasket = BasketMgr.getCurrentBasket(); // AQUI NO PUEDE COGER LA BASKET
+	let currentBasket = BasketMgr.getCurrentBasket();
 
 	if (!currentBasket) {
 		res.json({
