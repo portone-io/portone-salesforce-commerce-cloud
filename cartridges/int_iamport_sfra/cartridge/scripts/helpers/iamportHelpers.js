@@ -93,9 +93,24 @@ function handleErrorFromPaymentGateway(errorCode, errorMessage) {
 	return errorMessage;
 }
 
+/**
+ * Returns the correct error message from the Payment Gateway, or exactly the same message when there is a cancellation
+ * @param {string} pgType - Payment Gateway step type from the PG response
+ * @param {string} errorMessage - Error message content from the PG response
+ * @return {string} - Error message
+ */
+function handleErrorFromPaymentGatewayCancellation(pgType, errorMessage) {
+	if (pgType === 'payment') {
+		return Resource.msg('error.payment.incomplete', 'checkout', null);
+	}
+	// This message from the PG response will be in korean when there is a cancellation. It should to be translated
+	return errorMessage;
+}
+
 module.exports = {
 	preparePaymentResources: preparePaymentResources,
 	checkFraudPayments: checkFraudPayments,
 	mapPaymentResponseForLogging: mapPaymentResponseForLogging,
-	handleErrorFromPaymentGateway: handleErrorFromPaymentGateway
+	handleErrorFromPaymentGateway: handleErrorFromPaymentGateway,
+	handleErrorFromPaymentGatewayCancellation: handleErrorFromPaymentGatewayCancellation
 };

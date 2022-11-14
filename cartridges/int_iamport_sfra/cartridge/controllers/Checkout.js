@@ -35,10 +35,20 @@ server.post('HandleCancel', function (req, res, next) {
 	const URLUtils = require('dw/web/URLUtils');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 	const Resource = require('dw/web/Resource');
+	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 
 	let orderToken = req.form.orderToken;
 	let orderId = req.form.merchant_uid;
-	let iamportErrorMessage = req.form.errorMsg;
+	let pgType = req.form.pg_type;
+	let success = req.form.success;
+	let iamportErrorMessage;
+
+	if (success === 'false') {
+		iamportErrorMessage = iamportHelpers.handleErrorFromPaymentGatewayCancellation(pgType, req.form.errorMsg);
+	} else {
+		iamportErrorMessage = req.form.errorMsg;
+	}
+
 	let order = null;
 
 	iamportLogger.error('Iamport server responded with an error: {0}.', iamportErrorMessage);
@@ -62,8 +72,8 @@ server.post('HandlePaymentRequestFailure', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
 	const URLUtils = require('dw/web/URLUtils');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	const Resource = require('dw/web/Resource');
+	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 
 	let orderToken = req.form.orderToken;
 	let orderId = req.form.merchant_uid;
