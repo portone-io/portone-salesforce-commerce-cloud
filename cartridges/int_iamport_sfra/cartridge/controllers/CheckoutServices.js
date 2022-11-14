@@ -637,19 +637,19 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		paymentID: paymentID
 	});
 
-	// if (!paymentData.isOk()) {
-	// 	Logger.error('Server failed to retrieve payment data for "{0}": {1}.', paymentID, JSON.stringify(paymentData));
-	// 	customError = new CustomError({ status: paymentData.getError() });
+	if (!paymentData.isOk()) {
+		Logger.error('Server failed to retrieve payment data for "{0}": {1}.', paymentID, JSON.stringify(paymentData));
+		customError = new CustomError({ status: paymentData.getError() });
 
-	// 	COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
+		COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
 
-	// 	res.json({
-	// 		error: true,
-	// 		cartError: true,
-	// 		redirectUrl: URLUtils.url('Cart-Show', 'err', paymentData.getError().toString()).toString()
-	// 	});
-	// 	return next();
-	// }
+		res.json({
+			error: true,
+			cartError: true,
+			redirectUrl: URLUtils.url('Cart-Show', 'err', paymentData.getError().toString()).toString()
+		});
+		return next();
+	}
 
 	// Compare prices for fraud checks
 	let iamportFraudFlagged = iamportHelpers.checkFraudPayments(paymentData, order);
