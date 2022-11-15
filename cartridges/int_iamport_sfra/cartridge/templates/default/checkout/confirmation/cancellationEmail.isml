@@ -103,7 +103,6 @@
 
             .cancellation-mail__table__main-cell {
                 background-color: #414141c4;;
-                color: white;
                 text-align: left;
                 padding: 3px 3px 3px 6px
             }

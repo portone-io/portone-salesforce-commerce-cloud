@@ -24,7 +24,7 @@ server.post('SfNotifyTest', function (req, res, next) {
 		cancellation: 'cancellation',
 		vbankIssued: 'vbank'
 	};
-	let whatToTest = testPoints.payment;
+	let whatToTest = testPoints.vbankIssued;
 
 	order = OrderMgr.getOrder(iamportConstants.TEST_ORDER);
 	paymentData = iamportServices.getPaymentInformation.call({
@@ -90,7 +90,9 @@ server.post('SfNotifyTest', function (req, res, next) {
 
 			// test when virtual account is issued
 			case testPoints.vbankIssued:
-				//
+				if (order.getCustomerEmail()) {
+					COHelpers.sendVbankIssuanceEmail(order, paymentData);
+				}
 				break;
 
 			default:
@@ -162,7 +164,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 				}
 
 				if (order.getCustomerEmail()) {
-					// TODO: send the customer an email of the virtual account details
+					COHelpers.sendVbankIssuanceEmail(order, paymentData);
 				}
 
 				mappedPaymentInfo = iamportHelpers.mapVbankResponseForLogging(paymentData);

@@ -1,0 +1,67 @@
+<iscontent type="text/html " charset="UTF-8"></iscontent>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            .vbank-mail__title {
+                font-size: 16px;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+
+            .vbank-mail__table {
+                display: grid;
+                grid-auto-columns: 1fr;
+                padding: 2px;
+                margin-bottom: 12px
+            }
+
+            .vbank-mail__table__main-cell {
+                background-color: #414141c4;;
+                text-align: left;
+                padding: 3px 3px 3px 6px
+            }
+
+        </style>
+    </head>
+
+    <body class="bg--email" style="-webkit-font-smoothing: antialiased;font-size: 16px;line-height: 28px;letter-spacing: 0.5px;margin: 0;padding: 0;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;color: #414141;background-color: #f1f1f126;">
+
+    <div class="vbank-mail__title">
+        <strong><p>${Resource.msg('order.payment.vbank.subject', 'order', null)}</p></strong>
+    </div>
+        <p class="vbank-mail__msg">${Resource.msgf('order.payment.vbank.message', 'order', null, pdict.orderNo)}</p>
+
+    <div class="vbank-mail__orderno vbank-mail__table">
+        <div class="vbank-mail__table__main-cell"><strong>${Resource.msg('label.virtual.account.name', 'checkout', null)}</strong></div>
+        <div>${pdict.vbankPayload.vbankName}</div>
+    </div>
+
+    <div class="vbank-mail__orderno vbank-mail__table">
+        <div class="vbank-mail__table__main-cell"><strong>${Resource.msg('label.virtual.account.number', 'checkout', null)}</strong></div>
+        <div>${pdict.vbankPayload.vbankNumber}</div>
+    </div>
+
+	<div class="vbank-mail__orderno vbank-mail__table">
+        <div class="vbank-mail__table__main-cell"><strong>${Resource.msg('label.virtual.account.code', 'checkout', null)}</strong></div>
+        <div>${pdict.vbankPayload.vbankCode}</div>
+    </div>
+
+	<div class="vbank-mail__orderno vbank-mail__table">
+        <div class="vbank-mail__table__main-cell"><strong>${Resource.msg('label.virtual.account.holder', 'checkout', null)}</strong></div>
+        <div>${pdict.vbankPayload.vbankHolder}</div>
+    </div>
+
+	<div class="vbank-mail__orderno vbank-mail__table">
+        <div class="vbank-mail__table__main-cell"><strong>${Resource.msg('label.virtual.account.deposite.date', 'checkout', null)}</strong></div>
+        <div>${pdict.vbankPayload.vbankExpiration}</div>
+    </div>
+
+	<div class="vbank-mail__orderno vbank-mail__table">
+        <div class="vbank-mail__table__main-cell"><strong>${Resource.msg('label.virtual.account.issuance.date', 'checkout', null)}</strong></div>
+        <div>${pdict.vbankPayload.vbankIssuedAt}</div>
+    </div>
+
+    </body>
+</html>

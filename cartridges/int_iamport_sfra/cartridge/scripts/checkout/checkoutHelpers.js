@@ -73,6 +73,43 @@ function sendPaymentOrderCancellationEmail(order, locale) {
 	emailHelpers.sendEmail(emailObj, 'checkout/confirmation/cancellationEmail', orderObject);
 }
 
+/**
+ * Send order vbank issuance email
+ * @param {dw.order.Order} order - The current user's order
+ * @param {string} paymentData - the payment data
+ * @returns {void}
+ */
+function sendVbankIssuanceEmail(order, paymentData) {
+	const emailHelpers = require('*/cartridge/scripts/helpers/emailHelpers');
+
+	let paymentResponse = paymentData.getObject().response;
+	let vbankExpiration = new Date(0);
+	vbankExpiration.setUTCSeconds(paymentResponse.vbank_date);
+	let vbankIssuedAt = new Date(0);
+	vbankIssuedAt.setUTCSeconds(paymentResponse.vbank_issued_at);
+
+	let vbankPaymentDataObject = {
+		orderNo: order.orderNo,
+		vbankPayload: {
+			vbankName: paymentResponse.vbank_name,
+			vbankNumber: paymentResponse.vbank_num,
+			vbankExpiration: vbankExpiration,
+			vbankCode: paymentResponse.vbank_code,
+			vbankIssuedAt: vbankIssuedAt,
+			vbankHolder: paymentResponse.vbank_holder
+		}
+	};
+
+	let emailObj = {
+		to: order.customerEmail,
+		subject: Resource.msg('order.payment.vbank.subject', 'order', null),
+		from: Site.current.getCustomPreferenceValue('customerServiceEmail') || 'no-reply@testorganization.com',
+		type: emailHelpers.emailTypes.vbankIssuance
+	};
+
+	emailHelpers.sendEmail(emailObj, 'checkout/confirmation/vbankIssuanceEmail', vbankPaymentDataObject);
+}
+
 module.exports = Object.assign(base, {
 	recreateCurrentBasket: recreateCurrentBasket,
 	addOrderNote: addOrderNote,
