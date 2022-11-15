@@ -55,17 +55,15 @@ function recreateCurrentBasket(order, subject, reason) {
  * @returns {void}
  */
 function sendPaymentOrderCancellationEmail(order, locale) {
-	var OrderModel = require('*/cartridge/models/order');
-	var emailHelpers = require('*/cartridge/scripts/helpers/emailHelpers');
-	var Locale = require('dw/util/Locale');
+	const OrderModel = require('*/cartridge/models/order');
+	const emailHelpers = require('*/cartridge/scripts/helpers/emailHelpers');
+	const Locale = require('dw/util/Locale');
 
-	var currentLocale = Locale.getLocale(locale);
+	let currentLocale = Locale.getLocale(locale);
+	let orderModel = new OrderModel(order, { countryCode: currentLocale.country, containerView: 'order' });
+	let orderObject = { order: orderModel };
 
-	var orderModel = new OrderModel(order, { countryCode: currentLocale.country, containerView: 'order' });
-
-	var orderObject = { order: orderModel };
-
-	var emailObj = {
+	let emailObj = {
 		to: order.customerEmail,
 		subject: Resource.msg('order.payment.cancellation.subject', 'order', null),
 		from: Site.current.getCustomPreferenceValue('customerServiceEmail') || 'no-reply@testorganization.com',
@@ -78,5 +76,6 @@ function sendPaymentOrderCancellationEmail(order, locale) {
 module.exports = Object.assign(base, {
 	recreateCurrentBasket: recreateCurrentBasket,
 	addOrderNote: addOrderNote,
-	sendPaymentOrderCancellationEmail: sendPaymentOrderCancellationEmail
+	sendPaymentOrderCancellationEmail: sendPaymentOrderCancellationEmail,
+	sendVbankIssuanceEmail: sendVbankIssuanceEmail
 });
