@@ -639,14 +639,14 @@
 
     <type-extension type-id="Order">
         <custom-attribute-definitions>
-            <attribute-definition attribute-id="escrow">
-                <display-name xml:lang="x-default">Escrow Payment</display-name>
+            <attribute-definition attribute-id="isEscrowPayment">
+                <display-name xml:lang="x-default">Is Escrow Payment</display-name>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
-            <attribute-definition attribute-id="vbankPaymentStatus">
-                <display-name xml:lang="x-default">Virtual Payment Status</display-name>
+            <attribute-definition attribute-id="isVirtualPayment">
+                <display-name xml:lang="x-default">Is Virtual Payment?</display-name>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -681,8 +681,8 @@
         <group-definitions>
             <attribute-group group-id="iamport">
                 <display-name xml:lang="x-default">Iamport</display-name>
-                <attribute attribute-id="escrow"/>
-                <attribute attribute-id="vbankPaymentStatus"/>
+                <attribute attribute-id="isEscrowPayment"/>
+                <attribute attribute-id="isVirtualPayment"/>
                 <attribute attribute-id="vbankNumber"/>
                 <attribute attribute-id="vbankExpiration"/>
                 <attribute attribute-id="imp_uid"/>
