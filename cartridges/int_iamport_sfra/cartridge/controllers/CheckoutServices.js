@@ -145,9 +145,13 @@ server.replace(
 			selectedPaymentMethod[0]);
 
 		// save the payment method name to the current basket which will be transferred to the order object
-		Transaction.wrap(function () {
-			currentBasket.custom.pay_method = selectedPaymentMethod[1];
-		});
+		if (HookMgr.hasHook('app.payment.processor.iamport')) {
+			HookMgr.callHook('app.payment.processor.iamport',
+				'updatePaymentMethodOnBasket',
+				selectedPaymentMethod[1],
+				currentBasket
+			);
+		}
 
 		if (!currentBasket) {
 			delete billingData.paymentInformation;
@@ -655,6 +659,20 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		);
 	}
 
+	hooksHelper('app.payment.processor.iamport',
+		'updatePaymentIdOnOrder',
+		paymentId,
+		order,
+		require('*/cartridge/scripts/hooks/payment/processor/iamportPayments').updatePaymentIdOnOrder
+	);
+
+	hooksHelper('app.payment.processor.iamport',
+		'updateTransactionIdOnOrder',
+		paymentId,
+		order,
+		require('*/cartridge/scripts/hooks/payment/processor/iamportPayments').updateTransactionIdOnOrder
+	);
+
 	// Compare prices for iamport fraud checks
 	let iamportFraudFlagged = iamportHelpers.checkFraudPayments(paymentData, order);
 	if (iamportFraudFlagged) {
@@ -700,7 +718,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	let vbankExpiration = new Date(0);
 	vbankExpiration.setUTCSeconds(paymentResponse.vbank_date);
 	let vbankIssuedAt = new Date(0);
-	vbankIssuedAt.setUTCSeconds(paymentResponse.vbank_date);
+	vbankIssuedAt.setUTCSeconds(paymentResponse.vbank_issued_at);
 
 	if (paymentResponse.pay_method === 'vbank') {
 		Object.assign(validationResponse, {
