@@ -2,15 +2,6 @@
 <metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
     <type-extension type-id="SitePreferences">
         <custom-attribute-definitions>
-            <attribute-definition attribute-id="iamport_payment_timeout">
-                <display-name xml:lang="x-default">Iamport Payment Timeout (mins)</display-name>
-                <description xml:lang="x-default">Payment timeout in minutes for Iamport</description>
-                <type>int</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value> 20 </default-value>
-            </attribute-definition>
-
             <attribute-definition attribute-id="iamport_useEscrow">
                 <display-name xml:lang="x-default">Iamport Enable Escrow</display-name>
                 <description xml:lang="x-default">Enable/disable escrow feature for payment gateway</description>
@@ -542,7 +533,6 @@
             <attribute-group group-id="iamport_general">
                 <display-name xml:lang="x-default">Iamport General Configs</display-name>
                 <attribute attribute-id="iamport_useEscrow"/>
-                <attribute attribute-id="iamport_payment_timeout"/>
                 <attribute attribute-id="iamport_apiKey"/>
                 <attribute attribute-id="iamport_apiSecret"/>
                 <attribute attribute-id="iamport_merchantID"/>
@@ -649,15 +639,27 @@
 
     <type-extension type-id="Order">
         <custom-attribute-definitions>
-            <attribute-definition attribute-id="escrow">
-                <display-name xml:lang="x-default">Escrow Payment</display-name>
+            <attribute-definition attribute-id="isEscrowPayment">
+                <display-name xml:lang="x-default">Is Escrow Payment</display-name>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
-            <attribute-definition attribute-id="vbank">
-                <display-name xml:lang="x-default">Virtual Payment</display-name>
+            <attribute-definition attribute-id="isVirtualPayment">
+                <display-name xml:lang="x-default">Is Virtual Payment?</display-name>
                 <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="vbankNumber">
+                <display-name xml:lang="x-default">Virtual Payment Number</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="vbankExpiration">
+                <display-name xml:lang="x-default">Virtual Payment Expiration</display-name>
+                <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
@@ -679,8 +681,10 @@
         <group-definitions>
             <attribute-group group-id="iamport">
                 <display-name xml:lang="x-default">Iamport</display-name>
-                <attribute attribute-id="escrow"/>
-                <attribute attribute-id="vbank"/>
+                <attribute attribute-id="isEscrowPayment"/>
+                <attribute attribute-id="isVirtualPayment"/>
+                <attribute attribute-id="vbankNumber"/>
+                <attribute attribute-id="vbankExpiration"/>
                 <attribute attribute-id="imp_uid"/>
                 <attribute attribute-id="pay_method"/>
             </attribute-group>

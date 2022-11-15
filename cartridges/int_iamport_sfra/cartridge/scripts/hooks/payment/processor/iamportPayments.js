@@ -1,6 +1,6 @@
 'use strict';
 
-const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 const Transaction = require('dw/system/Transaction');
 const Resource = require('dw/web/Resource');
 const Order = require('dw/order/Order');
@@ -59,7 +59,7 @@ function Handle(basket, paymentInformation, paymentMethodID, req) {
 			};
 		});
 	} catch (e) {
-		Logger.error('Error on payment "Handle" hook: {0}.', e.message);
+		iamportLogger.error('Error on payment "Handle" hook: {0}.', e.message);
 		result = {
 			paymentInstrument: null,
 			success: false,
@@ -106,6 +106,21 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
 function updatePaymentIdOnOrder(paymentId, order) {
 	try {
 		Transaction.wrap(function () {
+			order.custom.imp_uid = paymentId;
+		});
+	} catch (e) {
+		iamportLogger.error('Could not update iamport payment id on the order object: \n{0}: {1}', e.message, e.stack);
+	}
+}
+
+/**
+ * Update the iamport payment id (imp_uid) attribute on the payment transaction id of the Order object
+ * @param {string} paymentId - The payment identifier
+ * @param {Object} order - The current order
+ */
+function updateTransactionIdOnOrder(paymentId, order) {
+	try {
+		Transaction.wrap(function () {
 			let paymentInstruments = order.getPaymentInstruments();
 
 			if (!empty(paymentInstruments)) {
@@ -115,11 +130,9 @@ function updatePaymentIdOnOrder(paymentId, order) {
 					order.paymentInstruments[0].paymentTransaction.setTransactionID(paymentId);
 				}
 			}
-
-			order.custom.imp_uid = paymentId;
 		});
 	} catch (e) {
-		Logger.error('Could not update iamport payment id on the order object: {0}', e.stack);
+		iamportLogger.error('Could not update iamport payment id on the payment transaction id order object: \n{0}: {1}', e.message, e.stack);
 	}
 }
 
@@ -132,12 +145,27 @@ function updatePaymentIdOnOrder(paymentId, order) {
 function updateVbankOnOrder(status, vbankPayload, order) {
 	try {
 		Transaction.wrap(function () {
-			order.custom.vbankPaymentStatus = status;
+			order.custom.isVirtualPayment = status;
 			order.custom.vbankNumber = vbankPayload.vbankNumber;
-			order.custom.vbankExpiration = vbankPayload.vbankExpiration;
+			order.custom.vbankExpiration = vbankPayload.vbankExpiration.toString();
 		});
 	} catch (e) {
-		Logger.error('Could not update vbank data on the order object: {0}', e.stack);
+		iamportLogger.error('Could not update vbank data on the order object: {0}', e.stack);
+	}
+}
+
+/**
+ * Updates the selected payment method on the current basket object
+ * @param {string} paymentMethod - The selected payment method
+ * @param {Object} currentBasket - The current basket
+ */
+function updatePaymentMethodOnBasket(paymentMethod, currentBasket) {
+	try {
+		Transaction.wrap(function () {
+			currentBasket.custom.pay_method = paymentMethod;
+		});
+	} catch (e) {
+		iamportLogger.error('Could not update vbank data on the order object: {0}', e.stack);
 	}
 }
 
@@ -164,7 +192,7 @@ function postAuthorize(order, paymentData, req) {
 		}
 
 		if (empty(paymentInstrument)) {
-			Logger.error('Payment Instrument is empty.');
+			iamportLogger.error('Payment Instrument is empty.');
 			return {
 				success: false,
 				error: true
@@ -248,5 +276,7 @@ module.exports = {
 	cancelOrder: cancelOrder,
 	vbankIssued: vbankIssued,
 	updatePaymentIdOnOrder: updatePaymentIdOnOrder,
-	updateVbankOnOrder: updateVbankOnOrder
+	updateVbankOnOrder: updateVbankOnOrder,
+	updatePaymentMethodOnBasket: updatePaymentMethodOnBasket,
+	updateTransactionIdOnOrder: updateTransactionIdOnOrder
 };

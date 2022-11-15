@@ -21,8 +21,8 @@ server.append('Confirm', function (req, res, next) {
 			vbank: req.form.vbank,
 			vbankName: req.form.vbankName,
 			vbankNumber: req.form.vbankNumber,
-			vbankExpiration: new Date(req.form.vbankExpiration),
-			vbankIssuedAt: new Date(req.form.vbankIssuedAt),
+			vbankExpiration: req.form.vbankExpiration,
+			vbankIssuedAt: req.form.vbankIssuedAt,
 			vbankCode: req.form.vbankCode,
 			vbankHolder: req.form.vbankHolder
 		});

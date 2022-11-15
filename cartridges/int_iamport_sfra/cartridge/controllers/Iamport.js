@@ -1,11 +1,11 @@
 'use strict';
 
 const server = require('server');
+const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 
 server.post('SfNotifyTest', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
 	const HookMgr = require('dw/system/HookMgr');
-	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 	const Resource = require('dw/web/Resource');
 	const iamportConstants = require('*/cartridge/constants/iamportConstants');
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
@@ -24,7 +24,7 @@ server.post('SfNotifyTest', function (req, res, next) {
 		cancellation: 'cancellation',
 		vbankIssued: 'vbank'
 	};
-	let whatToTest = testPoints.payment;
+	let whatToTest = testPoints.vbankIssued;
 
 	order = OrderMgr.getOrder(iamportConstants.TEST_ORDER);
 	paymentData = iamportServices.getPaymentInformation.call({
@@ -32,7 +32,7 @@ server.post('SfNotifyTest', function (req, res, next) {
 	});
 
 	if (!paymentData.isOk()) {
-		Logger.error('No payment data retrieved in webhook. Check the payment service.');
+		iamportLogger.error('No payment data retrieved in webhook. Check the payment service.');
 		return next();
 	}
 
@@ -60,7 +60,7 @@ server.post('SfNotifyTest', function (req, res, next) {
 				}
 
 				mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
-				Logger.debug('Webhook: Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
+				iamportLogger.debug('Webhook: Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
 
 				COHelpers.addOrderNote(order,
 					Resource.msg('order.note.payment.complete.subject', 'order', null),
@@ -90,19 +90,21 @@ server.post('SfNotifyTest', function (req, res, next) {
 
 			// test when virtual account is issued
 			case testPoints.vbankIssued:
-				//
+				if (order.getCustomerEmail()) {
+					COHelpers.sendVbankIssuanceEmail(order, paymentData);
+				}
 				break;
 
 			default:
 				break;
 		}
 
-		Logger.debug('Webhook called successfully. Webhook response: {0}.', JSON.stringify(webhookData));
+		iamportLogger.debug('Webhook called successfully. Webhook response: {0}.', JSON.stringify(webhookData));
 		// return success message to the import server
 		res.print('WebhookTest: success');
 		return next();
 	} catch (err) {
-		Logger.error('Webhook test failed: {0}', JSON.stringify(err));
+		iamportLogger.error('Webhook test failed: {0}', JSON.stringify(err));
 		res.setStatusCode(500);
 		res.print(err.message);
 		return next();
@@ -120,7 +122,6 @@ server.post('SfNotifyTest', function (req, res, next) {
 server.post('SfNotifyHook', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
 	const HookMgr = require('dw/system/HookMgr');
-	const Logger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 	const Resource = require('dw/web/Resource');
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
@@ -142,7 +143,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 	});
 
 	if (!paymentData.isOk()) {
-		Logger.error('No payment data retrieved in webhook. Check the payment service.');
+		iamportLogger.error('No payment data retrieved in webhook. Check the payment service.');
 		return next();
 	}
 
@@ -158,16 +159,16 @@ server.post('SfNotifyHook', function (req, res, next) {
 				}
 
 				if (vbankIssued.error) {
-					Logger.error('The order must be in the CREATED status when vbank accounts are issued');
+					iamportLogger.error('The order must be in the CREATED status when vbank accounts are issued');
 					throw new Error('Incorrect Order Status');
 				}
 
 				if (order.getCustomerEmail()) {
-					// TODO: send the customer an email of the virtual account details
+					COHelpers.sendVbankIssuanceEmail(order, paymentData);
 				}
 
 				mappedPaymentInfo = iamportHelpers.mapVbankResponseForLogging(paymentData);
-				Logger.debug('Webhook: Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
+				iamportLogger.debug('Webhook: Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
 
 				COHelpers.addOrderNote(order,
 					Resource.msg('order.note.vbank.subject', 'order', null),
@@ -180,7 +181,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 				if (paymentData.getObject().response.pay_method === 'vbank') {
 					let placeOrderResult = COHelpers.placeOrder(order);
 					if (placeOrderResult.error) {
-						Logger.error('Order could not be placed: {0}', JSON.stringify(placeOrderResult));
+						iamportLogger.error('Order could not be placed: {0}', JSON.stringify(placeOrderResult));
 						throw new Error(Resource.msg('error.technical', 'checkout', null));
 					}
 
@@ -188,15 +189,15 @@ server.post('SfNotifyHook', function (req, res, next) {
 					req.session.privacyCache.set('usingMultiShipping', false);
 
 					mappedPaymentInfo = iamportHelpers.mapVbankResponseForLogging(paymentData);
-					Logger.debug('data: {0}', JSON.stringify(paymentData));
-					Logger.debug('Webhook: Virtual Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
+					iamportLogger.debug('data: {0}', JSON.stringify(paymentData));
+					iamportLogger.debug('Webhook: Virtual Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
 
 					COHelpers.addOrderNote(order,
 						Resource.msg('order.note.vbank.subject', 'order', null),
 						Resource.msg('order.note.vbank.payment.complete.body', 'order', null));
 				} else {
 					mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
-					Logger.debug('Webhook: Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
+					iamportLogger.debug('Webhook: Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
 
 					COHelpers.addOrderNote(order,
 						Resource.msg('order.note.payment.complete.subject', 'order', null),
@@ -245,13 +246,13 @@ server.post('SfNotifyHook', function (req, res, next) {
 				break;
 		}
 
-		Logger.debug('Webhook called successfully. Webhook response: {0}.', JSON.stringify(webhookData));
+		iamportLogger.debug('Webhook called successfully. Webhook response: {0}.', JSON.stringify(webhookData));
 		// return success message to the import server
 		res.setStatusCode(200);
 		res.print('WebhookCall: success');
 		return next();
 	} catch (err) {
-		Logger.error('Webhook failed: {0}', JSON.stringify(err));
+		iamportLogger.error('Webhook failed: {0}', JSON.stringify(err));
 		res.setStatusCode(500);
 		res.print(err.message);
 		return next();
