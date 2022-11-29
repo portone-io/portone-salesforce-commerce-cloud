@@ -4,6 +4,7 @@ const shippingHelpers = require('base/checkout/shipping');
 const formHelpers = require('base/checkout/formErrors');
 const scrollAnimate = require('base/components/scrollAnimate');
 const baseCheckout = require('base/checkout/checkout');
+// const iamportPayment = require('../iamport/paymentLoader');
 
 /**
  * Create the jQuery Checkout Plugin.

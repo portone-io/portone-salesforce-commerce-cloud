@@ -3,12 +3,16 @@
 const processInclude = require('base/util');
 
 $(function () {
-	let sfra5Enabled = $('input[name="sfra5Enabled"]').val();
+	var sfra5Enabled = $('input[name="sfra5Enabled"]').val();
 
 	if (sfra5Enabled === 'true') {
 		processInclude(require('./checkout/checkoutSFRA5'));
 		return;
-	}
+	} else if (sfra5Enabled === 'false') {
 
-	processInclude(require('./checkout/checkoutSFRA6'));
+		// Comment next line when you are working with SFRA 5
+		// processInclude(require('./checkout/checkoutSFRA6'));
+		return;
+	}
+	return;
 });

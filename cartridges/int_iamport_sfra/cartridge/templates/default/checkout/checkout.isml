@@ -1,8 +1,11 @@
-<isdecorate template="common/layout/checkout">
+<iscomment>
+    This file is copy of SFRA6 checkout.isml wth some changes to make comatible this code with SFRA5
+</iscomment>
 
-    <!----------------------------------------------------------------------------------->
-    <!-- Load Static Assets -->
-    <!----------------------------------------------------------------------------------->
+<isdecorate template="common/layout/checkout">
+    <iscomment>
+        Load Static Assets
+    </iscomment>
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
         assets.addJs('/js/checkout.js');
@@ -17,9 +20,9 @@
         ${Resource.msg('title.checkout','checkout',null)}
     </h1>
     <div id="checkout-main" class="container data-checkout-stage <isif condition="${pdict.order.usingMultiShipping && pdict.order.shipping.length > 1}">multi-ship</isif>" data-customer-type="${pdict.customer.registeredUser ? 'registered' : 'guest'}" data-checkout-stage="${pdict.currentStage}" data-checkout-get-url="${URLUtils.https('CheckoutServices-Get')}">
-        <!----------------------------------------------------------------------------------->
-        <!-- Help and Phone -->
-        <!----------------------------------------------------------------------------------->
+        <iscomment>
+            Help and Phone
+        </iscomment>
         <div class="row hidden-xs-down">
             <div class="col-12 col-sm-5 offset-sm-7 col-md-5 offset-md-7">
                 <div class="text-center">
@@ -37,33 +40,39 @@
         </div>
         <div class="row">
             <div class="col-sm-7">
-
-                <!----------------------------------------------------------------------------------->
-                <!-- Checkout Forms: Shipping, Payment, Coupons, Billing, etc -->
-                <!----------------------------------------------------------------------------------->
+                <iscomment>
+                    Checkout Forms: Shipping, Payment, Coupons, Billing, etc
+                </iscomment>
 
                 <div class="alert alert-danger error-message" role="alert">
                     <p class="error-message-text"></p>
                 </div>
 
-                <!-- Step 1: Customer -->
-                <iscomment>We only allow edits for non-registered customers</iscomment>
-                <isif condition="${!pdict.customer.registeredUser}">
-                    <isinclude template="checkout/customer/customer" />
-                </isif>
-                 <div class="card customer-summary">
-                    <div class="card-header clearfix">
-                        <h2 class="pull-left card-header-custom">${Resource.msg('heading.checkout.customer', 'checkout', null)}</h2>
-                        <isif condition="${!pdict.customer.registeredUser}">
-                            <button class="edit-button pull-right" aria-label="${Resource.msg('action.edit.step.msg.customer', 'checkout', null)}">${Resource.msg('action.edit.step', 'checkout', null)}</button>
-                        </isif>
-                    </div>
-                    <div class="card-body">
-                        <isinclude template="checkout/customer/customerSummary" />
-                    </div>
-                </div>
+                <iscomment>
+                    Step 1: Customer on SFRA6. Customer step on SFRA5.3.0 doesn't exist
+                </iscomment>
 
-                <!-- Step 2: Shipping -->
+                <iscomment>We only allow edits for non-registered customers</iscomment>
+                <isif condition="${!pdict.useIamportSFRA5}">
+                    <isif condition="${!pdict.customer.registeredUser}">
+                        <isinclude template="checkout/customer/customer" />
+                    </isif>
+                     <div class="card customer-summary">
+                        <div class="card-header clearfix">
+                            <h2 class="pull-left card-header-custom">${Resource.msg('heading.checkout.customer', 'checkout', null)}</h2>
+                            <isif condition="${!pdict.customer.registeredUser}">
+                                <button class="edit-button pull-right" aria-label="${Resource.msg('action.edit.step.msg.customer', 'checkout', null)}">${Resource.msg('action.edit.step', 'checkout', null)}</button>
+                            </isif>
+                        </div>
+                        <div class="card-body">
+                                <isinclude template="checkout/customer/customerSummary" />
+                        </div>
+                    </div>
+                </isif>
+
+                <iscomment>
+                    Step 2: Shipping (Step 1 on SFRA 5)
+                </iscomment>
                 <isinclude template="checkout/shipping/shipping" />
                 <div class="card shipping-summary">
                     <div class="card-header clearfix">
@@ -75,7 +84,9 @@
                     </div>
                 </div>
 
-                <!-- Step 3: Payment and Billing-->
+                <iscomment>
+                    Payment and Billing
+                </iscomment>
                 <isinclude template="checkout/billing/billing" />
                 <div class="card payment-summary">
                     <div class="card-header clearfix">
@@ -91,9 +102,9 @@
 
                 <div class="payments-error" role="alert"></div>
 
-                <!----------------------------------------------------------------------------------->
-                <!-- Checkout Workflow Buttons -->
-                <!----------------------------------------------------------------------------------->
+                <iscomment>
+                    Checkout Workflow Buttons
+                </iscomment>
                 <div class="row">
                     <div class="col-12 next-step-button">
                         <div class="mb-sm-3">
@@ -104,7 +115,7 @@
 
 
 
-                            <button class="TESTING btn btn-primary btn-block submit-payment" type="submit" name="submit" value="submit-payment">
+                            <button class="btn btn-primary btn-block submit-payment" type="submit" name="submit" value="submit-payment">
                                 ${Resource.msg('button.next.place.order', 'checkout', null)}
                             </button>
 
