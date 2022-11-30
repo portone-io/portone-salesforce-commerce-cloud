@@ -78,6 +78,7 @@ server.replace(
 	if (Object.keys(contactInfoFormErrors).length) {
 		formFieldErrors.push(contactInfoFormErrors);
 	} else {
+		viewData.mail = { value: paymentForm.contactInfoFields.email.value };
 		viewData.phone = { value: paymentForm.contactInfoFields.phone.value };
 	}
 

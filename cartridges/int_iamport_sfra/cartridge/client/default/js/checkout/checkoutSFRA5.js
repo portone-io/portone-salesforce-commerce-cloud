@@ -4,7 +4,7 @@ const shippingHelpers = require('base/checkout/shipping');
 const formHelpers = require('base/checkout/formErrors');
 const scrollAnimate = require('base/components/scrollAnimate');
 const baseCheckout = require('base/checkout/checkout');
-// const iamportPayment = require('../iamport/paymentLoader');
+const iamportPayment = require('../iamport/paymentLoader');
 
 /**
  * Create the jQuery Checkout Plugin.
@@ -86,6 +86,7 @@ const baseCheckout = require('base/checkout/checkout');
 				// Clear Previous Errors
 				//
 				formHelpers.clearPreviousErrors('.shipping-form');
+				$('body').trigger('checkout:enableButton', '.next-step-button button');
 
 				//
 				// Submit the Shipping Address Form
@@ -108,7 +109,7 @@ const baseCheckout = require('base/checkout/checkout');
 							$('body').trigger('checkout:enableButton', '.next-step-button button');
 							if (!data.error) {
 								$('body').trigger('checkout:updateCheckoutView',
-                                        { order: data.order, customer: data.customer });
+                                { order: data.order, customer: data.customer });
 								defer.resolve();
 							} else if (data.message && $('.shipping-error .alert-danger').length < 1) {
 								let errorMsg = data.message;
@@ -133,7 +134,6 @@ const baseCheckout = require('base/checkout/checkout');
 					});
 				} else {
 					let shippingFormData = form.serialize();
-
 					$('body').trigger('checkout:serializeShipping', {
 						form: form,
 						data: shippingFormData,
@@ -141,8 +141,8 @@ const baseCheckout = require('base/checkout/checkout');
 							shippingFormData = data;
 						}
 					});
-					// disable the next:Payment button here
-					$('body').trigger('checkout:disableButton', '.next-step-button button');
+					// Not disable the next:Payment button here
+					$('body').trigger('checkout:enableButton', '.next-step-button button');
 					$.ajax({
 						url: form.attr('action'),
 						type: 'post',
@@ -150,6 +150,11 @@ const baseCheckout = require('base/checkout/checkout');
 						success: function (data) {
 								// Don't enable the next-step-button when moving to payment method
 								// $('body').trigger('checkout:enableButton', '.next-step-button button');
+							console.log('data from SFRA5.JS => ', data);
+							if (data.customer && data.customer.profile && data.customer.profile.email) {
+								$('.order-summary-email').text(data.customer.profile.email);
+							}
+
 							let hasPaymentMethodSelected = $('.payment-method:input:radio:checked').length > 0;
 							if (hasPaymentMethodSelected) {
 								$('body').trigger('checkout:enableButton', '.next-step-button button');
@@ -312,42 +317,74 @@ const baseCheckout = require('base/checkout/checkout');
 			} else if (stage === 'placeOrder') {
 				// disable the placeOrder button here
 				$('body').trigger('checkout:disableButton', '.next-step-button button');
+				$('.payments-error .alert-danger').remove();
 				$.spinner().start();
 				$.ajax({
 					url: $('.place-order').data('action'),
 					method: 'POST',
 					success: function (data) {
-						// not enable the placeOrder button here in order to user do only one
+						// not enable the placeOrder button here in order to user do only one click
 						// $('body').trigger('checkout:enableButton', '.next-step-button button');
+						// Response of CheckoutServices-PlaceOrder
 						if (data.error) {
+							// Response success but there is a request error
+							$('body').trigger('checkout:enableButton', '.next-step-button button');
 							if (data.cartError) {
 								window.location.href = data.redirectUrl;
 								defer.reject();
+							} else if (data.paymentError) {
+									// Any payment error when trying to create it
+								data.paymentResources.paymentError = true;
+								data.paymentResources.error_code = data.paymentErrorCode;
+								if (data.serverErrors) {
+									data.paymentResources.error_msg = data.serverErrors[0].message;
+								}
+
+								let payload = {
+									paymentError: true,
+									paymentErrorCode: data.paymentErrorCode,
+									paymentResources: data.paymentResources,
+									orderToken: data.orderToken,
+									requestPayFailureUrl: data.requestPayFailureUrl,
+									merchantID: data.paymentResources.merchant_uid
+								};
+								iamportPayment.generalPayment(payload);
 							} else {
 								$.spinner().stop();
 								// go to appropriate stage and display error message
 								defer.reject(data);
 							}
 						} else {
-							let continueUrl = data.continueUrl;
-							let urlParams = {
-								ID: data.orderID,
-								token: data.orderToken
-							};
+							// let continueUrl = data.continueUrl;
+							// let urlParams = {
+							// 	ID: data.orderID,
+							// 	token: data.orderToken
+							// };
 
-							continueUrl += (continueUrl.indexOf('?') !== -1 ? '&' : '?') +
-								Object.keys(urlParams).map(function (key) {
-									return key + '=' + encodeURIComponent(urlParams[key]);
-								}).join('&');
+							// continueUrl += (continueUrl.indexOf('?') !== -1 ? '&' : '?') +
+							// 	Object.keys(urlParams).map(function (key) {
+							// 		return key + '=' + encodeURIComponent(urlParams[key]);
+							// 	}).join('&');
 
-							window.location.href = continueUrl;
-							defer.resolve(data);
+							// window.location.href = continueUrl;
+							// defer.resolve(data);
+							if (data.paymentResources) {
+								var payload = {
+									paymentResources: data.paymentResources,
+									validationUrl: data.validationUrl,
+									cancelUrl: data.cancelUrl,
+									orderToken: data.orderToken,
+									requestPayFailureUrl: data.requestPayFailureUrl,
+									merchantID: data.paymentResources.merchant_uid
+								};
+								iamportPayment.generalPayment(payload);
+							}
 						}
 					},
 					error: function (error) {
 						$.spinner().stop();
 						let errorMsg = error.responseJSON.message;
-						let paymentErrorHtml = '<div class="alert alert-danger alert-dismissible valid-cart-error '
+						let paymentErrorHtml = '<div class="alert alert-danger alert-dismissible '
                             + 'fade show" role="alert">'
                             + '<button type="button" class="close" data-dismiss="alert" aria-label="Close">'
                             + '<span aria-hidden="true">&times;</span>'
@@ -356,6 +393,7 @@ const baseCheckout = require('base/checkout/checkout');
 						scrollAnimate($('.payments-error'));
 						// Enable the placeOrder button here in order to have the user trying the action again
 						$('body').trigger('checkout:enableButton', $('.next-step-button button'));
+						defer.reject();
 					}
 				});
 
