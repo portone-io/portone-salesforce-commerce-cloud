@@ -5,6 +5,7 @@ const formHelpers = require('base/checkout/formErrors');
 const scrollAnimate = require('base/components/scrollAnimate');
 const baseCheckout = require('base/checkout/checkout');
 const iamportPayment = require('../iamport/paymentLoader');
+const billingHelpers = require('./billing');
 
 /**
  * Create the jQuery Checkout Plugin.
@@ -198,15 +199,20 @@ const iamportPayment = require('../iamport/paymentLoader');
 					form: $('#dwfrm_billing .contact-info-block'),
 					data: contactInfoForm,
 					callback: function (data) {
+						console.log('data en serializeBilling-', data);
 						if (data) {
 							contactInfoForm = data;
 						}
 					}
 				});
 
+				// let emailUserInfo = $('#dwfrm_billing .contact-info-block :input').serialize();
+
 				let activeTabId = $('.tab-pane.active').attr('id');
 				let paymentInfoSelector = '#dwfrm_billing .' + activeTabId + ' .payment-form-fields :input';
 				let paymentInfoForm = $(paymentInfoSelector).serialize();
+
+				console.log('paymentInfoForm-', paymentInfoForm);
 
 				$('body').trigger('checkout:serializeBilling', {
 					form: $(paymentInfoSelector),
@@ -584,6 +590,37 @@ const iamportPayment = require('../iamport/paymentLoader');
 
 baseCheckout.initialize = function () {
 	$('#checkout-main').checkout();
+};
+
+baseCheckout.updateCheckoutView = function () {
+	$('body').on('checkout:updateCheckoutView', function (e, data) {
+		if (data.csrfToken) {
+			$("input[name*='csrf_token']").val(data.csrfToken);
+		}
+
+		shippingHelpers.methods.updateMultiShipInformation(data.order);
+		// summaryHelpers.updateTotals(data.order.totals);
+		data.order.shipping.forEach(function (shipping) {
+			shippingHelpers.methods.updateShippingInformation(
+				shipping,
+				data.order,
+				data.customer,
+				data.options
+			);
+		});
+
+		let currentStage = window.location.search.substring(window.location.search.indexOf('=') + 1);
+		if (currentStage === 'shipping' || currentStage === 'payment') {
+			return;
+		}
+
+		billingHelpers.methods.updateBillingInformation(
+			data.order,
+			data.customer,
+			data.options
+		);
+		billingHelpers.methods.updatePaymentInformation(data.order, data.options);
+	});
 };
 
 module.exports = baseCheckout;

@@ -14,9 +14,9 @@
             <isprint value=${pdict.forms.billingForm.attributes} encoding="off" /> novalidate>
 
             <fieldset class="billing-address-block">
-                <!-------------------------------------------------------------------------->
-                <!-- Billing Address Selector                                             -->
-                <!-------------------------------------------------------------------------->
+                <iscomment>
+                    Billing Address Selector
+                </iscomment>
                 <fieldset class="address-selector-block">
                     <div class="form-group">
                         <label class="form-control-label" for="billingAddressSelector">
@@ -32,9 +32,9 @@
                     </div>
                 </fieldset>
 
-                <!-------------------------------------------------------------------------->
-                <!-- Billing Address                                                      -->
-                <!-------------------------------------------------------------------------->
+               <iscomment>
+                   Billing Address
+               </iscomment>
                 <fieldset class="billing-address">
                     <isinclude template="checkout/billing/billingAddress" />
                 </fieldset>
@@ -43,9 +43,9 @@
                 <input type="hidden" name="localizedNewAddressTitle" value="${Resource.msg('msg.new.address', 'checkout', null)}"/>
             </fieldset>
 
-            <!-------------------------------------------------------------------------->
-            <!-- Contact Info (Email and Phone)                                       -->
-            <!-------------------------------------------------------------------------->
+            <iscomment>
+                Contact Info (Email and Phone)
+            </iscomment>
             <fieldset class="contact-info-block">
                 <div class="row">
                     <div class="col-sm-6">
@@ -101,9 +101,9 @@
                 </div>
             </fieldset>
 
-            <!-------------------------------------------------------------------------->
-            <!-- Payment Options                                                      -->
-            <!-------------------------------------------------------------------------->
+            <iscomment>
+                Payment Options
+            </iscomment>
             <fieldset>
                 <isinclude template="checkout/billing/paymentOptions" />
             </fieldset>
