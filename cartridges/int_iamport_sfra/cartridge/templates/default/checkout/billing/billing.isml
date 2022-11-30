@@ -63,8 +63,9 @@
                             </button>
 
                 <isif condition="${pdict.useIamportSFRA5}">
-                    <input type="text" class="form-control email form-sfra5" id="email"
-                    value="${pdict.order.orderEmail||''}" <isprint value=${pdict.forms.billingForm.contactInfoFields.email.attributes} encoding="off"/>
+                    <input name="${pdict.forms.billingForm.contactInfoFields.email.htmlName}" type="text" class="form-control email form-sfra5" id="email"
+                    value="${pdict.order.orderEmail||''}"
+                    <isprint value=${pdict.forms.billingForm.contactInfoFields.email.attributes} encoding="off"/>
                     aria-describedby="emailInvalidMessage" >
 
                     <iselse/>

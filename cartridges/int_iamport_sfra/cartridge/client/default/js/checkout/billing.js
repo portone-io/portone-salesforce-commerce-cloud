@@ -82,7 +82,6 @@ function updateBillingAddress(order) {
 	var billing = order.billing;
 	if (!billing.billingAddress || !billing.billingAddress.address) return;
 
-
 	var form = $('form[name=dwfrm_billing]');
 	if (!form) return;
 
@@ -101,6 +100,7 @@ function updateBillingAddress(order) {
 		$('input[name$=_email]', form).val(order.orderEmail);
 	} else {
 		$('input[name$=_email]', form).val($('#dwfrm_billing .contact-info-block #email').val());
+		order.orderEmail = $('#dwfrm_billing .contact-info-block #email').val();
 	}
 }
 
@@ -158,7 +158,12 @@ function updateBillingAddressSummary(order) {
         order.billing.billingAddress.address);
 
     // update billing parts of order summary
-	$('.order-summary-email').text(order.orderEmail);
+	if (order.orderEmail) {
+		$('.order-summary-email').text(order.orderEmail);
+	} else {
+		$('.order-summary-email').text($('#dwfrm_billing .contact-info-block #email').val());
+		order.orderEmail = $('#dwfrm_billing .contact-info-block #email').val();
+	}
 
 	if (order.billing.billingAddress.address) {
 		$('.order-summary-phone').text(order.billing.billingAddress.address.phone);

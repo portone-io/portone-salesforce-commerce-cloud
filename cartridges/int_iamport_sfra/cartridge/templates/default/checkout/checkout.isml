@@ -1,5 +1,5 @@
 <iscomment>
-    This file is copy of SFRA6 checkout.isml wth some changes to make comatible this code with SFRA5
+    This file is copy of SFRA6 checkout.isml wth some changes to make compatible this code with SFRA5
 </iscomment>
 
 <isdecorate template="common/layout/checkout">
@@ -128,9 +128,9 @@
 
             </div>
 
-            <!----------------------------------------------------------------------------------->
-            <!-- Order Totals, Details and Summary -->
-            <!----------------------------------------------------------------------------------->
+            <iscomment>
+                Order Totals, Details and Summary
+            </iscomment>
             <div class="col-sm-5">
 
                 <div class="card">

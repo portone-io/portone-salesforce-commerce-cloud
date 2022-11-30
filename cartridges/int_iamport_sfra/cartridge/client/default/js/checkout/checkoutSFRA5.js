@@ -179,6 +179,13 @@ const billingHelpers = require('./billing');
 				// Submit the Billing Address Form
 				//
 
+				// Recover the mail value in the input to avoid it clears when user go back
+				var form = $('form[name=dwfrm_billing]');
+				$('input[name$=_email]', form).val($('#dwfrm_billing .contact-info-block #email').val());
+
+				// Set the email value on the placeOrder stage
+				$('.order-summary-email').text($('#dwfrm_billing .contact-info-block #email').val());
+
 				formHelpers.clearPreviousErrors('.payment-form');
 
 				let billingAddressForm = $('#dwfrm_billing .billing-address-block :input').serialize();
