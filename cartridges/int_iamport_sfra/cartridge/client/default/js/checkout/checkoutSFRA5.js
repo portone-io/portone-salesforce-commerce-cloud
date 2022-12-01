@@ -151,7 +151,6 @@ const billingHelpers = require('./billing');
 						success: function (data) {
 								// Don't enable the next-step-button when moving to payment method
 								// $('body').trigger('checkout:enableButton', '.next-step-button button');
-							console.log('data from SFRA5.JS => ', data);
 							if (data.customer && data.customer.profile && data.customer.profile.email) {
 								$('.order-summary-email').text(data.customer.profile.email);
 							}
@@ -206,7 +205,6 @@ const billingHelpers = require('./billing');
 					form: $('#dwfrm_billing .contact-info-block'),
 					data: contactInfoForm,
 					callback: function (data) {
-						console.log('data en serializeBilling-', data);
 						if (data) {
 							contactInfoForm = data;
 						}
@@ -218,8 +216,6 @@ const billingHelpers = require('./billing');
 				let activeTabId = $('.tab-pane.active').attr('id');
 				let paymentInfoSelector = '#dwfrm_billing .' + activeTabId + ' .payment-form-fields :input';
 				let paymentInfoForm = $(paymentInfoSelector).serialize();
-
-				console.log('paymentInfoForm-', paymentInfoForm);
 
 				$('body').trigger('checkout:serializeBilling', {
 					form: $(paymentInfoSelector),
