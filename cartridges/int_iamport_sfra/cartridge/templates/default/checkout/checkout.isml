@@ -15,7 +15,6 @@
     <isif condition="${pdict.reportingURLs && pdict.reportingURLs.length}">
         <isinclude template="reporting/reportingUrls" />
     </isif>
-
     <h1 class="page-title">
         ${Resource.msg('title.checkout','checkout',null)}
     </h1>
@@ -65,7 +64,7 @@
                             </isif>
                         </div>
                         <div class="card-body">
-                                <isinclude template="checkout/customer/customerSummary" />
+                            <isinclude template="checkout/customer/customerSummary" />
                         </div>
                     </div>
                 </isif>
@@ -99,7 +98,6 @@
                     </div>
                 </div>
 
-
                 <div class="payments-error" role="alert"></div>
 
                 <iscomment>
@@ -111,9 +109,6 @@
                             <button class="btn btn-primary btn-block submit-shipping" type="submit" name="submit" value="submit-shipping" <isif condition="${pdict.order.usingMultiShipping && !pdict.order.shippable}">disabled</isif>>
                                 ${Resource.msg('button.next.payment', 'checkout', null)}
                             </button>
-
-
-
 
                             <button class="btn btn-primary btn-block submit-payment" type="submit" name="submit" value="submit-payment">
                                 ${Resource.msg('button.next.place.order', 'checkout', null)}
@@ -132,7 +127,6 @@
                 Order Totals, Details and Summary
             </iscomment>
             <div class="col-sm-5">
-
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-header-custom">${Resource.msg('heading.order.summary', 'checkout', null)}</h2>
@@ -141,11 +135,9 @@
                         <isinclude template="checkout/orderTotalSummary" />
                     </div>
                 </div>
-
                 <isinclude template="checkout/orderProductSummary" />
             </div>
         </div>
     </div>
     <isinclude template="checkout/shipping/shippingAddressTemplate" />
-
 </isdecorate>
