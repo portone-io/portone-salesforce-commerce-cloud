@@ -78,6 +78,8 @@ server.replace(
 	if (Object.keys(contactInfoFormErrors).length) {
 		formFieldErrors.push(contactInfoFormErrors);
 	} else {
+		// If we are on SFRA5
+		viewData.mail = { value: paymentForm.contactInfoFields && paymentForm.contactInfoFields.email && paymentForm.contactInfoFields.email.htmlValue ? paymentForm.contactInfoFields.email.htmlValue : paymentForm.contactInfoFields.email.value };
 		viewData.phone = { value: paymentForm.contactInfoFields.phone.value };
 	}
 
@@ -133,6 +135,7 @@ server.replace(
 		const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
 		const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 		const validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
+		const preferences = require('*/cartridge/config/preferences');
 
 		let currentBasket = BasketMgr.getCurrentBasket();
 		let billingData = res.getViewData();
@@ -204,6 +207,10 @@ server.replace(
 			}
 			billingAddress.setCountryCode(billingData.address.countryCode.value);
 			billingAddress.setPhone(billingData.phone.value);
+
+			if (preferences.SFRA5_ENABLED) {
+				currentBasket.setCustomerEmail(billingData.mail.value);
+			}
 		});
 
 
