@@ -722,10 +722,8 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		continueUrl: URLUtils.url('Order-Confirm').toString()
 	};
 
-	let vbankExpiration = new Date(0);
-	vbankExpiration.setUTCSeconds(paymentResponse.vbank_date);
-	let vbankIssuedAt = new Date(0);
-	vbankIssuedAt.setUTCSeconds(paymentResponse.vbank_issued_at);
+	let vbankExpiration = COHelpers.getTimeWithPreferredTimeZone(paymentResponse.vbank_date);
+	let vbankIssuedAt = COHelpers.getTimeWithPreferredTimeZone(paymentResponse.vbank_issued_at);
 
 	if (paymentResponse.pay_method === 'vbank') {
 		Object.assign(validationResponse, {

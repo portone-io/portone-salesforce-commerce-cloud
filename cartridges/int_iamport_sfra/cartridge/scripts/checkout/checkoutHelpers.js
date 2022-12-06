@@ -23,6 +23,23 @@ function addOrderNote(order, subject, reason) {
 }
 
 /**
+ * Set the current site timeZone and return the time.
+ * @param {string} date - response date
+ * @param {string} format - the calendar format
+ * @returns {Object} result - return calendar time
+ */
+function getTimeWithPreferredTimeZone(date, format) {
+	const Calendar = require('dw/util/Calendar');
+	let currentDate = new Date(0);
+	currentDate.setUTCSeconds(date);
+	var calendar = new Calendar(currentDate);
+	var siteTimeZone = Site.getCurrent().timezone;
+	calendar.setTimeZone(siteTimeZone);
+	var result = calendar.getTime();
+	return result;
+}
+
+/**
  * Recreate the current basket from an existing order
  *
  * @param {Object} order - The current order to recreate the basket from
@@ -83,10 +100,8 @@ function sendVbankIssuanceEmail(order, paymentData) {
 	const emailHelpers = require('*/cartridge/scripts/helpers/emailHelpers');
 
 	let paymentResponse = paymentData.getObject().response;
-	let vbankExpiration = new Date(0);
-	vbankExpiration.setUTCSeconds(paymentResponse.vbank_date);
-	let vbankIssuedAt = new Date(0);
-	vbankIssuedAt.setUTCSeconds(paymentResponse.vbank_issued_at);
+	let vbankExpiration = getTimeWithPreferredTimeZone(paymentResponse.vbank_date);
+	let vbankIssuedAt = getTimeWithPreferredTimeZone(paymentResponse.vbank_issued_at);
 
 	let vbankPaymentDataObject = {
 		orderNo: order.orderNo,
@@ -114,5 +129,6 @@ module.exports = Object.assign(base, {
 	recreateCurrentBasket: recreateCurrentBasket,
 	addOrderNote: addOrderNote,
 	sendPaymentOrderCancellationEmail: sendPaymentOrderCancellationEmail,
-	sendVbankIssuanceEmail: sendVbankIssuanceEmail
+	sendVbankIssuanceEmail: sendVbankIssuanceEmail,
+	getTimeWithPreferredTimeZone: getTimeWithPreferredTimeZone
 });
