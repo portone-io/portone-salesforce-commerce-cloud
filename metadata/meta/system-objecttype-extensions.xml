@@ -668,7 +668,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="vbankExpiration">
                 <display-name xml:lang="x-default">Virtual Payment Expiration</display-name>
-                <type>datetime</type>
+                <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>

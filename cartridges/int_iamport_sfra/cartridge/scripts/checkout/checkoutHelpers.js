@@ -30,12 +30,13 @@ function addOrderNote(order, subject, reason) {
  */
 function getTimeWithPreferredTimeZone(date, format) {
 	const Calendar = require('dw/util/Calendar');
+	const StringUtils = require('dw/util/StringUtils');
 	let currentDate = new Date(0);
 	currentDate.setUTCSeconds(date);
 	var calendar = new Calendar(currentDate);
 	var siteTimeZone = Site.getCurrent().timezone;
 	calendar.setTimeZone(siteTimeZone);
-	var result = calendar.getTime();
+	var result = StringUtils.formatCalendar(calendar, 'MM/dd/yyyy h:mm a');
 	return result;
 }
 

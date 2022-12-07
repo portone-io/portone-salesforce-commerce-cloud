@@ -15,16 +15,14 @@ server.append('Confirm', function (req, res, next) {
 	let viewData = res.getViewData();
 	let order = OrderMgr.getOrder(req.form.orderID, req.form.orderToken);
 	viewData.selectedPaymentMethod = order.custom.pay_method;
-	let vbankExpirationDate = new Date(req.form.vbankExpiration);
-	let vbankIssuedDate = new Date(req.form.vbankIssuedAt);
 
 	if (req.form.vbank) {
 		Object.assign(viewData, {
 			vbank: req.form.vbank,
 			vbankName: req.form.vbankName,
 			vbankNumber: req.form.vbankNumber,
-			vbankExpiration: vbankExpirationDate,
-			vbankIssuedAt: vbankIssuedDate,
+			vbankExpiration: req.form.vbankExpiration,
+			vbankIssuedAt: req.form.vbankIssuedAt,
 			vbankCode: req.form.vbankCode,
 			vbankHolder: req.form.vbankHolder
 		});
