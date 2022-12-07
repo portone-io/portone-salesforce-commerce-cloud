@@ -35,32 +35,32 @@
 
     <div class="vbank-mail__orderno vbank-mail__table">
         <div class="vbank-mail__table__main-cell"><strong>${Resource.msg('label.virtual.account.name', 'checkout', null)}</strong></div>
-        <div>${pdict.vbankPayload.vbankName}</div>
+        <div><isprint value="${pdict.vbankPayload.vbankName}" encoding="off" /></div>
     </div>
 
     <div class="vbank-mail__orderno vbank-mail__table">
         <div class="vbank-mail__table__main-cell"><strong>${Resource.msg('label.virtual.account.number', 'checkout', null)}</strong></div>
-        <div>${pdict.vbankPayload.vbankNumber}</div>
+        <div><isprint value="${pdict.vbankPayload.vbankNumber}" encoding="off" /></div>
     </div>
 
 	<div class="vbank-mail__orderno vbank-mail__table">
         <div class="vbank-mail__table__main-cell"><strong>${Resource.msg('label.virtual.account.code', 'checkout', null)}</strong></div>
-        <div>${pdict.vbankPayload.vbankCode}</div>
+        <div><isprint value="${pdict.vbankPayload.vbankCode}" encoding="off" /></div>
     </div>
 
 	<div class="vbank-mail__orderno vbank-mail__table">
         <div class="vbank-mail__table__main-cell"><strong>${Resource.msg('label.virtual.account.holder', 'checkout', null)}</strong></div>
-        <div>${pdict.vbankPayload.vbankHolder}</div>
+        <div><isprint value="${pdict.vbankPayload.vbankHolder}" encoding="off" /></div>
     </div>
 
 	<div class="vbank-mail__orderno vbank-mail__table">
         <div class="vbank-mail__table__main-cell"><strong>${Resource.msg('label.virtual.account.deposite.date', 'checkout', null)}</strong></div>
-        <div>${pdict.vbankPayload.vbankExpiration}</div>
+        <div><isprint value="${pdict.vbankPayload.vbankExpiration}" encoding="off" /></div>
     </div>
 
 	<div class="vbank-mail__orderno vbank-mail__table">
         <div class="vbank-mail__table__main-cell"><strong>${Resource.msg('label.virtual.account.issuance.date', 'checkout', null)}</strong></div>
-        <div>${pdict.vbankPayload.vbankIssuedAt}</div>
+        <div><isprint value="${pdict.vbankPayload.vbankIssuedAt}" encoding="off" /></div>
     </div>
 
     </body>
