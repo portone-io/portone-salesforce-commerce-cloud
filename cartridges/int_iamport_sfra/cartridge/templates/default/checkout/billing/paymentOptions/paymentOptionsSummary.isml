@@ -17,8 +17,8 @@
             <li> ${Resource.msg('label.virtual.account.name', 'checkout', null)} <span> ${pdict.vbankName} </span> </li>
             <li> ${Resource.msg('label.virtual.account.number', 'checkout', null)} <span> ${pdict.vbankNumber} </span> </li>
             <li> ${Resource.msg('label.virtual.account.code', 'checkout', null)} <span> ${pdict.vbankCode} </span> </li>
-            <li> ${Resource.msg('label.virtual.account.deposite.date', 'checkout', null)} <span> <isprint value="${pdict.vbankExpiration}" style="DATE_LONG"/> </span> </li>
-            <li> ${Resource.msg('label.virtual.account.issuance.date', 'checkout', null)} <span> <isprint value="${pdict.vbankIssuedAt}" style="DATE_LONG"/> </span> </li>
+            <li> ${Resource.msg('label.virtual.account.deposite.date', 'checkout', null)} <span> <isprint value="${pdict.vbankExpiration}" encoding="off" /> </span> </li>
+            <li> ${Resource.msg('label.virtual.account.issuance.date', 'checkout', null)} <span> <isprint value="${pdict.vbankIssuedAt}" encoding="off"/> </span> </li>
             <li> ${Resource.msg('label.virtual.account.holder', 'checkout', null)} <span> ${pdict.vbankHolder} </span> </li>
         </ul>
     </isif>

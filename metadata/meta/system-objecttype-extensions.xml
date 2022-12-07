@@ -146,6 +146,14 @@
                 </value-definitions>
             </attribute-definition>
 
+            <attribute-definition attribute-id="iamport_enabledSFRA5">
+                <display-name xml:lang="x-default">Enable SFRA5 Version</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+
             <attribute-definition attribute-id="iamport_inicisMerchantID">
                 <display-name xml:lang="x-default">KG Inicis Merchant ID</display-name>
                 <description xml:lang="x-default">Merchant ID (MID) from KG Inicis payment gateway</description>
@@ -529,7 +537,7 @@
 
         </custom-attribute-definitions>
 
-        <group-definitions>            
+        <group-definitions>
             <attribute-group group-id="iamport_general">
                 <display-name xml:lang="x-default">Iamport General Configs</display-name>
                 <attribute attribute-id="iamport_useEscrow"/>
@@ -537,6 +545,7 @@
                 <attribute attribute-id="iamport_apiSecret"/>
                 <attribute attribute-id="iamport_merchantID"/>
                 <attribute attribute-id="iamport_paymentGateway"/>
+                <attribute attribute-id="iamport_enabledSFRA5"/>
             </attribute-group>
 
             <attribute-group group-id="iamport_inicisConfigs">
