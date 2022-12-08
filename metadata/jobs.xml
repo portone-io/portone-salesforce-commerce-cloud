@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jobs xmlns="http://www.demandware.com/xml/impex/jobs/2015-07-01">
+    <job job-id="Iamport-FailUnpaidVirtualPaymentOrders" priority="0">
+        <description>Fetch virtual payment orders and fail the unpaid orders if it has exceed the given time.</description>
+        <parameters/>
+        <split sequential="false">
+            <contexts template-ref="template_45">
+                <all-storefront-sites/>
+            </contexts>
+            <flow-template template-id="template_45">
+                <step step-id="Iamport-FailUnpaidVirtualPaymentOrders" type="ExecuteScriptModule" enforce-restart="false">
+                    <description>Fetch virtual payment orders and fail the unpaid orders if it has exceed the given time.</description>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_iamport_core/cartridge/scripts/jobs/failUnpaidVirtualPaymentOrders.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">execute</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
+        <rules/>
+        <triggers>
+            <run-once enabled="false">
+                <date>2022-12-07Z</date>
+                <time>10:01:28.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+</jobs>
