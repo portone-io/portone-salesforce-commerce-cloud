@@ -174,6 +174,9 @@ const billingHelpers = require('./billing');
 				}
 				return defer;
 			} else if (stage === 'payment') {
+				// Clear Previous Errors
+				formHelpers.clearPreviousErrors('.payment-form');
+				$('body').trigger('checkout:enableButton', '.next-step-button button');
 				//
 				// Submit the Billing Address Form
 				//
@@ -185,7 +188,6 @@ const billingHelpers = require('./billing');
 				// Set the email value on the placeOrder stage
 				$('.order-summary-email').text($('#dwfrm_billing .contact-info-block #email').val());
 
-				formHelpers.clearPreviousErrors('.payment-form');
 
 				let billingAddressForm = $('#dwfrm_billing .billing-address-block :input').serialize();
 
@@ -291,9 +293,9 @@ const billingHelpers = require('./billing');
 
 							defer.reject();
 						} else {
-							//
+							// populate the payment method in the payment summary
+							iamportPayment.renderSelectedPaymentMethod(data.selectedPaymentMethod);
 							// Populate the Address Summary
-							//
 							$('body').trigger('checkout:updateCheckoutView',
                                     { order: data.order, customer: data.customer });
 

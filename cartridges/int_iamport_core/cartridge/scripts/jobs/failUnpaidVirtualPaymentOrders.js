@@ -16,41 +16,41 @@ var count = 0;
  * @returns {dw.system.Status} Status : dw.system.Status
  */
 function callback(order) {
-    try {
-        if ('vbankExpiration' in order.custom && order.custom.vbankExpiration) {
-            let siteTimeZone = Site.getCurrent().timezone;
-            let subject = Resource.msg('order.note.job.subject', 'import', null);
-            let reason = Resource.msg('order.note.job.fail.order', 'import', null);
-            // current time
-            let nowCal = new Calendar(new Date());
-            nowCal.setTimeZone(siteTimeZone);
+	try {
+		if ('vbankExpiration' in order.custom && order.custom.vbankExpiration) {
+			let siteTimeZone = Site.getCurrent().timezone;
+			let subject = Resource.msg('order.note.job.subject', 'import', null);
+			let reason = Resource.msg('order.note.job.fail.order', 'import', null);
+			// current time
+			let nowCal = new Calendar(new Date());
+			nowCal.setTimeZone(siteTimeZone);
 
-            let expirationCal = new Calendar(new Date(order.custom.vbankExpiration));
-            expirationCal.setTimeZone(siteTimeZone);
+			let expirationCal = new Calendar(new Date(order.custom.vbankExpiration));
+			expirationCal.setTimeZone(siteTimeZone);
 
-            if (nowCal.compareTo(expirationCal) > 0) {
-                count++;
-                Transaction.wrap(function () {
-                    OrderMgr.failOrder(order, false);
-                    order.addNote(subject, reason);
-                });
-                iamportLogger.info('Fail Unpaid VirtualPayment Order ' + order.orderNo);
-            }
-        }
-        return new Status(Status.OK);
-    } catch (e) {
-        iamportLogger.error('Error during processing order ' + order.orderNo + ' - ' + e.stack);
-        return new Status(Status.ERROR, 'ERROR', e.stack);
-    }
+			if (nowCal.compareTo(expirationCal) > 0) {
+				count++;
+				Transaction.wrap(function () {
+					OrderMgr.failOrder(order, false);
+					order.addNote(subject, reason);
+				});
+				iamportLogger.info('Fail Unpaid VirtualPayment Order ' + order.orderNo);
+			}
+		}
+		return new Status(Status.OK);
+	} catch (e) {
+		iamportLogger.error('Error during processing order ' + order.orderNo + ' - ' + e.stack);
+		return new Status(Status.ERROR, 'ERROR', e.stack);
+	}
 }
 
 /**
 * Fetch virtual payment orders.
 */
 function processOrders() {
-    let queryStr = 'custom.isVirtualPayment = {0} AND status = {1}';
-    OrderMgr.processOrders(callback, queryStr, true, Order.ORDER_STATUS_CREATED);
-    iamportLogger.info('found ' + count + '  orders');
+	let queryStr = 'custom.isVirtualPayment = {0} AND status = {1}';
+	OrderMgr.processOrders(callback, queryStr, true, Order.ORDER_STATUS_CREATED);
+	iamportLogger.info('found ' + count + '  orders');
 }
 
 module.exports.execute = processOrders;
