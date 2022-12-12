@@ -38,7 +38,7 @@ server.post('SfNotifyTest', function (req, res, next) {
 
 	try {
 		if (webhookData.status !== 'ready') {
-			throw new Error('Thw webhook status is not a test status');
+			throw new Error('The webhook status is not a test status');
 		}
 
 		switch (whatToTest) {
@@ -123,6 +123,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
 	const HookMgr = require('dw/system/HookMgr');
 	const Resource = require('dw/web/Resource');
+	const Transaction = require('dw/system/Transaction');
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
@@ -136,7 +137,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 	let vbankIssued;
 	let mappedPaymentInfo;
 
-	let order = OrderMgr.getOrder(orderId);
+	var order = OrderMgr.getOrder(orderId);
 
 	let paymentData = iamportServices.getPaymentInformation.call({
 		paymentID: paymentId
@@ -179,7 +180,18 @@ server.post('SfNotifyHook', function (req, res, next) {
 			// when payment is approved or payment amount is deposited into virtual account
 			case 'paid':
 				if (paymentData.getObject().response.pay_method === 'vbank') {
-					let placeOrderResult = COHelpers.placeOrder(order);
+					var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
+					var fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', order, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
+					if (fraudDetectionStatus.status === 'fail') {
+						Transaction.wrap(function () {
+							OrderMgr.failOrder(order, true);
+						});
+						// fraud detection failed
+						req.session.privacyCache.set('fraudDetectionStatus', true);
+						iamportLogger.error('Order could not be placed: {0}', JSON.stringify(fraudDetectionStatus.status));
+						throw new Error(Resource.msg('error.technical', 'checkout', null));
+					}
+					var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
 					if (placeOrderResult.error) {
 						iamportLogger.error('Order could not be placed: {0}', JSON.stringify(placeOrderResult));
 						throw new Error(Resource.msg('error.technical', 'checkout', null));
@@ -192,9 +204,11 @@ server.post('SfNotifyHook', function (req, res, next) {
 					iamportLogger.debug('data: {0}', JSON.stringify(paymentData));
 					iamportLogger.debug('Webhook: Virtual Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
 
+					let importPaymentInfoResponse = paymentData.getObject().response;
+					let paidDate = COHelpers.getTimeWithPreferredTimeZone(importPaymentInfoResponse.paid_at);
 					COHelpers.addOrderNote(order,
 						Resource.msg('order.note.vbank.subject', 'order', null),
-						Resource.msg('order.note.vbank.payment.complete.body', 'order', null));
+						Resource.msgf('order.note.vbank.paidpayment.complete.body', 'order', null, paidDate));
 				} else {
 					mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
 					iamportLogger.debug('Webhook: Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));

@@ -48,6 +48,7 @@ server.replace(
 	const HookManager = require('dw/system/HookMgr');
 	const Resource = require('dw/web/Resource');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	const preferences = require('*/cartridge/config/preferences');
 
 	let viewData = {};
 	let paymentForm = server.forms.getForm('billing');
@@ -78,8 +79,10 @@ server.replace(
 	if (Object.keys(contactInfoFormErrors).length) {
 		formFieldErrors.push(contactInfoFormErrors);
 	} else {
-		// If we are on SFRA5
-		viewData.mail = { value: paymentForm.contactInfoFields && paymentForm.contactInfoFields.email && paymentForm.contactInfoFields.email.htmlValue ? paymentForm.contactInfoFields.email.htmlValue : paymentForm.contactInfoFields.email.value };
+		// If we are on SFRA5 the email is set on the payment form and not from customer data
+		if (preferences.SFRA5_ENABLED) {
+			viewData.mail = { value: paymentForm.contactInfoFields && paymentForm.contactInfoFields.email && paymentForm.contactInfoFields.email.htmlValue ? paymentForm.contactInfoFields.email.htmlValue : paymentForm.contactInfoFields.email.value };
+		}
 		viewData.phone = { value: paymentForm.contactInfoFields.phone.value };
 	}
 
@@ -135,7 +138,6 @@ server.replace(
 		const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
 		const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 		const validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
-		const preferences = require('*/cartridge/config/preferences');
 
 		let currentBasket = BasketMgr.getCurrentBasket();
 		let billingData = res.getViewData();

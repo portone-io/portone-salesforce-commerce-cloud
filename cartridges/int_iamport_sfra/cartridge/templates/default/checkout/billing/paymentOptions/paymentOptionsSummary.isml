@@ -13,7 +13,7 @@
 
     <isif condition="${pdict.vbank === 'true'}">
         <p> ${Resource.msg('label.virtual.account.details', 'checkout', null)} </p>
-        <ul>
+        <ul class="order-summary_payment-info">
             <li> ${Resource.msg('label.virtual.account.name', 'checkout', null)} <span> ${pdict.vbankName} </span> </li>
             <li> ${Resource.msg('label.virtual.account.number', 'checkout', null)} <span> ${pdict.vbankNumber} </span> </li>
             <li> ${Resource.msg('label.virtual.account.code', 'checkout', null)} <span> ${pdict.vbankCode} </span> </li>
