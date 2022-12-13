@@ -608,14 +608,6 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	// Handles payment authorization
 	let handlePaymentResult = COHelpers.handlePayments(order, order.orderNo);
 
-    // Handle custom processing post authorization
-	let options = { req: req, res: res };
-	let postAuthCustomizations = hooksHelper('app.post.auth', 'postAuthorization', handlePaymentResult, order, options, require('*/cartridge/scripts/hooks/postAuthorizationHandling').postAuthorization);
-	if (postAuthCustomizations && Object.prototype.hasOwnProperty.call(postAuthCustomizations, 'error')) {
-		res.json(postAuthCustomizations);
-		return next();
-	}
-
 	if (handlePaymentResult.error) {
 		res.json({
 			error: true,
@@ -660,14 +652,6 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	// save the payment id in a custom attribute on the Order object
 	let paymentResponse = paymentData.getObject().response;
 	let paymentId = paymentResponse.imp_uid;
-	if (HookMgr.hasHook('app.payment.processor.iamport')) {
-		HookMgr.callHook('app.payment.processor.iamport',
-			'updatePaymentIdOnOrder',
-			paymentId,
-			order
-		);
-	}
-
 	hooksHelper('app.payment.processor.iamport',
 		'updatePaymentIdOnOrder',
 		paymentId,
@@ -682,28 +666,14 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		require('*/cartridge/scripts/hooks/payment/processor/iamportPayments').updateTransactionIdOnOrder
 	);
 
-	// Compare prices for iamport fraud checks
-	let iamportFraudFlagged = iamportHelpers.checkFraudPayments(paymentData, order);
-	if (iamportFraudFlagged) {
-		Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
-
-        // fraud detected
-		req.session.privacyCache.set('fraudDetectionStatus', true);
-
-		res.json({
-			error: true,
-			cartError: true,
-			redirectUrl: URLUtils.url('Error-ErrorCode', 'err', 'fraud.detected').toString(),
-			errorMessage: Resource.msg('error.technical', 'checkout', null)
-		});
-
-		return next();
-	}
-
-	let fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', currentBasket, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
+	var fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', paymentData, order, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
 	if (fraudDetectionStatus.status === 'fail') {
-		Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
-
+		Transaction.wrap(function () {
+			OrderMgr.failOrder(order, true);
+			COHelpers.addOrderNote(order,
+				Resource.msg('order.note.payment.incomplete.subject', 'order', null),
+				fraudDetectionStatus.errorMessage);
+		});
         // fraud detection failed
 		req.session.privacyCache.set('fraudDetectionStatus', true);
 

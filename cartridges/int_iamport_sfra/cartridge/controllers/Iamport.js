@@ -181,7 +181,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 			case 'paid':
 				if (paymentData.getObject().response.pay_method === 'vbank') {
 					var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
-					var fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', order, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
+					var fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', paymentData, order, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
 					if (fraudDetectionStatus.status === 'fail') {
 						Transaction.wrap(function () {
 							OrderMgr.failOrder(order, true);
