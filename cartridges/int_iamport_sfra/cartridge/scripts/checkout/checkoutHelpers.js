@@ -6,6 +6,9 @@ const Transaction = require('dw/system/Transaction');
 const base = module.superModule;
 const Resource = require('dw/web/Resource');
 const Site = require('dw/system/Site');
+const Status = require('dw/system/Status');
+const Order = require('dw/order/Order');
+
 
 /**
  * Recreate the current basket from an existing order
@@ -126,10 +129,43 @@ function sendVbankIssuanceEmail(order, paymentData) {
 	emailHelpers.sendEmail(emailObj, 'checkout/confirmation/vbankIssuanceEmail', vbankPaymentDataObject);
 }
 
+/**
+ * Override this function because placeorder method will return object not string
+ * @param {dw.order.Order} order - The order object to be placed
+ * @param {Object} fraudDetectionStatus - an Object returned by the fraud detection hook
+ * @returns {Object} an error object
+ */
+function placeOrder(order, fraudDetectionStatus) {
+	var result = { error: false };
+
+	try {
+		Transaction.begin();
+		var placeOrderStatus = OrderMgr.placeOrder(order);
+		if (placeOrderStatus.status === Status.ERROR) {
+			throw new Error();
+		}
+
+		if (fraudDetectionStatus.status === 'flag') {
+			order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
+		} else {
+			order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+		}
+
+		order.setExportStatus(Order.EXPORT_STATUS_READY);
+		Transaction.commit();
+	} catch (e) {
+		Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
+		result.error = true;
+	}
+
+	return result;
+}
+
 module.exports = Object.assign(base, {
 	recreateCurrentBasket: recreateCurrentBasket,
 	addOrderNote: addOrderNote,
 	sendPaymentOrderCancellationEmail: sendPaymentOrderCancellationEmail,
 	sendVbankIssuanceEmail: sendVbankIssuanceEmail,
-	getTimeWithPreferredTimeZone: getTimeWithPreferredTimeZone
+	getTimeWithPreferredTimeZone: getTimeWithPreferredTimeZone,
+	placeOrder: placeOrder
 });
