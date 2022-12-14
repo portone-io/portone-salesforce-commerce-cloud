@@ -181,7 +181,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 				// when payment is approved or payment amount is deposited into virtual account
 				case 'paid':
 					if (paymentData.getObject().response.pay_method === 'vbank') {
-						if ('imp_uid' in order.custom && !empty(order.custom.imp_uid)) {
+						if ('imp_uid' in order.custom && !empty(order.custom.imp_uid) && order.custom.imp_uid === paymentData.getObject().response.imp_uid) {
 							var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
 							if (placeOrderResult.error) {
 								COHelpers.addOrderNote(order,
