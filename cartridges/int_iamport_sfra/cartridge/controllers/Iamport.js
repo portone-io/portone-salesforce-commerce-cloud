@@ -181,27 +181,39 @@ server.post('SfNotifyHook', function (req, res, next) {
 				// when payment is approved or payment amount is deposited into virtual account
 				case 'paid':
 					if (paymentData.getObject().response.pay_method === 'vbank') {
-						var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-						if (placeOrderResult.error) {
+						if ('imp_uid' in order.custom && !empty(order.custom.imp_uid)) {
+							var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+							if (placeOrderResult.error) {
+								COHelpers.addOrderNote(order,
+									Resource.msg('order.note.vbank.subject', 'order', null),
+									Resource.msgf('order.note.vbank.paidpayment.notcomplete.body', 'order', null, paidAmount));
+								iamportLogger.error('Order could not be placed: {0}', JSON.stringify(placeOrderResult));
+								throw new Error(Resource.msg('error.technical', 'checkout', null));
+							}
+
+							// Reset usingMultiShip after successful Order placement
+							req.session.privacyCache.set('usingMultiShipping', false);
+
+							mappedPaymentInfo = iamportHelpers.mapVbankResponseForLogging(paymentData);
+							iamportLogger.debug('data: {0}', JSON.stringify(paymentData));
+							iamportLogger.debug('Webhook: Virtual Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
+
+							let importPaymentInfoResponse = paymentData.getObject().response;
+							let paidDate = COHelpers.getTimeWithPreferredTimeZone(importPaymentInfoResponse.paid_at);
 							COHelpers.addOrderNote(order,
 								Resource.msg('order.note.vbank.subject', 'order', null),
-								Resource.msgf('order.note.vbank.paidpayment.notcomplete.body', 'order', null, paidAmount));
-							iamportLogger.error('Order could not be placed: {0}', JSON.stringify(placeOrderResult));
-							throw new Error(Resource.msg('error.technical', 'checkout', null));
+								Resource.msgf('order.note.vbank.paidpayment.complete.body', 'order', null, paidAmount, paidDate));
+						} else {
+							Transaction.wrap(function () {
+								OrderMgr.failOrder(order, true);
+								COHelpers.addOrderNote(order,
+									Resource.msg('order.note.vbank.subject', 'order', null),
+									Resource.msg('order.error.missed.iamport.uid', 'order', null)
+								);
+							});
+							iamportLogger.error('Order could not be placed: {0}', Resource.msg('order.error.missed.iamport.uid', 'order', null));
+							throw new Error(Resource.msgf('order.error.missed.iamport.uid', 'order', null, paidAmount));
 						}
-
-						// Reset usingMultiShip after successful Order placement
-						req.session.privacyCache.set('usingMultiShipping', false);
-
-						mappedPaymentInfo = iamportHelpers.mapVbankResponseForLogging(paymentData);
-						iamportLogger.debug('data: {0}', JSON.stringify(paymentData));
-						iamportLogger.debug('Webhook: Virtual Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
-
-						let importPaymentInfoResponse = paymentData.getObject().response;
-						let paidDate = COHelpers.getTimeWithPreferredTimeZone(importPaymentInfoResponse.paid_at);
-						COHelpers.addOrderNote(order,
-							Resource.msg('order.note.vbank.subject', 'order', null),
-							Resource.msgf('order.note.vbank.paidpayment.complete.body', 'order', null, paidAmount, paidDate));
 					} else {
 						mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
 						iamportLogger.debug('Webhook: Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
