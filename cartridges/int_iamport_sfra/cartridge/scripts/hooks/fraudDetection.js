@@ -13,8 +13,8 @@ function fraudDetection(paymentData, order) { // eslint-disable-line
 	var errorCode;
 	var errorMessage;
 	var status = 'success';
-	var orderAmount = Number(order.totalGrossPrice.value.toFixed());
 	// Converting to whole numbers as Korean currency does not support decimal numbers.
+	var orderAmount = Number(order.totalGrossPrice.value.toFixed());
 	if (paymentData.object.response.amount !== orderAmount) {
 		status = 'fail';
 		errorMessage = Resource.msg('message.error.fraud.detected', 'error', null);
