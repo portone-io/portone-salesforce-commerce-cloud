@@ -2,7 +2,6 @@
 
 /**
  * fraud detection hook
- * OrderTotal : Converting to whole numbers as Korean currency does not support decimal numbers.
  * @param {Object} paymentData - Response of payment
  * @param {dw.order.Order} order - The order object to be placed
  * @returns {Object} an error object. Status can have three values 'success', 'fail' or 'flag'
@@ -15,6 +14,7 @@ function fraudDetection(paymentData, order) { // eslint-disable-line
 	var errorMessage;
 	var status = 'success';
 	var orderAmount = Number(order.totalGrossPrice.value.toFixed());
+	// Converting to whole numbers as Korean currency does not support decimal numbers.
 	if (paymentData.object.response.amount !== orderAmount) {
 		status = 'fail';
 		errorMessage = Resource.msg('message.error.fraud.detected', 'error', null);

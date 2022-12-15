@@ -6,7 +6,6 @@ const Site = require('dw/system/Site');
 
 /**
  * Prepares the payment resources needed to request payment to Iamport server
- * OrderTotal : Converting to whole numbers as Korean currency does not support decimal numbers.
  * @param {Object} order - Customer order data
  * @param {string} selectedPaymentMethod - Id of the selected payment method
  * @param {string} noticeUrl - webhook receive URL. Default is undefined
@@ -19,6 +18,7 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl) {
 		amount: iamportConstants.TEST_AMOUNT
 	};
 	if (order.totalGrossPrice) {
+		// Converting to whole numbers as Korean currency does not support decimal numbers.
 		paymentInformation.amount = Number(order.totalGrossPrice.value.toFixed());
 	}
 
