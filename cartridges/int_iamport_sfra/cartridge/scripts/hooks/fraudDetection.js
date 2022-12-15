@@ -1,6 +1,7 @@
 'use strict';
 
 /**
+ * fraud detection hook
  * OrderTotal : Converting to whole numbers as Korean currency does not support decimal numbers.
  * @param {Object} paymentData - Response of payment
  * @param {dw.order.Order} order - The order object to be placed
