@@ -13,7 +13,8 @@ function fraudDetection(paymentData, order) { // eslint-disable-line
 	var errorCode;
 	var errorMessage;
 	var status = 'success';
-	if (paymentData.object.response.amount !== order.paymentTransaction.amount.value) {
+	var orderAmount = Number(order.totalGrossPrice.value.toFixed());
+	if (paymentData.object.response.amount !== orderAmount) {
 		status = 'fail';
 		errorMessage = Resource.msg('message.error.fraud.detected', 'error', null);
 		errorCode = 'fraud.detected';

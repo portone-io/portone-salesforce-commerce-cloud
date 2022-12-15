@@ -17,9 +17,8 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl) {
 		pay_method: selectedPaymentMethod,
 		amount: iamportConstants.TEST_AMOUNT
 	};
-
-	if (!paymentInformation.amount && order.totalNetPrice) {
-		paymentInformation.amount = order.totalNetPrice.value;
+	if (order.totalGrossPrice) {
+		paymentInformation.amount = Number.parseInt(order.totalGrossPrice.value.toFixed());
 	}
 
 	if (order.orderNo) {
