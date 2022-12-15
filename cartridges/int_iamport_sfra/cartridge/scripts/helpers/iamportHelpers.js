@@ -17,9 +17,9 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl) {
 		pay_method: selectedPaymentMethod,
 		amount: iamportConstants.TEST_AMOUNT
 	};
-
-	if (!paymentInformation.amount && order.totalNetPrice) {
-		paymentInformation.amount = order.totalNetPrice.value;
+	if (order.totalGrossPrice) {
+		// Converting to whole numbers as Korean currency does not support decimal numbers.
+		paymentInformation.amount = Number(order.totalGrossPrice.value.toFixed());
 	}
 
 	if (order.orderNo) {
