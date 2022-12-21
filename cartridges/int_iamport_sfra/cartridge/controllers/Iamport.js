@@ -2,6 +2,7 @@
 
 const server = require('server');
 const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 
 server.post('SfNotifyTest', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
@@ -287,6 +288,42 @@ server.post('SfNotifyHook', function (req, res, next) {
 		res.print(err.message);
 		return next();
 	}
+});
+
+/**
+ * Create Iamport Subscription request for Request billing key.
+ * @param {middleware} - userLoggedIn.validateLoggedInAjax
+ */
+server.get('GetBillingKey', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
+	var iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
+	var selectedPaymentMethod = 'card';
+
+	var data = res.getViewData();
+	if (data && !data.loggedin) {
+		res.json();
+		return next();
+	}
+	var profile = req.currentCustomer.profile;
+	var generalPaymentWebhookUrl = '';
+	var order = {
+		totalGrossPrice: {
+			value: 0
+		},
+		customerName: profile.firstName + ' ' + profile.lastName,
+		orderNo: iamportHelpers.generateString(8),
+		customerEmail: profile.email,
+		billingAddress: {
+			phone: !empty(profile.phoneHome) ? profile.phoneHome : '0000000000',
+			fullName: profile.firstName + ' ' + profile.lastName
+		}
+	};
+	var paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod, generalPaymentWebhookUrl);
+	paymentResources.customer_uid = iamportHelpers.generateString(5) + '_' + profile.customerNo;
+	res.json({
+		error: false,
+		paymentResources: paymentResources
+	});
+	return next();
 });
 
 module.exports = server.exports();

@@ -130,11 +130,27 @@ function getTranslatedMessage(pgType, errorMessage) {
 	return errorMessage;
 }
 
+/**
+ *
+ * @param {number} length - define the length of String
+ * @returns {string} - return the generated Rendom String
+ */
+function generateString(length) {
+	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+	const charactersLength = characters.length;
+	let result = '';
+	for (let i = 0; i < length; i++) {
+		result += characters.charAt(Math.floor(Math.random() * charactersLength));
+	}
+	return result;
+}
+
 module.exports = {
 	preparePaymentResources: preparePaymentResources,
 	checkFraudPayments: checkFraudPayments,
 	mapPaymentResponseForLogging: mapPaymentResponseForLogging,
 	mapVbankResponseForLogging: mapVbankResponseForLogging,
 	handleErrorFromPaymentGateway: handleErrorFromPaymentGateway,
-	getTranslatedMessage: getTranslatedMessage
+	getTranslatedMessage: getTranslatedMessage,
+	generateString: generateString
 };
