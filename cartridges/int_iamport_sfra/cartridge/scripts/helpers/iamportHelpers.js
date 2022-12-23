@@ -11,7 +11,7 @@ const Site = require('dw/system/Site');
  * @param {string} noticeUrl - webhook receive URL. Default is undefined
  * @returns {Object} - The payment resources
  */
-function preparePaymentResources(order, selectedPaymentMethod, noticeUrl) {
+function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobileRedirectUrl) {
 	let paymentInformation = {
 		pg: Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value,
 		pay_method: selectedPaymentMethod,
@@ -52,6 +52,9 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl) {
 
 	if (noticeUrl) {
 		paymentInformation.notice_url = noticeUrl;
+	}
+	if (mobileRedirectUrl && request.httpUserAgent.indexOf('Mobile') > -1) {
+		paymentInformation.m_redirect_url = mobileRedirectUrl;
 	}
 
 	return paymentInformation;
