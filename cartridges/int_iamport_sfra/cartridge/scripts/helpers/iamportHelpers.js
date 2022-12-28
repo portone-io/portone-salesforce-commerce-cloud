@@ -14,8 +14,7 @@ const Site = require('dw/system/Site');
 function preparePaymentResources(order, selectedPaymentMethod, noticeUrl) {
 	let paymentInformation = {
 		pg: Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value,
-		pay_method: selectedPaymentMethod,
-		amount: iamportConstants.TEST_AMOUNT
+		pay_method: selectedPaymentMethod
 	};
 	if (order.totalGrossPrice) {
 		// Converting to whole numbers as Korean currency does not support decimal numbers.

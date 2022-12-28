@@ -189,23 +189,6 @@ const handlePaymentError = function handlePaymentError(item, paymentPayload) {
 	}
 };
 
-/**
- * Request payment to Iamport server using the payment information
- * @param {string} item Iamport global object
- * @param {Object} paymentPayload The payment resources
- */
-const requestSubscriptionPayment = function requestSubscriptionPayment(item, paymentPayload) {
-	let IMP = window[item];
-	if (!IMP || !IAMPORT_ARGS.MID) {
-		throw new Error('Merchant code not set');
-	}
-	IMP.init(IAMPORT_ARGS.MID);
-	IMP.request_pay(paymentPayload, function (paymentResponse) {
-		console.log(paymentPayload);
-		console.log(paymentResponse);
-	});
-};
-
 module.exports = {
 	generalPayment: function (payload) {
 		try {
@@ -229,18 +212,6 @@ module.exports = {
 		if (selectedPaymentMethod) {
 			let paymentMethod = selectedPaymentMethod.toString().replace(/['"]+/g, '');
 			$('.iamport-payment-method-name').empty().html('<span>' + paymentMethod + '</span>');
-		}
-	},
-
-	// Request billing key
-	requestBillingKey: function (payload) {
-		try {
-			deferLoader.defer('IMP', requestSubscriptionPayment, payload);
-		} catch (err) {
-			// eslint-disable-next-line no-console
-			console.error('Error on the request calling to PG server:', err);
-		} finally {
-			$.spinner().stop();
 		}
 	}
 };

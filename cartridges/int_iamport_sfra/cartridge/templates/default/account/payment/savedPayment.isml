@@ -1,0 +1,2 @@
+<p>${Resource.msg('label.payment.credit','account',null)} ${payment.creditCardType}</p>
+<p>${payment.iamportCreditCardNumber}</p>

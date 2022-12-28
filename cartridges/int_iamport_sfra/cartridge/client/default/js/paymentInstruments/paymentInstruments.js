@@ -1,7 +1,7 @@
 'use strict';
 
 var base = require('base/paymentInstruments/paymentInstruments');
-var iamportPayment = require('../iamport/paymentLoader');
+var iamportPayment = require('../iamport/iamport');
 
 
 base.addNewCard = function () {
@@ -10,13 +10,15 @@ base.addNewCard = function () {
 		$.spinner().start();
 		$.ajax({
 			url: $(this).data('href'),
-			success: function (response) {
-				iamportPayment.requestBillingKey(response.paymentResources);
+			success: function (data) {
+				if (data.error) {
+					window.location.href = data.redirectUrl;
+				} else {
+					iamportPayment.requestBillingKey(data);
+				}
 			},
 			error: function (err) {
-				if (err.responseJSON.redirectUrl) {
-					window.location.href = err.responseJSON.redirectUrl;
-				}
+				window.location.reload();
 				$.spinner().stop();
 			}
 		});

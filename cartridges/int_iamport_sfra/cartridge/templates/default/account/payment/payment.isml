@@ -28,8 +28,7 @@
                     </div>
                     <div class="col">
 						<input type="hidden" name="merchantID" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('iamport_merchantID')}">
-						<input type="hidden" name="customerid" value="${pdict.CurrentCustomer.profile.firstName + '_' + pdict.CurrentCustomer.profile.customerNo}">
-                        <button data-href="${URLUtils.url('Iamport-GetBillingKey')}" class="btn btn-save btn-block btn-primary btn-add-payment-card" aria-label="${Resource.msg('label.payment.addnewpayment','payment',null)}">${Resource.msg('button.addnew','payment',null)}</button>
+                        <button data-href="${URLUtils.url('Iamport-RequestBillingKey')}" class="btn btn-save btn-block btn-primary btn-add-payment-card" aria-label="${Resource.msg('label.payment.addnewpayment','payment',null)}">${Resource.msg('button.addnew','payment',null)}</button>
                     </div>
                 </div>
             </div>
