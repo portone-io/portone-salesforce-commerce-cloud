@@ -11,7 +11,7 @@
         </isif>
     </div>
 
-    <isif condition="${pdict.vbank === 'true'}">
+    <isif condition="${pdict.vbank === 'true' || pdict.vbank === true}">
         <p> ${Resource.msg('label.virtual.account.details', 'checkout', null)} </p>
         <ul class="order-summary_payment-info">
             <li> ${Resource.msg('label.virtual.account.name', 'checkout', null)} <span> ${pdict.vbankName} </span> </li>
