@@ -33,7 +33,7 @@ server.append('Confirm', function (req, res, next) {
 });
 
 /**
- * Order-GetConfirmation : The Account-EditProfile endpoint renders the page that allows a shopper to edit their profile. The edit profile form is prefilled with the shopper's first name, last name, phone number and email
+ * Order-GetConfirmation : This endpoint is invoked when the shopper's Order is Placed and Confirmed in mobile
  * @name Custom/Order-GetConfirmation
  * @function
  * @memberof Order
@@ -41,38 +41,43 @@ server.append('Confirm', function (req, res, next) {
  * @param {renders} - isml
  */
 server.get('GetConfirmation', server.middleware.https, function (req, res, next) {
-	const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
-	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-	const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
-	const OrderMgr = require('dw/order/OrderMgr');
-	const Resource = require('dw/web/Resource');
-	const URLUtils = require('dw/web/URLUtils');
-	const Transaction = require('dw/system/Transaction');
-	const BasketMgr = require('dw/order/BasketMgr');
-	const HookMgr = require('dw/system/HookMgr');
-	const iamportServices = require('*/cartridge/scripts/service/iamportService');
-	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
-	const addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
-	const CustomError = require('*/cartridge/errors/customError');
-	const reportingUrlsHelper = require('*/cartridge/scripts/reportingUrls');
-    const OrderModel = require('*/cartridge/models/order');
-    const Locale = require('dw/util/Locale');
-	const customError;
-	const paymentInformation = req.querystring;
+	var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+	var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
+	var OrderMgr = require('dw/order/OrderMgr');
+	var Resource = require('dw/web/Resource');
+	var URLUtils = require('dw/web/URLUtils');
+	var Transaction = require('dw/system/Transaction');
+	var HookMgr = require('dw/system/HookMgr');
+	var iamportServices = require('*/cartridge/scripts/service/iamportService');
+	var iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
+	var addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
+	var CustomError = require('*/cartridge/errors/customError');
+	var reportingUrlsHelper = require('*/cartridge/scripts/reportingUrls');
+	var OrderModel = require('*/cartridge/models/order');
+	var Locale = require('dw/util/Locale');
+	var paymentInformation = req.querystring;
+	var mappedPaymentInfo = '';
 
 	if (empty(paymentInformation) || !('imp_uid' in paymentInformation) || !('merchant_uid' in paymentInformation) || empty(paymentInformation.imp_uid) || empty(paymentInformation.merchant_uid)) {
 		iamportLogger.error('GetConfirmation: query parameters must contain imp_uid {0} and merchant_uid {1}.', paymentInformation.imp_uid, paymentInformation.merchant_uid);
-		res.redirect(URLUtils.url('Home-Show'));
+		res.render('/error', {
+			message: Resource.msg('error.confirmation.error', 'confirmation', null)
+		});
 		return next();
 	}
 	var orderID = paymentInformation.merchant_uid;
 	var token = paymentInformation.token;
 	var order = OrderMgr.getOrder(orderID, token);
 	var paymentID = paymentInformation.imp_uid;
-	var paymentData = iamportServices.getPaymentInformation.call({
-		paymentID: paymentID
-	});
+	var config = {
+		numberOfLineItems: '*'
+	};
+	var currentLocale = Locale.getLocale(req.locale.id);
+	var passwordForm;
+	var reportingURLs = reportingUrlsHelper.getOrderReportingURLs(order);
 
+	// token in url parameter and order token should always same.
 	if (!order
 		|| !token
 		|| token !== order.orderToken
@@ -84,27 +89,20 @@ server.get('GetConfirmation', server.middleware.https, function (req, res, next)
 
 		return next();
 	}
+
+	// not allow to customer hit the same endpoint after place the order.
 	var lastOrderID = Object.prototype.hasOwnProperty.call(req.session.raw.custom, 'orderID') ? req.session.raw.custom.orderID : null;
 	if (lastOrderID === orderID) {
 		res.redirect(URLUtils.url('Home-Show'));
 		return next();
 	}
 
+	// get the payment Data from pass iamport id in url parameter.
+	var paymentData = iamportServices.getPaymentInformation.call({
+		paymentID: paymentID
+	});
+	// if imp_success is true, we will place the order and if imp_success is false, we will failed the order
 	if (('imp_success' in paymentInformation && paymentInformation.imp_success === 'true') || ('success' in paymentInformation && paymentInformation.success === 'true')) {
-		var currentBasket = null;
-		try {
-			Transaction.wrap(function () {
-				currentBasket = BasketMgr.createBasketFromOrder(order);
-			});
-		} catch (e) {
-			iamportLogger.error(e.stack);
-		}
-
-		if (!currentBasket) {
-			res.redirect(URLUtils.url('Cart-Show'));
-			return next();
-		}
-
 		// Handles payment authorization
 		var handlePaymentResult = COHelpers.handlePayments(order, order.orderNo);
 
@@ -125,7 +123,7 @@ server.get('GetConfirmation', server.middleware.https, function (req, res, next)
 
 		if (!paymentData.isOk()) {
 			iamportLogger.error('Server failed to retrieve payment data for "{0}": {1}.', paymentID, JSON.stringify(paymentData));
-			customError = new CustomError({ status: paymentData.getError() });
+			var customError = new CustomError({ status: paymentData.getError() });
 
 			COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
 			res.redirect(URLUtils.url('Cart-Show', 'err', paymentData.getError().toString()));
@@ -203,9 +201,8 @@ server.get('GetConfirmation', server.middleware.https, function (req, res, next)
 				vbankHolder: validationResponse.vbankPayload.vbankHolder
 			});
 
-			var mappedPaymentInfo = iamportHelpers.mapVbankResponseForLogging(paymentData);
+			mappedPaymentInfo = iamportHelpers.mapVbankResponseForLogging(paymentData);
 			iamportLogger.debug('Virtual Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
-
 		} else {
 			// Places the order
 			var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
@@ -217,7 +214,7 @@ server.get('GetConfirmation', server.middleware.https, function (req, res, next)
 			// Reset usingMultiShip after successful Order placement
 			req.session.privacyCache.set('usingMultiShipping', false);
 
-			var mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
+			mappedPaymentInfo = iamportHelpers.mapPaymentResponseForLogging(paymentData);
 			iamportLogger.debug('Payment Information: {0}.', JSON.stringify(mappedPaymentInfo));
 		}
 
@@ -225,47 +222,29 @@ server.get('GetConfirmation', server.middleware.https, function (req, res, next)
 			selectedPaymentMethod: order.custom.pay_method
 		});
 
-		if (!order || order.customer.ID !== req.currentCustomer.raw.ID) {
-			res.render('/error', {
-				message: Resource.msg('error.confirmation.error', 'confirmation', null)
+		var orderModel = new OrderModel(
+			order,
+			{ config: config, countryCode: currentLocale.country, containerView: 'order' }
+		);
+		if (!req.currentCustomer.profile) {
+			passwordForm = server.forms.getForm('newPasswords');
+			passwordForm.clear();
+			res.render('checkout/confirmation/confirmation', {
+				order: orderModel,
+				returningCustomer: false,
+				passwordForm: passwordForm,
+				reportingURLs: reportingURLs,
+				orderUUID: order.getUUID()
 			});
-
-			return next();
+		} else {
+			res.render('checkout/confirmation/confirmation', {
+				order: orderModel,
+				returningCustomer: true,
+				reportingURLs: reportingURLs,
+				orderUUID: order.getUUID()
+			});
 		}
-		var config = {
-            numberOfLineItems: '*'
-        };
-
-        var currentLocale = Locale.getLocale(req.locale.id);
-
-        var orderModel = new OrderModel(
-            order,
-            { config: config, countryCode: currentLocale.country, containerView: 'order' }
-        );
-        var passwordForm;
-
-        var reportingURLs = reportingUrlsHelper.getOrderReportingURLs(order);
-
-        if (!req.currentCustomer.profile) {
-            passwordForm = server.forms.getForm('newPasswords');
-            passwordForm.clear();
-            res.render('checkout/confirmation/confirmation', {
-                order: orderModel,
-                returningCustomer: false,
-                passwordForm: passwordForm,
-                reportingURLs: reportingURLs,
-                orderUUID: order.getUUID()
-            });
-        } else {
-            res.render('checkout/confirmation/confirmation', {
-                order: orderModel,
-                returningCustomer: true,
-                reportingURLs: reportingURLs,
-                orderUUID: order.getUUID()
-            });
-        }
 		req.session.raw.custom.orderID = orderID;
-		return next();
 	} else {
 		var iamportErrorMessage = paymentInformation.error_msg;
 		iamportLogger.error('Iamport server responded with an error: {0}.', iamportErrorMessage);
@@ -275,8 +254,8 @@ server.get('GetConfirmation', server.middleware.https, function (req, res, next)
 			Resource.msg('order.note.payment.incomplete.body', 'order', null));
 
 		res.redirect(URLUtils.url('Cart-Show', 'err', '02').toString());
-		return next();
 	}
+	return next();
 });
 
 module.exports = server.exports();
