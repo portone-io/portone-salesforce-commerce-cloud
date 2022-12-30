@@ -123,5 +123,26 @@ module.exports = {
 			vbank_name: null,
 			vbank_num: null
 		}
+	},
+	deleteSubscribePayment: {
+		code: 0,
+		message: null,
+		response: {
+			card_code: 'MAS',
+			card_name: '해외마스터카드',
+			card_number: null,
+			card_type: null,
+			customer_addr: null,
+			customer_email: null,
+			customer_id: 'customer-id-2749a51e-738b-421a-b4c2-c131ea4e1417',
+			customer_name: null,
+			customer_postcode: null,
+			customer_tel: null,
+			customer_uid: 'ScUKW_00001001',
+			inserted: 1672300188,
+			pg_id: 'T5102001',
+			pg_provider: 'kicc',
+			updated: 1672300188
+		}
 	}
 };

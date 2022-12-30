@@ -1,7 +1,7 @@
 'use strict';
 
-const server = require('server');
-const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+var server = require('server');
+var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 var iamportConstants = require('*/cartridge/constants/iamportConstants');
 
@@ -297,6 +297,7 @@ server.post('SfNotifyHook', function (req, res, next) {
 server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
 	var URLUtils = require('dw/web/URLUtils');
 	var Site = require('dw/system/Site');
+	var Resource = require('dw/web/Resource');
 	var iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	var pgValidators = require('*/cartridge/config/pgValidators');
 	var selectedCardPaymentMethod = 'card';
@@ -305,17 +306,29 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 	var paymentGateway = pgValidators[paymentGatewayID];
 	var selectedPaymentMethods = Site.getCurrent().getCustomPreferenceValue(paymentGateway.paymentMethodsAttributeID);
 	var validPaymentMethod = false;
+	var enablePaymentWindow = false;
+	var errorMsg = Resource.msg('error.payment.nopaymentselected', 'checkout', null);
+	var paymentMethods = paymentGateway.paymentMethods;
 	for (var i = 0; i < selectedPaymentMethods.length; i++) {
 		if (selectedCardPaymentMethod === selectedPaymentMethods[i].value) {
 			validPaymentMethod = true;
 			break;
 		}
 	}
-
-	if (!validPaymentMethod) {
+	for (var j = 0; j < paymentMethods.length; j++) {
+		if (selectedCardPaymentMethod === paymentMethods[j].id && paymentMethods[j].paymentWindow) {
+			enablePaymentWindow = true;
+			break;
+		}
+	}
+	if (validPaymentMethod && !enablePaymentWindow) {
+		errorMsg = Resource.msg('error.payment.nopaymentwindow', 'checkout', null);
+	}
+	if (!validPaymentMethod || !enablePaymentWindow) {
 		res.json({
 			error: true,
-			redirectUrl: URLUtils.url('PaymentInstruments-List', 'code', 18).toString()
+			errorMsg: errorMsg,
+			redirectUrl: URLUtils.url('PaymentInstruments-List').toString()
 		});
 		return next();
 	}
@@ -328,7 +341,7 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 	var generalPaymentWebhookUrl = '';
 	var order = {
 		totalGrossPrice: {
-			value: 0
+			value: iamportConstants.TEST_AMOUNT
 		},
 		customerName: profile.firstName + ' ' + profile.lastName,
 		orderNo: 'authsave_' + iamportHelpers.generateString(8),
@@ -355,6 +368,7 @@ server.post('SaveBillingKey', function (req, res, next) {
 	var iamportServices = require('*/cartridge/scripts/service/iamportService');
 	var iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	var accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
+	const CustomError = require('*/cartridge/errors/customError');
 	var dwOrderPaymentInstrument = require('dw/order/PaymentInstrument');
 	var URLUtils = require('dw/web/URLUtils');
 	var paymentInformation = req.form;
@@ -375,62 +389,68 @@ server.post('SaveBillingKey', function (req, res, next) {
 		buyer_tel: phone
 	};
 
-	// It is used when making a payment with the saved billing key.
-	var paymentResponse = iamportServices.subscribePayment.call(requestBody);
-	if (!paymentResponse.isOk() || paymentResponse.getObject().message) {
-		var iamportResponseError = '';
-		var errorcode = '';
-		if (paymentResponse.errorMessage) {
-			iamportResponseError = JSON.parse(paymentResponse.errorMessage);
-			errorcode = iamportResponseError.code;
-		} else if (paymentResponse.getObject().message) {
-			iamportResponseError = paymentResponse.getObject().message;
-			errorcode = paymentResponse.getObject().code;
-		}
-		iamportLogger.error('Subscibe Payment request failed: {0}.', JSON.stringify(iamportResponseError));
-		res.json({
-			error: true,
-			errorMessage: iamportResponseError,
-			redirectUrl: URLUtils.url('PaymentInstruments-List', 'code', errorcode).toString()
-		});
-	} else {
-		var paymentResponseObj = paymentResponse.getObject().response;
-		var result = {
-			name: paymentResponseObj.buyer_name || '',
-			cardNumber: paymentResponseObj.card_number,
-			cardType: paymentResponseObj.card_name,
-			token: paymentResponseObj.customer_uid,
-			creditCardPGProvider: paymentResponseObj.pg_provider
-		};
-		res.setViewData(result);
-		this.on('route:BeforeComplete', function (req, res) { // eslint-disable-line no-shadow
-			var CustomerMgr = require('dw/customer/CustomerMgr');
-			var Transaction = require('dw/system/Transaction');
-
-			var customer = CustomerMgr.getCustomerByCustomerNumber(
-				profile.customerNo
-			);
-			var wallet = customer.getProfile().getWallet();
-
-			Transaction.wrap(function () {
-				var paymentInstrument = wallet.createPaymentInstrument(dwOrderPaymentInstrument.METHOD_CREDIT_CARD);
-				paymentInstrument.setCreditCardHolder(result.name);
-				paymentInstrument.setCreditCardNumber(result.cardNumber);
-				paymentInstrument.setCreditCardType(result.cardType);
-				paymentInstrument.setCreditCardToken(result.token);
-				// store the iamport credit card in custom attribute because system attribtue will convert in mask with last four digits.
-				paymentInstrument.custom.iamportCreditCardNumber = result.cardNumber;
-				paymentInstrument.custom.iamportCreditCardPG = result.creditCardPGProvider;
-			});
-
-			// Send account edited email
-			accountHelpers.sendAccountEditedEmail(customer.profile);
-
+	try {
+		// It is used when making a payment with the saved billing key.
+		var paymentResponse = iamportServices.subscribePayment.call(requestBody);
+		if (!paymentResponse.isOk() || paymentResponse.getObject().message) {
+			var iamportResponseError = '';
+			var errorcode = '';
+			iamportResponseError = paymentResponse.errorMessage;
+			if (paymentResponse.msg && paymentResponse.errorMessage) {
+				errorcode = JSON.parse(paymentResponse.errorMessage).code;
+				iamportResponseError = new CustomError({ status: errorcode }).message;
+			} else if (paymentResponse.getObject() != null && paymentResponse.getObject().message) {
+				iamportResponseError = paymentResponse.getObject().message;
+				errorcode = paymentResponse.getObject().code;
+				iamportResponseError = new CustomError({ status: errorcode }).message;
+			}
+			iamportLogger.error('Subscibe Payment request failed: {0}.', JSON.stringify(iamportResponseError));
 			res.json({
-				error: false,
-				redirectUrl: URLUtils.url('PaymentInstruments-List').toString()
+				error: true,
+				errorMsg: iamportResponseError,
+				redirectUrl: URLUtils.url('PaymentInstruments-List', 'code', errorcode).toString()
 			});
-		});
+		} else {
+			var paymentResponseObj = paymentResponse.getObject().response;
+			var result = {
+				name: paymentResponseObj.buyer_name || '',
+				cardNumber: paymentResponseObj.card_number,
+				cardType: paymentResponseObj.card_name,
+				token: paymentResponseObj.customer_uid,
+				creditCardPGProvider: paymentResponseObj.pg_provider
+			};
+			res.setViewData(result);
+			this.on('route:BeforeComplete', function (req, res) { // eslint-disable-line no-shadow
+				var CustomerMgr = require('dw/customer/CustomerMgr');
+				var Transaction = require('dw/system/Transaction');
+
+				var customer = CustomerMgr.getCustomerByCustomerNumber(
+					profile.customerNo
+				);
+				var wallet = customer.getProfile().getWallet();
+
+				Transaction.wrap(function () {
+					var paymentInstrument = wallet.createPaymentInstrument(dwOrderPaymentInstrument.METHOD_CREDIT_CARD);
+					paymentInstrument.setCreditCardHolder(result.name);
+					paymentInstrument.setCreditCardNumber(result.cardNumber);
+					paymentInstrument.setCreditCardType(result.cardType);
+					paymentInstrument.setCreditCardToken(result.token);
+					// store the iamport credit card in custom attribute because system attribtue will convert in mask with last four digits.
+					paymentInstrument.custom.iamportCreditCardNumber = result.cardNumber;
+					paymentInstrument.custom.iamportCreditCardPG = result.creditCardPGProvider;
+				});
+
+				// Send account edited email
+				accountHelpers.sendAccountEditedEmail(customer.profile);
+
+				res.json({
+					error: false,
+					redirectUrl: URLUtils.url('PaymentInstruments-List').toString()
+				});
+			});
+		}
+	} catch (e) {
+		iamportLogger.error('Iamport-SaveBillingKey: \n{0}: {1}', e.message, e.stack);
 	}
 
 	return next();

@@ -117,8 +117,34 @@ const subscribePayment = LocalServiceRegistry.createService('iamport_subscribePa
 		return ServiceMock.subscribePayment;
 	}
 });
+
+/**
+ * Deleting the buyer's billing key information (delete the billing key from the DB).
+ * @returns {Object} returns the response from iamport
+ */
+const deleteSubscribePayment = LocalServiceRegistry.createService('iamport_delete_subscribePayment', {
+	createRequest: function (svc, args) {
+		let credential = svc.getConfiguration().getCredential();
+		let auth = getAuthAccessToken.call(credential);
+		let token = auth.isOk() && auth.object.response.access_token;
+
+		svc.setURL(svc.getURL().toString() + '/' + args.customerUid);
+		svc.setAuthentication('NONE');
+		svc.setRequestMethod('DELETE');
+		svc.addHeader('Content-Type', 'application/json');
+		svc.addHeader('Authorization', token);
+	},
+	parseResponse: function (svc, response) {
+		return JSON.parse(response.text);
+	},
+	mockFull: function (svc, args) {
+		return ServiceMock.deleteSubscribePayment;
+	}
+});
 module.exports = {
 	getPaymentInformation: getPaymentInformation,
 	registerAndValidatePayment: registerAndValidatePayment,
-	subscribePayment: subscribePayment
+	subscribePayment: subscribePayment,
+	deleteSubscribePayment: deleteSubscribePayment
+
 };

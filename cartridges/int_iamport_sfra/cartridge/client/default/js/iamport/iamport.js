@@ -2,6 +2,7 @@
 
 var IAMPORT_ARGS = { MID: $('input[name="merchantID"]').val()
 	.toString().replace(/['"]+/g, '') };
+var notification = require('../iamport/notification');
 
 /**
  *
@@ -22,20 +23,28 @@ function requestSubscriptionPayment(item, paymentPayload) {
 				data: paymentResponse,
 				success: function (data) {
 					if (data.error) {
-						console.log(data);
+						notification({
+							target: '.js-error-alert',
+							message: data.errorMsg,
+							classes: 'alert text-center',
+							dismissTime: 5000
+						});
 					} else {
 						window.location.href = data.redirectUrl;
 					}
 				},
 				error: function () {
+					window.location.reload();
 				}
 			});
 		} else if (paymentResponse.error_code !== 'STOP') {
 			// Error occurred before page is redirected
-			var msg = 'Unable to process request due to an error.';
-			msg += 'Error message : ' + paymentResponse.error_msg;
-			alert(msg);
-			window.location.reload();
+			notification({
+				target: '.js-error-alert',
+				message: paymentResponse.error_msg,
+				classes: 'alert text-center',
+				dismissTime: 5000
+			});
 		}
 	});
 }
