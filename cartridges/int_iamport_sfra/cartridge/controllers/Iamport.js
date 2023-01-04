@@ -343,7 +343,7 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 	var generalPaymentWebhookUrl = '';
 	var order = {
 		totalGrossPrice: {
-			value: iamportConstants.TEST_AMOUNT
+			value: iamportConstants.TEST_SUBSCRIBE_AMOUNT
 		},
 		customerName: profile.firstName + ' ' + profile.lastName,
 		orderNo: 'authsave_' + iamportHelpers.generateString(8),

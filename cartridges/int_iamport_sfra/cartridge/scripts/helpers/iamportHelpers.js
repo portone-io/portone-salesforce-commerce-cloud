@@ -164,8 +164,8 @@ function handleSubcribePaymentRequest(req, customerUid) {
 	var CustomError = require('*/cartridge/errors/customError');
 	var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 	var merchantUid = 'authsave_' + generateString(8);
-	var payingAmount = iamportConstants.TEST_AMOUNT;
-	var orderName = iamportConstants.SUBCRIBE_ORDER_NAME;
+	var payingAmount = iamportConstants.TEST_SUBSCRIBE_AMOUNT;
+	var orderName = iamportConstants.SUBSCRIBE_ORDER_NAME;
 	var profile = req.currentCustomer.profile;
 	var profileName = profile.firstName + ' ' + profile.lastName;
 	var phone = !empty(profile.phone) ? profile.phone : '0000000000';
