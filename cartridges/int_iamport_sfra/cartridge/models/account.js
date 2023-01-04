@@ -13,13 +13,14 @@ function getPayment(wallet) {
 		var paymentInstruments = wallet.paymentInstruments;
 		if (paymentInstruments && paymentInstruments.length > 0) {
 			var paymentInstrument = paymentInstruments[0];
+			var paymentObj = 'raw' in paymentInstrument ? paymentInstrument.raw : paymentInstrument;
 			return {
 				maskedCreditCardNumber: paymentInstrument.maskedCreditCardNumber,
 				creditCardType: paymentInstrument.creditCardType,
 				creditCardExpirationMonth: paymentInstrument.creditCardExpirationMonth,
 				creditCardExpirationYear: paymentInstrument.creditCardExpirationYear,
-				iamportCreditCardNumber: paymentInstrument.raw.custom.iamportCreditCardNumber || '',
-				iamportCreditCardPG: paymentInstrument.raw.custom.iamportCreditCardPG || ''
+				iamportCreditCardNumber: 'iamportCreditCardNumber' in paymentObj.custom ? paymentObj.custom.iamportCreditCardNumber : '',
+				iamportCreditCardPG: 'iamportCreditCardPG' in paymentObj ? paymentObj.custom.iamportCreditCardPG : ''
 			};
 		}
 	}
@@ -35,6 +36,7 @@ function getCustomerPaymentInstruments(userPaymentInstruments) {
 	var paymentInstruments;
 
 	paymentInstruments = userPaymentInstruments.map(function (paymentInstrument) {
+		var paymentObj = 'raw' in paymentInstrument ? paymentInstrument.raw : paymentInstrument;
 		var result = {
 			creditCardHolder: paymentInstrument.creditCardHolder,
 			maskedCreditCardNumber: paymentInstrument.maskedCreditCardNumber,
@@ -42,8 +44,8 @@ function getCustomerPaymentInstruments(userPaymentInstruments) {
 			creditCardExpirationMonth: paymentInstrument.creditCardExpirationMonth,
 			creditCardExpirationYear: paymentInstrument.creditCardExpirationYear,
 			UUID: paymentInstrument.UUID,
-			iamportCreditCardNumber: paymentInstrument.raw.custom.iamportCreditCardNumber || '',
-			iamportCreditCardPG: paymentInstrument.raw.custom.iamportCreditCardPG || ''
+			iamportCreditCardNumber: 'iamportCreditCardNumber' in paymentObj.custom ? paymentObj.custom.iamportCreditCardNumber : '',
+			iamportCreditCardPG: 'iamportCreditCardPG' in paymentObj ? paymentObj.custom.iamportCreditCardPG : ''
 		};
 
 		result.cardTypeImage = {

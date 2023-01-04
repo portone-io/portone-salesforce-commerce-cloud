@@ -63,7 +63,7 @@ server.get('GetList', userLoggedIn.validateLoggedIn, consentTracking.consent, fu
 	var AccountModel = require('*/cartridge/models/account');
 	var parameters = req.querystring;
 	var paymentId = parameters.imp_uid;
-	var sucess = parameters.imp_success;
+	var success = parameters.imp_success;
 	var merchantUid = parameters.merchant_uid;
 	var customerUid = '';
 	// not allow to customer hit the same endpoint after saved the card details.
@@ -72,7 +72,7 @@ server.get('GetList', userLoggedIn.validateLoggedIn, consentTracking.consent, fu
 		res.redirect(URLUtils.url('PaymentInstruments-List'));
 		return next();
 	}
-	if (sucess === 'true') {
+	if (success === 'true') {
 		var paymentData = iamportServices.getPaymentInformation.call({
 			paymentID: paymentId
 		});
