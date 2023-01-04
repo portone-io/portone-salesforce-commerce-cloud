@@ -1,10 +1,10 @@
 'use strict';
 
-const server = require('server');
+var server = require('server');
 server.extend(module.superModule);
 
-let csrfProtection = require('*/cartridge/scripts/middleware/csrf');
-const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 var Site = require('dw/system/Site');
 
 /**
