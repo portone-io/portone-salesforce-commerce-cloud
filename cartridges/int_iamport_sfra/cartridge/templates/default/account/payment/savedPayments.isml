@@ -12,6 +12,7 @@
 	                        <isset name="payment" value="${paymentInstrument}" scope="page">
 	                        <isinclude template="account/payment/savedPayment"/>
 	                    </div>
+						<iscomment> displaying iamport credit card  in delete popup </iscomment>
 	                    <button
 	                        type="button"
 	                        class="remove-btn remove-payment btn-light"

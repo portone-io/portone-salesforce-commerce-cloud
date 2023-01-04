@@ -26,6 +26,9 @@
                           ${Resource.msg('link.profile.backtomyaccount','account',null)}
                         </a>
                     </div>
+					<iscomment>
+						pass the endpoint for get iamport payment popup and get iamport merchant id in client js
+					</iscomment>
                     <div class="col">
 						<input type="hidden" name="merchantID" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('iamport_merchantID')}">
                         <button data-href="${URLUtils.url('Iamport-RequestBillingKey')}" class="btn btn-save btn-block btn-primary btn-add-payment-card" aria-label="${Resource.msg('label.payment.addnewpayment','payment',null)}">${Resource.msg('button.addnew','payment',null)}</button>
