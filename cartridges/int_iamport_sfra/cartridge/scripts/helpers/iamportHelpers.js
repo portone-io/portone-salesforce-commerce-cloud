@@ -10,13 +10,17 @@ const Site = require('dw/system/Site');
  * @param {string} selectedPaymentMethod - Id of the selected payment method
  * @param {string} noticeUrl - webhook receive URL. Default is undefined
  * @param {string} mobileRedirectUrl - redirect url(order confirmation page) for mobile
+ * @param {string} selectedPG - pass payment gateway with merchant id.
  * @returns {Object} - The payment resources
  */
-function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobileRedirectUrl) {
+function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobileRedirectUrl, selectedPG) {
 	let paymentInformation = {
 		pg: Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value,
 		pay_method: selectedPaymentMethod
 	};
+	if (selectedPG) {
+		paymentInformation.pg = selectedPG;
+	}
 	if (order.totalGrossPrice) {
 		// Converting to whole numbers as Korean currency does not support decimal numbers.
 		paymentInformation.amount = Number(order.totalGrossPrice.value.toFixed());
@@ -149,6 +153,72 @@ function generateString(length) {
 	return result;
 }
 
+/**
+ * @param {dw.system.Request} req - system request object
+ * @param {string} customerUid get the customer uid in client side response
+ * @param {string} impUid get the imp_uid in mobile response
+ * @returns {Object} - Response of Subcribe Payment
+ */
+function handleSubcribePaymentRequest(req, customerUid) {
+	var iamportServices = require('*/cartridge/scripts/service/iamportService');
+	var CustomError = require('*/cartridge/errors/customError');
+	var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+	var merchantUid = 'authsave_' + generateString(8);
+	var payingAmount = iamportConstants.TEST_AMOUNT;
+	var orderName = iamportConstants.SUBCRIBE_ORDER_NAME;
+	var profile = req.currentCustomer.profile;
+	var profileName = profile.firstName + ' ' + profile.lastName;
+	var phone = !empty(profile.phone) ? profile.phone : '0000000000';
+	var requestBody = {
+		customer_uid: customerUid,
+		merchant_uid: merchantUid,
+		amount: payingAmount,
+		name: orderName,
+		buyer_name: profileName,
+		buyer_email: profile.email,
+		buyer_tel: phone
+	};
+
+	var paymentResponse = iamportServices.subscribePayment.call(requestBody);
+	if (!paymentResponse.isOk() || paymentResponse.getObject().message) {
+		var iamportResponseError = paymentResponse.errorMessage;
+		var errorcode = paymentResponse.error;
+		if (paymentResponse.msg && paymentResponse.errorMessage) {
+			errorcode = JSON.parse(paymentResponse.errorMessage).code;
+		} else if (paymentResponse.getObject() != null && paymentResponse.getObject().message) {
+			errorcode = paymentResponse.getObject().code;
+		}
+		iamportResponseError = new CustomError({ status: errorcode }).message;
+		iamportLogger.error('IamportHelpers-Subscibe Payment request failed: {0}.', JSON.stringify(iamportResponseError));
+	} else if (paymentResponse.isOk() && paymentResponse.getObject().message === null) {
+		var paymentResponseObj = paymentResponse.getObject().response;
+		var CustomerMgr = require('dw/customer/CustomerMgr');
+		var Transaction = require('dw/system/Transaction');
+		var dwOrderPaymentInstrument = require('dw/order/PaymentInstrument');
+		var accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
+
+		var customer = CustomerMgr.getCustomerByCustomerNumber(
+			profile.customerNo
+		);
+		var wallet = customer.getProfile().getWallet();
+
+		Transaction.wrap(function () {
+			var paymentInstrument = wallet.createPaymentInstrument(dwOrderPaymentInstrument.METHOD_CREDIT_CARD);
+			paymentInstrument.setCreditCardHolder(paymentResponseObj.buyer_name || '');
+			paymentInstrument.setCreditCardNumber(paymentResponseObj.card_number);
+			paymentInstrument.setCreditCardType(paymentResponseObj.card_name);
+			paymentInstrument.setCreditCardToken(paymentResponseObj.customer_uid);
+			// store the iamport credit card in custom attribute because system attribtue will convert in mask with last four digits.
+			paymentInstrument.custom.iamportCreditCardNumber = paymentResponseObj.card_number;
+			paymentInstrument.custom.iamportCreditCardPG = paymentResponseObj.pg_provider;
+		});
+
+		// Send account edited email
+		accountHelpers.sendAccountEditedEmail(customer.profile);
+	}
+	return paymentResponse;
+}
+
 module.exports = {
 	preparePaymentResources: preparePaymentResources,
 	checkFraudPayments: checkFraudPayments,
@@ -156,5 +226,6 @@ module.exports = {
 	mapVbankResponseForLogging: mapVbankResponseForLogging,
 	handleErrorFromPaymentGateway: handleErrorFromPaymentGateway,
 	getTranslatedMessage: getTranslatedMessage,
-	generateString: generateString
+	generateString: generateString,
+	handleSubcribePaymentRequest: handleSubcribePaymentRequest
 };

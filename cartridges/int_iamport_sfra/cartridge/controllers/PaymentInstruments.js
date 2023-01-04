@@ -3,6 +3,7 @@
 var server = require('server');
 server.extend(module.superModule);
 var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
+var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
 
 /**
@@ -41,6 +42,74 @@ server.append('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req,
 		}
 	}
 	next();
+});
+
+/**
+ * PaymentInstruments-GetList : The endpoint PaymentInstruments-GetList is the endpoint that renders a list of shopper saved payment instruments from m_redirectUrl. The rendered list displays the masked card number and payemnt instrument type
+ * @name Custom/PaymentInstruments-GetList
+ * @function
+ * @memberof PaymentInstruments
+ * @param {middleware} - userLoggedIn.validateLoggedIn
+ * @param {middleware} - consentTracking.consent
+ * @param {category} - sensitive
+ * @param {renders} - isml
+ * @param {serverfunction} - get
+ */
+server.get('GetList', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
+	var iamportServices = require('*/cartridge/scripts/service/iamportService');
+	var iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
+	var URLUtils = require('dw/web/URLUtils');
+	var Resource = require('dw/web/Resource');
+	var AccountModel = require('*/cartridge/models/account');
+	var parameters = req.querystring;
+	var paymentId = parameters.imp_uid;
+	var sucess = parameters.imp_success;
+	var merchantUid = parameters.merchant_uid;
+	var customerUid = '';
+	// not allow to customer hit the same endpoint after saved the card details.
+	var lastPaymentId = Object.prototype.hasOwnProperty.call(req.session.raw.custom, 'paymentId') ? req.session.raw.custom.paymentId : null;
+	if (lastPaymentId === paymentId) {
+		res.redirect(URLUtils.url('PaymentInstruments-List'));
+		return next();
+	}
+	if (sucess === 'true') {
+		var paymentData = iamportServices.getPaymentInformation.call({
+			paymentID: paymentId
+		});
+		if (paymentData.isOk() && paymentData.getObject().message == null) {
+			var response = paymentData.getObject().response;
+			var responseMerchantId = response.merchant_uid;
+			customerUid = response.customer_uid;
+			if (merchantUid === responseMerchantId) {
+				// It is used when making a payment with the saved billing key.
+				iamportHelpers.handleSubcribePaymentRequest(req, customerUid);
+				req.session.raw.custom.paymentId = paymentId;
+			}
+		}
+	}
+
+	var paymentInstruments = AccountModel.getCustomerPaymentInstruments(
+		req.currentCustomer.wallet.paymentInstruments
+	);
+
+	res.render('account/payment/payment', {
+		paymentInstruments: paymentInstruments,
+		noSavedPayments: paymentInstruments.length === 0,
+		actionUrl: URLUtils.url('PaymentInstruments-DeletePayment').toString(),
+		addPaymentUrl: URLUtils.url('PaymentInstruments-AddPayment').toString(),
+		breadcrumbs: [
+			{
+				htmlValue: Resource.msg('global.home', 'common', null),
+				url: URLUtils.home().toString()
+			},
+			{
+				htmlValue: Resource.msg('page.title.myaccount', 'account', null),
+				url: URLUtils.url('Account-Show').toString()
+			}
+		]
+	});
+
+	return next();
 });
 
 module.exports = server.exports();

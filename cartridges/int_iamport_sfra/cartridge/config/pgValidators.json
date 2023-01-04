@@ -2,7 +2,8 @@
     "nice": {
         "name": "NICE",
         "paymentMethodsAttributeID": "iamport_nicePaymentMethods",
-        "merchantAttributeID": "iamport_niceMerchantID",
+        "generalStoreID": "iamport_nice_general_storeID",
+		"subscriptionStoreID": "iamport_nice_subscription_storeID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -29,7 +30,8 @@
     "html5_inicis": {
         "name": "KG Inicis",
         "paymentMethodsAttributeID": "iamport_inicisPaymentMethods",
-        "merchantAttributeID": "iamport_inicisMerchantID",
+        "generalStoreID": "iamport_inicis_general_storeID",
+		"subscriptionStoreID": "iamport_inicis_subscription_storeID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -68,7 +70,8 @@
     "kcp": {
         "name": "KCP",
         "paymentMethodsAttributeID": "iamport_kcpPaymentMethods",
-        "merchantAttributeID": "iamport_kcpMerchantID",
+        "generalStoreID": "iamport_kcp_general_storeID",
+		"subscriptionStoreID": "iamport_kcp_subscription_storeID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -107,7 +110,8 @@
     "uplus": {
         "name": "Toss",
         "paymentMethodsAttributeID": "iamport_tossPaymentMethods",
-        "merchantAttributeID": "iamport_tossMerchantID",
+        "generalStoreID": "iamport_toss_general_storeID",
+		"subscriptionStoreID": "iamport_toss_subscription_storeID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -134,7 +138,8 @@
     "kicc": {
         "name": "KICC",
         "paymentMethodsAttributeID": "iamport_kiccPaymentMethods",
-        "merchantAttributeID": "iamport_kiccMerchantID",
+        "generalStoreID": "iamport_kicc_general_storeID",
+		"subscriptionStoreID": "iamport_kicc_subscription_storeID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -157,7 +162,8 @@
     "danal_tpay": {
         "name": "Danal",
         "paymentMethodsAttributeID": "iamport_danalPaymentMethods",
-        "merchantAttributeID": "iamport_danalMerchantID",
+        "generalStoreID": "iamport_danal_general_storeID",
+		"subscriptionStoreID": "iamport_danal_subscription_storeID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -180,7 +186,8 @@
     "kakaopay": {
         "name": "KAKAOPAY",
         "paymentMethodsAttributeID": "iamport_kakaoPayPaymentMethods",
-        "merchantAttributeID": "iamport_kakaoPayMerchantID",
+        "generalStoreID": "iamport_kakaoPay_general_storeID",
+		"subscriptionStoreID": "iamport_kakaoPay_subscription_storeID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -197,7 +204,8 @@
     "naverpay": {
         "name": "Naver PAY",
         "paymentMethodsAttributeID": "iamport_naverPayPaymentMethods",
-        "merchantAttributeID": "iamport_naverPayMerchantID",
+        "generalStoreID": "iamport_naverPay_general_storeID",
+		"subscriptionStoreID": "iamport_naverPay_subscription_storeID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -214,7 +222,8 @@
     "payco": {
         "name": "PAYCO",
         "paymentMethodsAttributeID": "iamport_paycoPaymentMethods",
-        "merchantAttributeID": "iamport_paycoMerchantID",
+        "generalStoreID": "iamport_payco_general_storeID",
+		"subscriptionStoreID": "iamport_payco_subscription_storeID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -231,7 +240,8 @@
     "smilepay": {
         "name": "SmilePay",
         "paymentMethodsAttributeID": "iamport_smilePayPaymentMethods",
-        "merchantAttributeID": "iamport_smilePayMerchantID",
+        "generalStoreID": "iamport_smilePay_general_storeID",
+		"subscriptionStoreID": "iamport_smilePay_subscription_storeID",
         "paymentMethods": [
             {
                 "id": "smilepay",
@@ -242,7 +252,8 @@
     "smartro": {
         "name": "Smartro",
         "paymentMethodsAttributeID": "iamport_smartroPaymentMethods",
-        "merchantAttributeID": "iamport_smartroMerchantID",
+        "generalStoreID": "iamport_smartro_general_storeID",
+		"subscriptionStoreID": "iamport_smartro_subscription_storeID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -265,7 +276,8 @@
     "settleBank": {
         "name": "Settle Bank",
         "paymentMethodsAttributeID": "iamport_settleBankPaymentMethods",
-        "merchantAttributeID": "iamport_settleBankMerchantID",
+        "generalStoreID": "iamport_settle_general_storeID",
+		"subscriptionStoreID": "iamport_settle_subscription_storeID",
         "paymentMethods": [
             {
                 "id": "card",
@@ -288,7 +300,8 @@
     "payjoa": {
         "name": "PAYJOA",
         "paymentMethodsAttributeID": "iamport_spayjoaPaymentMethods",
-        "merchantAttributeID": "iamport_payjoaoMerchantID",
+        "generalStoreID": "iamport_payjoa_general_storeID",
+		"subscriptionStoreID": "iamport_payjoa_subscription_storeID",
         "paymentMethods": [
             {
                 "id": "card",
