@@ -273,7 +273,7 @@
             }
         ]
     },
-    "settleBank": {
+    "settle": {
         "name": "Settle Bank",
         "paymentMethodsAttributeID": "iamport_settleBankPaymentMethods",
         "generalStoreID": "iamport_settle_general_storeID",
@@ -299,7 +299,7 @@
     },
     "payjoa": {
         "name": "PAYJOA",
-        "paymentMethodsAttributeID": "iamport_spayjoaPaymentMethods",
+        "paymentMethodsAttributeID": "iamport_payjoaPaymentMethods",
         "generalStoreID": "iamport_payjoa_general_storeID",
 		"subscriptionStoreID": "iamport_payjoa_subscription_storeID",
         "paymentMethods": [
