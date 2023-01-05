@@ -115,7 +115,7 @@
                 <type>enum-of-string</type>
                 <select-multiple-flag>true</select-multiple-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">Credit Card</display>
                         <value>card</value>
                     </value-definition>
@@ -180,7 +180,7 @@
                 <type>enum-of-string</type>
                 <select-multiple-flag>true</select-multiple-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">Credit Card</display>
                         <value>card</value>
                     </value-definition>
@@ -235,7 +235,7 @@
                 <type>enum-of-string</type>
                 <select-multiple-flag>true</select-multiple-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">Credit Card</display>
                         <value>card</value>
                     </value-definition>
@@ -275,7 +275,7 @@
                 <type>enum-of-string</type>
                 <select-multiple-flag>true</select-multiple-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">Credit Card</display>
                         <value>card</value>
                     </value-definition>
@@ -319,7 +319,7 @@
                 <type>enum-of-string</type>
                 <select-multiple-flag>true</select-multiple-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">Credit Card</display>
                         <value>card</value>
                     </value-definition>
@@ -358,7 +358,7 @@
                 <type>enum-of-string</type>
                 <select-multiple-flag>true</select-multiple-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">Credit Card</display>
                         <value>card</value>
                     </value-definition>
@@ -397,7 +397,7 @@
                 <type>enum-of-string</type>
                 <select-multiple-flag>true</select-multiple-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">Credit Card</display>
                         <value>card</value>
                     </value-definition>
@@ -437,7 +437,7 @@
                 <type>enum-of-string</type>
                 <select-multiple-flag>true</select-multiple-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">Credit Card</display>
                         <value>card</value>
                     </value-definition>
@@ -477,7 +477,7 @@
                 <type>enum-of-string</type>
                 <select-multiple-flag>true</select-multiple-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">Credit Card</display>
                         <value>card</value>
                     </value-definition>
@@ -516,7 +516,7 @@
                 <type>enum-of-string</type>
                 <select-multiple-flag>true</select-multiple-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">Credit Card</display>
                         <value>card</value>
                     </value-definition>
@@ -556,7 +556,7 @@
                 <type>enum-of-string</type>
                 <select-multiple-flag>true</select-multiple-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">Credit Card</display>
                         <value>card</value>
                     </value-definition>
@@ -595,7 +595,7 @@
                 <type>enum-of-string</type>
                 <select-multiple-flag>true</select-multiple-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">Credit Card</display>
                         <value>card</value>
                     </value-definition>
@@ -635,10 +635,10 @@
                 <type>enum-of-string</type>
                 <select-multiple-flag>true</select-multiple-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">smilePay Account</display>
                         <value>smilepay</value>
-                    </value-definition> 
+                    </value-definition>
                 </value-definitions>
             </attribute-definition>
 
