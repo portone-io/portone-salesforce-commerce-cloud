@@ -1,13 +1,14 @@
 'use strict';
 
-const server = require('server');
-const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+var server = require('server');
+var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
+var iamportConstants = require('*/cartridge/constants/iamportConstants');
 
 server.post('SfNotifyTest', function (req, res, next) {
 	const OrderMgr = require('dw/order/OrderMgr');
 	const HookMgr = require('dw/system/HookMgr');
 	const Resource = require('dw/web/Resource');
-	const iamportConstants = require('*/cartridge/constants/iamportConstants');
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
@@ -287,6 +288,120 @@ server.post('SfNotifyHook', function (req, res, next) {
 		res.print(err.message);
 		return next();
 	}
+});
+
+/**
+ * Create Iamport Subscription request for Request billing key.
+ * @param {middleware} - userLoggedIn.validateLoggedInAjax
+ */
+server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
+	var URLUtils = require('dw/web/URLUtils');
+	var Site = require('dw/system/Site');
+	var Resource = require('dw/web/Resource');
+	var iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
+	var pgValidators = require('*/cartridge/config/pgValidators');
+	var selectedCardPaymentMethod = 'card';
+	var paymentGatewayID = Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID)
+		|| iamportConstants.PG_DEFAULT_FALLBACK;
+	var paymentGateway = pgValidators[paymentGatewayID];
+	var storeID = Site.getCurrent().getCustomPreferenceValue(paymentGateway.subscriptionStoreID);
+	var selectedPG = !empty(storeID) ? paymentGatewayID.value + '.' + storeID : paymentGatewayID.value;
+	var selectedPaymentMethods = Site.getCurrent().getCustomPreferenceValue(paymentGateway.paymentMethodsAttributeID);
+	var validPaymentMethod = false;
+	var enablePaymentWindow = false;
+	var errorMsg = Resource.msg('error.payment.nopaymentselected', 'checkout', null);
+	var paymentMethods = paymentGateway.paymentMethods;
+	for (var i = 0; i < selectedPaymentMethods.length; i++) {
+		if (selectedCardPaymentMethod === selectedPaymentMethods[i].value) {
+			validPaymentMethod = true;
+			break;
+		}
+	}
+	for (var j = 0; j < paymentMethods.length; j++) {
+		if (selectedCardPaymentMethod === paymentMethods[j].id && paymentMethods[j].paymentWindow) {
+			enablePaymentWindow = true;
+			break;
+		}
+	}
+	if (validPaymentMethod && !enablePaymentWindow) {
+		errorMsg = Resource.msg('error.payment.nopaymentwindow', 'checkout', null);
+	}
+	if (!validPaymentMethod || !enablePaymentWindow) {
+		res.json({
+			error: true,
+			errorMsg: errorMsg,
+			redirectUrl: URLUtils.url('PaymentInstruments-List').toString()
+		});
+		return next();
+	}
+	var data = res.getViewData();
+	if (data && !data.loggedin) {
+		res.json();
+		return next();
+	}
+	var profile = req.currentCustomer.profile;
+	var generalPaymentWebhookUrl = '';
+	var order = {
+		totalGrossPrice: {
+			value: iamportConstants.TEST_SUBSCRIBE_AMOUNT
+		},
+		customerName: profile.firstName + ' ' + profile.lastName,
+		orderNo: 'authsave_' + iamportHelpers.generateString(8),
+		customerEmail: profile.email,
+		billingAddress: {
+			phone: !empty(profile.phone) ? profile.phone : '0000000000',
+			fullName: profile.firstName + ' ' + profile.lastName
+		}
+	};
+	var mobileRedirectUrl = URLUtils.abs('PaymentInstruments-GetList').toString();
+	var paymentResources = iamportHelpers.preparePaymentResources(order, selectedCardPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedPG);
+	paymentResources.customer_uid = iamportHelpers.generateString(5) + '_' + profile.customerNo;
+	res.json({
+		error: false,
+		paymentResources: paymentResources,
+		validationUrl: URLUtils.url('Iamport-SaveBillingKey').toString()
+	});
+	return next();
+});
+
+/**
+ * Register the custom Uid in Iamport portal.
+ */
+server.post('SaveBillingKey', function (req, res, next) {
+	var iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
+	var CustomError = require('*/cartridge/errors/customError');
+	var URLUtils = require('dw/web/URLUtils');
+	var paymentInformation = req.form;
+	var customerUid = paymentInformation.customer_uid;
+	try {
+		// It is used when making a payment with the saved billing key.
+		var paymentResponse = iamportHelpers.handleSubcribePaymentRequest(req, customerUid);
+		if (!paymentResponse.isOk() || paymentResponse.getObject().message) {
+			var iamportResponseError = '';
+			var errorcode = paymentResponse.error;
+			iamportResponseError = paymentResponse.errorMessage;
+			if (paymentResponse.msg && paymentResponse.errorMessage) {
+				errorcode = JSON.parse(paymentResponse.errorMessage).code;
+			} else if (paymentResponse.getObject() != null && paymentResponse.getObject().message) {
+				errorcode = paymentResponse.getObject().code;
+			}
+			iamportResponseError = new CustomError({ status: errorcode }).message;
+			res.json({
+				error: true,
+				errorMsg: iamportResponseError,
+				redirectUrl: URLUtils.url('PaymentInstruments-List').toString()
+			});
+		} else {
+			res.json({
+				error: false,
+				redirectUrl: URLUtils.url('PaymentInstruments-List').toString()
+			});
+		}
+	} catch (e) {
+		iamportLogger.error('Iamport-SaveBillingKey: \n{0}: {1}', e.message, e.stack);
+	}
+
+	return next();
 });
 
 module.exports = server.exports();

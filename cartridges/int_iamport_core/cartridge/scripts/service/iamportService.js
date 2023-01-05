@@ -93,7 +93,58 @@ const getPaymentInformation = LocalServiceRegistry.createService('iamport_getPay
 	}
 });
 
+/**
+ * It is used when making a first/repayment with the saved billing key.
+ * @returns {Object} returns the response from iamport
+ */
+const subscribePayment = LocalServiceRegistry.createService('iamport_subscribePayment', {
+	createRequest: function (svc, args) {
+		let credential = svc.getConfiguration().getCredential();
+		let auth = getAuthAccessToken.call(credential);
+		let token = auth.isOk() && auth.object.response.access_token;
+
+		svc.setURL(svc.getURL());
+		svc.setAuthentication('NONE');
+		svc.setRequestMethod('POST');
+		svc.addHeader('Content-Type', 'application/json');
+		svc.addHeader('Authorization', token);
+		return JSON.stringify(args);
+	},
+	parseResponse: function (svc, response) {
+		return JSON.parse(response.text);
+	},
+	mockFull: function (svc, args) {
+		return ServiceMock.subscribePayment;
+	}
+});
+
+/**
+ * Deleting the buyer's billing key information (delete the billing key from the DB).
+ * @returns {Object} returns the response from iamport
+ */
+const deleteSubscribePayment = LocalServiceRegistry.createService('iamport_delete_subscribePayment', {
+	createRequest: function (svc, args) {
+		let credential = svc.getConfiguration().getCredential();
+		let auth = getAuthAccessToken.call(credential);
+		let token = auth.isOk() && auth.object.response.access_token;
+
+		svc.setURL(svc.getURL().toString() + '/' + args.customerUid);
+		svc.setAuthentication('NONE');
+		svc.setRequestMethod('DELETE');
+		svc.addHeader('Content-Type', 'application/json');
+		svc.addHeader('Authorization', token);
+	},
+	parseResponse: function (svc, response) {
+		return JSON.parse(response.text);
+	},
+	mockFull: function (svc, args) {
+		return ServiceMock.deleteSubscribePayment;
+	}
+});
 module.exports = {
 	getPaymentInformation: getPaymentInformation,
-	registerAndValidatePayment: registerAndValidatePayment
+	registerAndValidatePayment: registerAndValidatePayment,
+	subscribePayment: subscribePayment,
+	deleteSubscribePayment: deleteSubscribePayment
+
 };

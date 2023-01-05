@@ -1,10 +1,11 @@
 'use strict';
 
-let csrfProtection = require('*/cartridge/scripts/middleware/csrf');
-const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
-
-const server = require('server');
+var server = require('server');
 server.extend(module.superModule);
+
+var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+var Site = require('dw/system/Site');
 
 /**
  *  Handle Ajax payment (and billing) form submit
@@ -362,6 +363,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	const iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	const iamportServices = require('*/cartridge/scripts/service/iamportService');
 	const CustomError = require('*/cartridge/errors/customError');
+	var pgValidators = require('*/cartridge/config/pgValidators');
+	var iamportConstants = require('*/cartridge/constants/iamportConstants');
 	let customError;
 
 	let currentBasket = BasketMgr.getCurrentBasket();
@@ -480,12 +483,17 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		});
 		return next();
 	}
-
+	// get the store id
+	var paymentGatewayID = Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID)
+		|| iamportConstants.PG_DEFAULT_FALLBACK;
+	var paymentGateway = pgValidators[paymentGatewayID];
+	var storeID = Site.getCurrent().getCustomPreferenceValue(paymentGateway.generalStoreID);
+	var selectedPG = !empty(storeID) ? paymentGatewayID.value + '.' + storeID : paymentGatewayID.value;
 	// retrieved the payment method id from the session
 	let selectedPaymentMethod = req.session.privacyCache.get('iamportPaymentMethod');
 	let generalPaymentWebhookUrl = URLUtils.abs('Iamport-SfNotifyHook').toString();
 	let mobileRedirectUrl = URLUtils.abs('Order-GetConfirmation', 'token', encodeURIComponent(order.orderToken)).toString();
-	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl);
+	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedPG);
 
 	// Pre-register payment before the client call for forgery protection
 	let paymentRegistered = iamportServices.registerAndValidatePayment.call({

@@ -18,6 +18,18 @@
         <password masked="true">********</password>
     </service-credential>
 
+	<service-credential service-credential-id="iamport_subscribePaymentCred">
+        <url>https://api.iamport.kr/subscribe/payments/again</url>
+        <user-id>5710432070117613</user-id>
+        <password encrypted="true" encryption-type="common.export">nxA31issv8YR0A/e8fM8HegZrFkOITViz6ZL/So7cRcLAnW9wweq81WKqwwtA9fGI9VEyNcbMzCy3HAjEyuADNqRsf8f2LoH+jnGeJ1rrix4EY+Nso7qJ0LpbMVjnzC6YrJQRoZ1h0DrbFnnNxge3w==</password>
+    </service-credential>
+
+	<service-credential service-credential-id="iamport_delete_subscribePaymentCred">
+        <url>https://api.iamport.kr/subscribe/customers</url>
+        <user-id>5710432070117613</user-id>
+        <password encrypted="true" encryption-type="common.export">RN+Evztou+4guHP/WLtqxOgZrFkOITViz6ZL/So7cRcLAnW9wweq81WKqwwtA9fGI9VEyNcbMzCy3HAjEyuADNqRsf8f2LoH+jnGeJ1rriymOAx3dj/sBrTMuQLU5emqvTjjBDcMDGdt6VFIty5PRA==</password>
+    </service-credential>
+
     <service-profile service-profile-id="iamport_authenticateProf">
         <timeout-millis>1000</timeout-millis>
         <rate-limit-enabled>false</rate-limit-enabled>
@@ -44,6 +56,26 @@
         <rate-limit-calls>0</rate-limit-calls>
         <rate-limit-millis>0</rate-limit-millis>
         <cb-enabled>true</cb-enabled>
+        <cb-calls>0</cb-calls>
+        <cb-millis>0</cb-millis>
+    </service-profile>
+
+	<service-profile service-profile-id="iamport_subscribePaymentProf">
+        <timeout-millis>0</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>0</cb-calls>
+        <cb-millis>0</cb-millis>
+    </service-profile>
+
+	<service-profile service-profile-id="iamport_delete_subscribePayment_Prof">
+        <timeout-millis>1000</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
         <cb-calls>0</cb-calls>
         <cb-millis>0</cb-millis>
     </service-profile>
@@ -79,6 +111,28 @@
         <mock-mode-enabled>true</mock-mode-enabled>
         <profile-id>iamport_validatePaymentProf</profile-id>
         <credential-id>iamport_validatePaymentCred</credential-id>
+    </service>
+
+	<service service-id="iamport_delete_subscribePayment">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>iamport_delete_subscribeP</log-prefix>
+        <comm-log-enabled>false</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>iamport_delete_subscribePayment_Prof</profile-id>
+        <credential-id>iamport_delete_subscribePaymentCred</credential-id>
+    </service>
+
+    <service service-id="iamport_subscribePayment">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>subscribePayment</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>iamport_subscribePaymentProf</profile-id>
+        <credential-id>iamport_subscribePaymentCred</credential-id>
     </service>
 
 </services>

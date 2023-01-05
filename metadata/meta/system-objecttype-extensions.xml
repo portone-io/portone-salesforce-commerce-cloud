@@ -146,6 +146,24 @@
                 </value-definitions>
             </attribute-definition>
 
+			<attribute-definition attribute-id="iamport_inicis_general_storeID">
+                <display-name xml:lang="x-default">Inicis General PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="iamport_inicis_subscription_storeID">
+                <display-name xml:lang="x-default">Inicis Subscription PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
             <attribute-definition attribute-id="iamport_enabledSFRA5">
                 <display-name xml:lang="x-default">Enable SFRA5 Version</display-name>
                 <type>boolean</type>
@@ -154,14 +172,7 @@
                 <default-value>false</default-value>
             </attribute-definition>
 
-            <attribute-definition attribute-id="iamport_inicisMerchantID">
-                <display-name xml:lang="x-default">KG Inicis Merchant ID</display-name>
-                <description xml:lang="x-default">Merchant ID (MID) from KG Inicis payment gateway</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
+            
 
             <attribute-definition attribute-id="iamport_kcpPaymentMethods">
                 <display-name xml:lang="x-default">KCP Payment Methods</display-name>
@@ -200,9 +211,18 @@
                 </value-definitions>
             </attribute-definition>
 
-            <attribute-definition attribute-id="iamport_kcpMerchantID">
-                <display-name xml:lang="x-default">KCP Merchant ID</display-name>
-                <description xml:lang="x-default">Merchant ID (MID) from KCP payment gateway</description>
+            <attribute-definition attribute-id="iamport_kcp_general_storeID">
+                <display-name xml:lang="x-default">KCP General PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="iamport_kcp_subscription_storeID">
+                <display-name xml:lang="x-default">KCP Subscription PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -230,14 +250,24 @@
                 </value-definitions>
             </attribute-definition>
 
-            <attribute-definition attribute-id="iamport_tossMerchantID">
-                <display-name xml:lang="x-default">Toss Merchant ID</display-name>
-                <description xml:lang="x-default">Merchant ID (MID) from Toss payment gateway</description>
+			<attribute-definition attribute-id="iamport_toss_general_storeID">
+                <display-name xml:lang="x-default">Toss General PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+
+            <attribute-definition attribute-id="iamport_toss_subscription_storeID">
+                <display-name xml:lang="x-default">Toss Subscription PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
 
             <attribute-definition attribute-id="iamport_nicePaymentMethods">
                 <display-name xml:lang="x-default">NICE Payment Methods</display-name>
@@ -264,14 +294,24 @@
                 </value-definitions>
             </attribute-definition>
 
-            <attribute-definition attribute-id="iamport_niceMerchantID">
-                <display-name xml:lang="x-default">NICE Merchant ID</display-name>
-                <description xml:lang="x-default">Merchant ID (MID) from NICE payment gateway</description>
+			<attribute-definition attribute-id="iamport_nice_general_storeID">
+                <display-name xml:lang="x-default">Nice General PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+
+            <attribute-definition attribute-id="iamport_nice_subscription_storeID">
+                <display-name xml:lang="x-default">Nice Subscription PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
 
             <attribute-definition attribute-id="iamport_kiccPaymentMethods">
                 <display-name xml:lang="x-default">KICC Payment Methods</display-name>
@@ -294,14 +334,23 @@
                 </value-definitions>
             </attribute-definition>
 
-            <attribute-definition attribute-id="iamport_kiccMerchantID">
-                <display-name xml:lang="x-default">KICC Merchant ID</display-name>
-                <description xml:lang="x-default">Merchant ID (MID) from KICC payment gateway</description>
+			<attribute-definition attribute-id="iamport_kicc_general_storeID">
+                <display-name xml:lang="x-default">KICC General PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+
+            <attribute-definition attribute-id="iamport_kicc_subscription_storeID">
+                <display-name xml:lang="x-default">KICC Subscription PG Store ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
 
             <attribute-definition attribute-id="iamport_danalPaymentMethods">
                 <display-name xml:lang="x-default">Danal Payment Methods</display-name>
@@ -324,9 +373,18 @@
                 </value-definitions>
             </attribute-definition>
 
-            <attribute-definition attribute-id="iamport_danalMerchantID">
-                <display-name xml:lang="x-default">Danal Merchant ID</display-name>
-                <description xml:lang="x-default">Merchant ID (MID) from Danal payment gateway</description>
+			<attribute-definition attribute-id="iamport_danal_general_storeID">
+                <display-name xml:lang="x-default">Danal General PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="iamport_danal_subscription_storeID">
+                <display-name xml:lang="x-default">Danal Subscription PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -354,14 +412,24 @@
                 </value-definitions>
             </attribute-definition>
 
-            <attribute-definition attribute-id="iamport_smartroMerchantID">
-                <display-name xml:lang="x-default">Smartro Merchant ID</display-name>
-                <description xml:lang="x-default">Merchant ID (MID) from Smartro payment gateway</description>
+			<attribute-definition attribute-id="iamport_smartro_general_storeID">
+                <display-name xml:lang="x-default">Smartro General PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+
+            <attribute-definition attribute-id="iamport_smartro_subscription_storeID">
+                <display-name xml:lang="x-default">Smartro Subscription PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
 
             <attribute-definition attribute-id="iamport_settleBankPaymentMethods">
                 <display-name xml:lang="x-default">Settle Bank Payment Methods</display-name>
@@ -384,14 +452,24 @@
                 </value-definitions>
             </attribute-definition>
 
-            <attribute-definition attribute-id="iamport_settleBankMerchantID">
-                <display-name xml:lang="x-default">Settle Bank Merchant ID</display-name>
-                <description xml:lang="x-default">Merchant ID (MID) from Settle Bank payment gateway</description>
+			<attribute-definition attribute-id="iamport_settle_general_storeID">
+                <display-name xml:lang="x-default">Settle Bank General PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+
+            <attribute-definition attribute-id="iamport_settle_subscription_storeID">
+                <display-name xml:lang="x-default">Settle Bank Subscription PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
 
             <attribute-definition attribute-id="iamport_payjoaPaymentMethods">
                 <display-name xml:lang="x-default">PAYJOA Payment Methods</display-name>
@@ -414,14 +492,23 @@
                 </value-definitions>
             </attribute-definition>
 
-            <attribute-definition attribute-id="iamport_payjoaMerchantID">
-                <display-name xml:lang="x-default">PAYJOA Merchant ID</display-name>
-                <description xml:lang="x-default">Merchant ID (MID) from PAYJOA payment gateway</description>
+			<attribute-definition attribute-id="iamport_payjoa_general_storeID">
+                <display-name xml:lang="x-default">Payjoa General PG Store ID</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+
+            <attribute-definition attribute-id="iamport_payjoa_subscription_storeID">
+                <display-name xml:lang="x-default">Payjoa Subscription PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
 
             <attribute-definition attribute-id="iamport_kakaoPayPaymentMethods">
                 <display-name xml:lang="x-default">KAKAOPAY Payment Methods</display-name>
@@ -444,14 +531,24 @@
                 </value-definitions>
             </attribute-definition>
 
-            <attribute-definition attribute-id="iamport_kakaoPayMerchantID">
-                <display-name xml:lang="x-default">KAKAOPAY Merchant ID</display-name>
-                <description xml:lang="x-default">Merchant ID (MID) from KAKAOPAY payment gateway</description>
+			<attribute-definition attribute-id="iamport_kakaoPay_general_storeID">
+                <display-name xml:lang="x-default">Kakao Pay General PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+
+            <attribute-definition attribute-id="iamport_kakaoPay_subscription_storeID">
+                <display-name xml:lang="x-default">Kakao Pay Subscription PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
 
             <attribute-definition attribute-id="iamport_naverPayPaymentMethods">
                 <display-name xml:lang="x-default">NaverPAY Payment Methods</display-name>
@@ -474,9 +571,18 @@
                 </value-definitions>
             </attribute-definition>
 
-            <attribute-definition attribute-id="iamport_naverPayMerchantID">
-                <display-name xml:lang="x-default">NaverPAY Merchant ID</display-name>
-                <description xml:lang="x-default">Merchant ID (MID) from NaverPAY payment gateway</description>
+			<attribute-definition attribute-id="iamport_naverPay_general_storeID">
+                <display-name xml:lang="x-default">NaverPay General PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="iamport_naverPay_subscription_storeID">
+                <display-name xml:lang="x-default">NaverPay Subscription PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -504,14 +610,24 @@
                 </value-definitions>
             </attribute-definition>
 
-            <attribute-definition attribute-id="iamport_paycoMerchantID">
-                <display-name xml:lang="x-default">PAYCO Merchant ID</display-name>
-                <description xml:lang="x-default">Merchant ID (MID) from PAYCO payment gateway</description>
+			<attribute-definition attribute-id="iamport_payco_ subscription_storeID">
+                <display-name xml:lang="x-default">Payco  Subscription PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+
+            <attribute-definition attribute-id="iamport_payco_general_storeID">
+                <display-name xml:lang="x-default">Payco General PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
 
             <attribute-definition attribute-id="iamport_smilePayPaymentMethods">
                 <display-name xml:lang="x-default">smilePay Payment Methods</display-name>
@@ -526,14 +642,24 @@
                 </value-definitions>
             </attribute-definition>
 
-            <attribute-definition attribute-id="iamport_smilePayMerchantID">
-                <display-name xml:lang="x-default">smilePay Merchant ID</display-name>
-                <description xml:lang="x-default">Merchant ID (MID) from smilePay payment gateway</description>
+			<attribute-definition attribute-id="iamport_smilePay_general_storeID">
+                <display-name xml:lang="x-default">Smile Pay General PG Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+			
+            <attribute-definition attribute-id="iamport_smilePay_subscription_storeID">
+                <display-name xml:lang="x-default">Smile Pay Subscription Store ID</display-name>
+                <description xml:lang="x-default">If you have multiple store merchant IDs(each for general and subscription) issued by PG, configure the value else keep empty.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
 
         </custom-attribute-definitions>
 
@@ -547,105 +673,104 @@
                 <attribute attribute-id="iamport_paymentGateway"/>
                 <attribute attribute-id="iamport_enabledSFRA5"/>
             </attribute-group>
-
             <attribute-group group-id="iamport_inicisConfigs">
                 <display-name xml:lang="x-default">Iamport Inicis Configs</display-name>
                 <attribute attribute-id="iamport_inicisPaymentMethods"/>
-                <attribute attribute-id="iamport_inicisMerchantID"/>
+                <attribute attribute-id="iamport_inicis_subscription_storeID"/>
+                <attribute attribute-id="iamport_inicis_general_storeID"/>
             </attribute-group>
-
             <attribute-group group-id="iamport_kcpConfigs">
                 <display-name xml:lang="x-default">Iamport KCP Configs</display-name>
                 <attribute attribute-id="iamport_kcpPaymentMethods"/>
-                <attribute attribute-id="iamport_kcpMerchantID"/>
+                <attribute attribute-id="iamport_kcp_general_storeID"/>
+                <attribute attribute-id="iamport_kcp_subscription_storeID"/>
             </attribute-group>
-
             <attribute-group group-id="iamport_tossConfigs">
                 <display-name xml:lang="x-default">Iamport Toss Configs</display-name>
                 <attribute attribute-id="iamport_tossPaymentMethods"/>
-                <attribute attribute-id="iamport_tossMerchantID"/>
+                <attribute attribute-id="iamport_toss_general_storeID"/>
+                <attribute attribute-id="iamport_toss_subscription_storeID"/>
             </attribute-group>
-
             <attribute-group group-id="iamport_niceConfigs">
                 <display-name xml:lang="x-default">Iamport NICE Configs</display-name>
                 <attribute attribute-id="iamport_nicePaymentMethods"/>
-                <attribute attribute-id="iamport_niceMerchantID"/>
+                <attribute attribute-id="iamport_nice_subscription_storeID"/>
+                <attribute attribute-id="iamport_nice_general_storeID"/>
             </attribute-group>
-
             <attribute-group group-id="iamport_kiccConfigs">
                 <display-name xml:lang="x-default">Iamport KICC Configs</display-name>
                 <attribute attribute-id="iamport_kiccPaymentMethods"/>
-                <attribute attribute-id="iamport_kiccMerchantID"/>
+                <attribute attribute-id="iamport_kicc_general_storeID"/>
+                <attribute attribute-id="iamport_kicc_subscription_storeID"/>
             </attribute-group>
-
             <attribute-group group-id="iamport_danalConfigs">
                 <display-name xml:lang="x-default">Iamport Danal Configs</display-name>
                 <attribute attribute-id="iamport_danalPaymentMethods"/>
-                <attribute attribute-id="iamport_danalMerchantID"/>
+                <attribute attribute-id="iamport_danal_subscription_storeID"/>
+                <attribute attribute-id="iamport_danal_general_storeID"/>
             </attribute-group>
-
             <attribute-group group-id="iamport_smartroConfigs">
                 <display-name xml:lang="x-default">Iamport Smartro Configs</display-name>
                 <attribute attribute-id="iamport_smartroPaymentMethods"/>
-                <attribute attribute-id="iamport_smartroMerchantID"/>
+                <attribute attribute-id="iamport_smartro_subscription_storeID"/>
+                <attribute attribute-id="iamport_smartro_general_storeID"/>
             </attribute-group>
-
             <attribute-group group-id="iamport_settleBankConfigs">
                 <display-name xml:lang="x-default">Iamport Settle Bank Configs</display-name>
                 <attribute attribute-id="iamport_settleBankPaymentMethods"/>
-                <attribute attribute-id="iamport_settleBankMerchantID"/>
+                <attribute attribute-id="iamport_settle_subscription_storeID"/>
+                <attribute attribute-id="iamport_settle_general_storeID"/>
             </attribute-group>
-
             <attribute-group group-id="iamport_payjoaConfigs">
                 <display-name xml:lang="x-default">Iamport PAYJOA Configs</display-name>
                 <attribute attribute-id="iamport_payjoaPaymentMethods"/>
-                <attribute attribute-id="iamport_payjoaMerchantID"/>
+                <attribute attribute-id="iamport_payjoa_general_storeID"/>
+                <attribute attribute-id="iamport_payjoa_subscription_storeID"/>
             </attribute-group>
-
             <attribute-group group-id="iamport_kakaoPayConfigs">
                 <display-name xml:lang="x-default">Iamport KAKAOPAY Configs</display-name>
                 <attribute attribute-id="iamport_kakaoPayPaymentMethods"/>
-                <attribute attribute-id="iamport_kakaoPayMerchantID"/>
+                <attribute attribute-id="iamport_kakaoPay_general_storeID"/>
+                <attribute attribute-id="iamport_kakaoPay_subscription_storeID"/>
             </attribute-group>
-
             <attribute-group group-id="iamport_naverPayConfigs">
                 <display-name xml:lang="x-default">Iamport NaverPAY Configs</display-name>
                 <attribute attribute-id="iamport_naverPayPaymentMethods"/>
-                <attribute attribute-id="iamport_naverPayMerchantID"/>
+                <attribute attribute-id="iamport_naverPay_general_storeID"/>
+                <attribute attribute-id="iamport_naverPay_subscription_storeID"/>
             </attribute-group>
-
             <attribute-group group-id="iamport_paycoConfigs">
                 <display-name xml:lang="x-default">Iamport PAYCO Configs</display-name>
                 <attribute attribute-id="iamport_paycoPaymentMethods"/>
-                <attribute attribute-id="iamport_paycoMerchantID"/>
+                <attribute attribute-id="iamport_payco_general_storeID"/>
+                <attribute attribute-id="iamport_payco_ subscription_storeID"/>
             </attribute-group>
-
             <attribute-group group-id="iamport_smilePayConfigs">
                 <display-name xml:lang="x-default">Iamport SmilePay Configs</display-name>
                 <attribute attribute-id="iamport_smilePayPaymentMethods"/>
-                <attribute attribute-id="iamport_smilePayMerchantID"/>
+                <attribute attribute-id="iamport_smilePay_general_storeID"/>
+                <attribute attribute-id="iamport_smilePay_subscription_storeID"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
 
-     <type-extension type-id="Basket">
-        <custom-attribute-definitions>
-            <attribute-definition attribute-id="pay_method">
-                <display-name xml:lang="x-default">Iamport Payment Method</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-        </custom-attribute-definitions>
-        <group-definitions>
-            <attribute-group group-id="iamport">
-                <display-name xml:lang="x-default">Iamport</display-name>
-                <attribute attribute-id="pay_method"/>
-            </attribute-group>
-        </group-definitions>
-    </type-extension>
-
+	<type-extension type-id="Basket">
+		<custom-attribute-definitions>
+		    <attribute-definition attribute-id="pay_method">
+		        <display-name xml:lang="x-default">Iamport Payment Method</display-name>
+		        <type>string</type>
+		        <mandatory-flag>false</mandatory-flag>
+		        <externally-managed-flag>false</externally-managed-flag>
+		        <min-length>0</min-length>
+		    </attribute-definition>
+		</custom-attribute-definitions>
+		<group-definitions>
+		    <attribute-group group-id="iamport">
+		        <display-name xml:lang="x-default">Iamport</display-name>
+		        <attribute attribute-id="pay_method"/>
+		    </attribute-group>
+		</group-definitions>
+	</type-extension>
     <type-extension type-id="Order">
         <custom-attribute-definitions>
             <attribute-definition attribute-id="isEscrowPayment">
@@ -698,5 +823,23 @@
                 <attribute attribute-id="pay_method"/>
             </attribute-group>
         </group-definitions>
+    </type-extension>
+	<type-extension type-id="CustomerPaymentInstrument">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="iamportCreditCardNumber">
+                <display-name xml:lang="x-default">Iamport Credit Card Number</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="iamportCreditCardPG">
+                <display-name xml:lang="x-default">Iamport Credit Card Payment Gateway Provider</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
     </type-extension>
 </metadata>

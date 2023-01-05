@@ -28,6 +28,23 @@ function CustomError(error) {
 			break;
 		case 2:
 			this.message = Resource.msg('error.payment.incomplete', 'checkout', null);
+			this.note = Resource.msg('error.payment.incomplete', 'checkout', null);
+			break;
+		case 1:
+			this.message = Resource.msg('error.payment.missingparameter', 'checkout', null);
+			this.note = Resource.msg('error.payment.missingparameter', 'checkout', null);
+			break;
+		case -1:
+			this.message = Resource.msg('error.payment.unauthorized', 'checkout', null);
+			this.note = Resource.msg('error.payment.unauthorized', 'checkout', null);
+			break;
+		case 18:
+			this.message = Resource.msg('error.payment.nopaymentselected', 'checkout', null);
+			this.note = Resource.msg('error.payment.nopaymentselected', 'checkout', null);
+			break;
+		case 0:
+			this.message = Resource.msg('error.payment.notenabled', 'checkout', null);
+			this.note = Resource.msg('error.payment.notenabled', 'checkout', null);
 			break;
 		default:
 			this.message = Resource.msg('msg.general.error', 'iamport', null);
