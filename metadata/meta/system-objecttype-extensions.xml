@@ -100,7 +100,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">Settle Bank</display>
-                        <value>settlebank</value>
+                        <value>settle</value>
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">PAYJOA</display>
