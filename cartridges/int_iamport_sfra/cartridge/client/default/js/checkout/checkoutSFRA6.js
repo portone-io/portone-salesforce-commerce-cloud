@@ -1,13 +1,13 @@
 'use strict';
 
-const customerHelpers = require('base/checkout/customer');
-const shippingHelpers = require('base/checkout/shipping');
-const billingHelpers = require('base/checkout/billing');
-const summaryHelpers = require('base/checkout/summary');
-const formHelpers = require('base/checkout/formErrors');
-const scrollAnimate = require('base/components/scrollAnimate');
-const baseCheckout = require('base/checkout/checkout');
-const iamportPayment = require('../iamport/paymentLoader');
+var customerHelpers = require('base/checkout/customer');
+var addressHelpers = require('base/checkout/address');
+var shippingHelpers = require('base/checkout/shipping');
+var billingHelpers = require('./billing');
+var summaryHelpers = require('base/checkout/summary');
+var formHelpers = require('base/checkout/formErrors');
+var scrollAnimate = require('base/components/scrollAnimate');
+var iamportPayment = require('../iamport/paymentLoader');
 
 /**
  * Create the jQuery Checkout Plugin. fgh
@@ -275,6 +275,13 @@ const iamportPayment = require('../iamport/paymentLoader');
 								paymentForm += '&securityCode=' + cvvCode;
 							}
 						}
+						// update selected credit card details in data for credit card payment method.
+						if ($(':radio[name=paymentOption]').filter(':checked').attr('id') === 'card' && $('.saved-payment-instrument.selected-payment:visible').length > 0) {
+							if ($('.saved-payment-instrument.selected-payment:visible').attr('data-uuid') !== '') {
+								paymentForm += '&storedPaymentUUID='
+								+ $('.saved-payment-instrument.selected-payment:visible').attr('data-uuid');
+							}
+						}
 					}
 					// disable the next:Place Order button here
 					$('body').trigger('checkout:disableButton', '.next-step-button button');
@@ -311,15 +318,13 @@ const iamportPayment = require('../iamport/paymentLoader');
 
 								defer.reject();
 							} else {
-								// populate the payment method in the payment summary
-								iamportPayment.renderSelectedPaymentMethod(data.selectedPaymentMethod);
-
 								//
 								// Populate the Address Summary
 								//
 								$('body').trigger('checkout:updateCheckoutView',
 									{ order: data.order, customer: data.customer });
-
+								// populate the payment method in the payment summary
+								iamportPayment.renderSelectedPaymentMethod(data.selectedPaymentMethod);
 								if (data.renderedPaymentInstruments) {
 									$('.stored-payments').empty().html(
 										data.renderedPaymentInstruments
@@ -388,6 +393,31 @@ const iamportPayment = require('../iamport/paymentLoader');
 									// go to appropriate stage and display error message
 									defer.reject(data);
 								}
+							} else if (data.placedOrderWithSavedCard) {
+								// redirect to order confirmation page after placed the order with saved credit card.
+								var redirect = $('<form>')
+								.appendTo(document.body)
+								.attr({
+									method: 'POST',
+									action: data.continueUrl
+								});
+
+								$('<input>')
+									.appendTo(redirect)
+									.attr({
+										name: 'orderID',
+										value: data.orderID
+									});
+
+								$('<input>')
+									.appendTo(redirect)
+									.attr({
+										name: 'orderToken',
+										value: data.orderToken
+									});
+
+								redirect.submit();
+								defer.resolve(data);
 							} else {
 								if (data.paymentResources) {
 									let payload = {
@@ -520,9 +550,14 @@ const iamportPayment = require('../iamport/paymentLoader');
 					}
 				});
 
-				// Payment method selected enables the button
+				// Payment method selected enables the button and hide/show the saved credit cards on selected payment methods
 				$('input[name=paymentOption]').on('change', function (e) {
 					$('body').trigger('checkout:enableButton', '.next-step-button button');
+					if ($(this).attr('id') === 'card' && $('.iamport-cards').length > 0) {
+						$('.user-payment-instruments').removeClass('checkout-hidden');
+					} else {
+						$('.user-payment-instruments').addClass('checkout-hidden');
+					}
 				});
 
 				//
@@ -636,40 +671,59 @@ const iamportPayment = require('../iamport/paymentLoader');
 	};
 }(jQuery));
 
-baseCheckout.initialize = function () {
-	$('#checkout-main').checkout();
-};
 
-baseCheckout.updateCheckoutView = function () {
-	$('body').on('checkout:updateCheckoutView', function (e, data) {
-		if (data.csrfToken) {
-			$("input[name*='csrf_token']").val(data.csrfToken);
-		}
-		customerHelpers.methods.updateCustomerInformation(data.customer, data.order);
-		shippingHelpers.methods.updateMultiShipInformation(data.order);
-		summaryHelpers.updateTotals(data.order.totals);
-		data.order.shipping.forEach(function (shipping) {
-			shippingHelpers.methods.updateShippingInformation(
-				shipping,
+var exports = {
+	initialize: function () {
+		$('#checkout-main').checkout();
+	},
+
+	updateCheckoutView: function () {
+		$('body').on('checkout:updateCheckoutView', function (e, data) {
+			if (data.csrfToken) {
+				$("input[name*='csrf_token']").val(data.csrfToken);
+			}
+			customerHelpers.methods.updateCustomerInformation(data.customer, data.order);
+			shippingHelpers.methods.updateMultiShipInformation(data.order);
+			summaryHelpers.updateTotals(data.order.totals);
+			data.order.shipping.forEach(function (shipping) {
+				shippingHelpers.methods.updateShippingInformation(
+					shipping,
+					data.order,
+					data.customer,
+					data.options
+				);
+			});
+			billingHelpers.methods.updateBillingInformation(
 				data.order,
 				data.customer,
 				data.options
 			);
+			billingHelpers.methods.updatePaymentInformation(data.order, data.options);
+			summaryHelpers.updateOrderProductSummaryInformation(data.order, data.options);
 		});
+	},
 
-		let currentStage = window.location.search.substring(window.location.search.indexOf('=') + 1);
-		if (currentStage === 'shipping' || currentStage === 'payment') {
-			return;
-		}
+	disableButton: function () {
+		$('body').on('checkout:disableButton', function (e, button) {
+			$(button).prop('disabled', true);
+		});
+	},
 
-		billingHelpers.methods.updateBillingInformation(
-			data.order,
-			data.customer,
-			data.options
-		);
-		billingHelpers.methods.updatePaymentInformation(data.order, data.options);
-		summaryHelpers.updateOrderProductSummaryInformation(data.order, data.options);
-	});
+	enableButton: function () {
+		$('body').on('checkout:enableButton', function (e, button) {
+			$(button).prop('disabled', false);
+		});
+	}
 };
 
-module.exports = baseCheckout;
+[customerHelpers, billingHelpers, shippingHelpers, addressHelpers].forEach(function (library) {
+	Object.keys(library).forEach(function (item) {
+		if (typeof library[item] === 'object') {
+			exports[item] = $.extend({}, exports[item], library[item]);
+		} else {
+			exports[item] = library[item];
+		}
+	});
+});
+
+module.exports = exports;

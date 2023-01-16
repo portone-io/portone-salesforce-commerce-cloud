@@ -45,7 +45,7 @@ server.append('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req,
 });
 
 /**
- * PaymentInstruments-GetList : The endpoint PaymentInstruments-GetList is the endpoint that renders a list of shopper saved payment instruments from m_redirectUrl. The rendered list displays the masked card number and payemnt instrument type
+ * PaymentInstruments-GetList : The endpoint PaymentInstruments-GetList is the endpoint that renders a list of shopper saved payment instruments from mobile(m_redirectUrl) only. The rendered list displays the masked card number and payemnt instrument type
  * @name Custom/PaymentInstruments-GetList
  * @function
  * @memberof PaymentInstruments
@@ -81,7 +81,7 @@ server.get('GetList', userLoggedIn.validateLoggedIn, consentTracking.consent, fu
 			var responseMerchantId = response.merchant_uid;
 			customerUid = response.customer_uid;
 			if (merchantUid === responseMerchantId) {
-				// It is used when making a payment with the saved billing key.
+				// It is used when making a actual payment with the saved billing key to get the card details for mobile.
 				iamportHelpers.handleSubcribePaymentRequest(req, customerUid);
 				req.session.raw.custom.paymentId = paymentId;
 			}

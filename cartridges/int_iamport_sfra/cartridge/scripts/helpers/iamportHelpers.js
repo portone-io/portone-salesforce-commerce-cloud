@@ -219,6 +219,58 @@ function handleSubcribePaymentRequest(req, customerUid) {
 	return paymentResponse;
 }
 
+/**
+ * validate the customer uid and place the order with Iamport customer uid.
+ * @param {Object} paymentResources - iamport payment request
+ * @param {Object} paymentInstrument order paymentInstrument
+ * @returns {Object} - Response of place order with register customer uid.
+ */
+function paymentWithSavedCard(paymentResources, paymentInstrument) {
+	var iamportServices = require('*/cartridge/scripts/service/iamportService');
+	var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+	var requestBody = {
+		customerUid: paymentInstrument.creditCardToken
+	};
+	var response = {
+		error: false,
+		imp_uid: ''
+	};
+	// validate the Iamport Customer Uid.
+	var responseCustomerUID = iamportServices.validateCustomerUid.call(requestBody);
+	try {
+		if (responseCustomerUID.isOk()) {
+			if (responseCustomerUID.getObject().message) {
+				iamportLogger.error('IamportHelpers-validated customer uid failed: {0}.', JSON.stringify(responseCustomerUID.getObject().message));
+				response.error = true;
+			} else {
+				paymentResources.customer_uid = paymentInstrument.creditCardToken;
+				// make payment with Iamport Customer Uid.
+				var paymentResponse = iamportServices.subscribePayment.call(paymentResources);
+				if (paymentResponse.isOk()) {
+					if (responseCustomerUID.getObject().message) {
+						iamportLogger.error('IamportHelpers-payment with saved card customer uid failed: {0}.', JSON.stringify(responseCustomerUID.getObject().message));
+						response.error = true;
+					} else {
+						response.error = false;
+						response.imp_uid = paymentResponse.getObject().response.imp_uid;
+					}
+				} else {
+					iamportLogger.error('IamportHelpers-payment With saved card customeruid failed: {0}.', JSON.stringify(paymentResponse.errorMessage));
+					response.error = true;
+				}
+			}
+		} else {
+			iamportLogger.error('IamportHelpers-validated customer uid failed: {0}.', JSON.stringify(responseCustomerUID.errorMessage));
+			response.error = true;
+		}
+	} catch (e) {
+		iamportLogger.error('IamportHelpers-payment With saved card customeruid failed: \n{0}: {1}', e.message, e.stack);
+		response.error = true;
+	}
+	return response;
+}
+
+
 module.exports = {
 	preparePaymentResources: preparePaymentResources,
 	checkFraudPayments: checkFraudPayments,
@@ -227,5 +279,6 @@ module.exports = {
 	handleErrorFromPaymentGateway: handleErrorFromPaymentGateway,
 	getTranslatedMessage: getTranslatedMessage,
 	generateString: generateString,
-	handleSubcribePaymentRequest: handleSubcribePaymentRequest
+	handleSubcribePaymentRequest: handleSubcribePaymentRequest,
+	paymentWithSavedCard: paymentWithSavedCard
 };

@@ -1,9 +1,11 @@
 <div class="payment-details">
-    <isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="payment">
-        <isif condition="${payment.paymentMethod === 'CREDIT_CARD'}">
-            <isinclude template="checkout/billing/paymentOptions/creditCardSummary" />
-        </isif>
-    </isloop>
+	<div class= "credit-section">
+		<isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="payment">
+	        <isif condition="${payment.paymentMethod === 'CREDIT_CARD' || (payment.paymentMethod === 'Iamport' && payment.maskedCreditCardNumber) }">
+	            <isinclude template="checkout/billing/paymentOptions/creditCardSummary" />
+	        </isif>
+	    </isloop>
+	</div>
 
     <div class="iamport-payment-method-name">
         <isif condition="${pdict.selectedPaymentMethod}">

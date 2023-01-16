@@ -1,11 +1,43 @@
 'use strict';
 
-const Site = require('dw/system/Site');
-const IamportConstants = require('*/cartridge/constants/iamportConstants');
-const pgValidators = require('*/cartridge/config/pgValidators');
-const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+var Site = require('dw/system/Site');
+var IamportConstants = require('*/cartridge/constants/iamportConstants');
+var pgValidators = require('*/cartridge/config/pgValidators');
+var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+var collections = require('*/cartridge/scripts/util/collections');
 
 const basePayment = module.superModule;
+
+/**
+ * Creates an array of objects containing selected payment information
+ * @param {dw.util.ArrayList<dw.order.PaymentInstrument>} selectedPaymentInstruments - ArrayList
+ *      of payment instruments that the user is using to pay for the current basket
+ * @returns {Array} Array of objects that contain information about the selected payment instruments
+ */
+function getSelectedPaymentInstruments(selectedPaymentInstruments) {
+	return collections.map(selectedPaymentInstruments, function (paymentInstrument) {
+		var results = {
+			paymentMethod: paymentInstrument.paymentMethod,
+			amount: paymentInstrument.paymentTransaction.amount.value
+		};
+		if (paymentInstrument.paymentMethod === 'CREDIT_CARD') {
+			results.lastFour = paymentInstrument.creditCardNumberLastDigits;
+			results.owner = paymentInstrument.creditCardHolder;
+			results.expirationYear = paymentInstrument.creditCardExpirationYear;
+			results.type = paymentInstrument.creditCardType;
+			results.maskedCreditCardNumber = paymentInstrument.maskedCreditCardNumber;
+			results.expirationMonth = paymentInstrument.creditCardExpirationMonth;
+		} else if (paymentInstrument.paymentMethod === 'GIFT_CERTIFICATE') {
+			results.giftCertificateCode = paymentInstrument.giftCertificateCode;
+			results.maskedGiftCertificateCode = paymentInstrument.maskedGiftCertificateCode;
+		} else if (paymentInstrument.paymentMethod === 'Iamport') {
+			results.type = paymentInstrument.creditCardType ? paymentInstrument.creditCardType : '';
+			results.maskedCreditCardNumber = paymentInstrument.creditCardNumber ? paymentInstrument.creditCardNumber : '';
+		}
+
+		return results;
+	});
+}
 
 /**
  * Validate the selected payment methods against the actual ones specified in the PG validators
@@ -67,9 +99,12 @@ function getPaymentMethods(paymentGatewayID) {
  */
 function Payment(currentBasket, currentCustomer, countryCode) {
 	basePayment.call(this, currentBasket, currentCustomer, countryCode);
+	var paymentInstruments = currentBasket.paymentInstruments;
 
 	let paymentGateway = Site.getCurrent().getCustomPreferenceValue(IamportConstants.PG_ATTRIBUTE_ID)
 		|| IamportConstants.PG_DEFAULT_FALLBACK;
+
+	this.selectedPaymentInstruments = paymentInstruments ? getSelectedPaymentInstruments(paymentInstruments) : null;
 
 	this.iamportPaymentGateway = paymentGateway;
 	this.iamportPaymentMethods = getPaymentMethods(paymentGateway);

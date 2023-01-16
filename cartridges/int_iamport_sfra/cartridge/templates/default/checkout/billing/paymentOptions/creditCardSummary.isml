@@ -1,0 +1,11 @@
+	<div class="credit-card-type">
+	    <span>
+		<isif condition="${!empty(payment.type)}">
+		    ${Resource.msg('msg.payment.type.credit', 'confirmation', null)}
+	    	${payment.type}
+		</isif>
+		</span>
+	</div>
+	<div class="credit-card-number">
+	    ${payment.maskedCreditCardNumber}
+	</div>

@@ -1,12 +1,13 @@
 'use strict';
 
-const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
-const Transaction = require('dw/system/Transaction');
-const Resource = require('dw/web/Resource');
-const Order = require('dw/order/Order');
-const PaymentMgr = require('dw/order/PaymentMgr');
-const Money = require('dw/value/Money');
-const OrderMgr = require('dw/order/OrderMgr');
+var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+var Transaction = require('dw/system/Transaction');
+var Resource = require('dw/web/Resource');
+var Order = require('dw/order/Order');
+var PaymentMgr = require('dw/order/PaymentMgr');
+var Money = require('dw/value/Money');
+var OrderMgr = require('dw/order/OrderMgr');
+var collections = require('*/cartridge/scripts/util/collections');
 
 /**
  * Iamport hook form processor
@@ -16,11 +17,35 @@ const OrderMgr = require('dw/order/OrderMgr');
  * @returns {Object} an object that has error information or payment information
  */
 function processForm(req, paymentForm, viewFormData) {
+	var array = require('*/cartridge/scripts/util/array');
+	var viewData = viewFormData;
 	viewFormData.paymentMethod = {
 		value: paymentForm.paymentMethod.value,
 		htmlName: paymentForm.paymentMethod.value
 	};
+	if (req.form.storedPaymentUUID) {
+		viewData.storedPaymentUUID = req.form.storedPaymentUUID;
+	}
 
+	// process payment information of saved credit card
+	if (viewData.storedPaymentUUID && req.currentCustomer.raw.authenticated && req.currentCustomer.raw.registered) {
+		var paymentInstruments = req.currentCustomer.wallet.paymentInstruments;
+		var paymentInstrument = array.find(paymentInstruments, function (item) {
+			return viewData.storedPaymentUUID === item.UUID;
+		});
+		viewData.paymentInformation = {
+			cardNumber: {
+				value: 'iamportCreditCardNumber' in paymentInstrument.raw.custom ? paymentInstrument.raw.custom.iamportCreditCardNumber : '',
+				htmlName: 'iamportCreditCardNumber' in paymentInstrument.raw.custom ? paymentInstrument.raw.custom.iamportCreditCardNumber : ''
+			},
+			cardType: {
+				value: paymentInstrument.creditCardType,
+				htmlName: paymentInstrument.creditCardType
+			}
+
+		};
+		viewData.paymentInformation.creditCardToken = paymentInstrument.raw.creditCardToken;
+	}
 	return {
 		viewData: viewFormData,
 		success: true,
@@ -38,20 +63,43 @@ function processForm(req, paymentForm, viewFormData) {
  * @returns {Object} processor result
  */
 function Handle(basket, paymentInformation, paymentMethodID, req) {
+	var currentBasket = basket;
+	var cardNumber = paymentInformation != null && paymentInformation.cardNumber != null ? paymentInformation.cardNumber.value : '';
+	var cardType = paymentInformation != null && paymentInformation.cardType != null ? paymentInformation.cardType.value : '';
+	var creditCardToken = paymentInformation != null && paymentInformation.creditCardToken != null ? paymentInformation.creditCardToken : '';
 	let result;
+
+	// Invalid Payment Instrument
+	if (!empty(cardNumber) && !empty(cardType) && empty(creditCardToken)) {
+		var invalidPaymentMethod = Resource.msg('error.card.information.error', 'creditCard', null);
+		return {
+			fieldErrors: [],
+			serverErrors: [invalidPaymentMethod],
+			error: true
+		};
+	}
+
 
 	try {
 		result = Transaction.wrap(function () {
-			let paymentInstrument;
-			if (empty(basket.getPaymentInstruments(paymentMethodID))) {
-				paymentInstrument = basket.createPaymentInstrument(
-					paymentMethodID,
-					basket.getTotalGrossPrice()
-				);
-			} else {
-				paymentInstrument = basket.getPaymentInstruments(paymentMethodID);
-			}
+			var paymentInstruments = currentBasket.getPaymentInstruments(
+				paymentMethodID
+			);
 
+			collections.forEach(paymentInstruments, function (item) {
+				currentBasket.removePaymentInstrument(item);
+			});
+
+			var paymentInstrument = currentBasket.createPaymentInstrument(
+				paymentMethodID, currentBasket.totalGrossPrice
+			);
+			// set the selected credit card in basket payment instrument.
+			if (!empty(cardNumber) && !empty(cardType) && !empty(creditCardToken)) {
+				paymentInstrument.setCreditCardHolder(currentBasket.billingAddress.fullName);
+				paymentInstrument.setCreditCardNumber(cardNumber);
+				paymentInstrument.setCreditCardType(cardType);
+				paymentInstrument.setCreditCardToken(creditCardToken);
+			}
 			return {
 				paymentInstrument: paymentInstrument,
 				success: true,

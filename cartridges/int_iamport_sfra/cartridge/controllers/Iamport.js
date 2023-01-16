@@ -374,7 +374,7 @@ server.post('SaveBillingKey', function (req, res, next) {
 	var paymentInformation = req.form;
 	var customerUid = paymentInformation.customer_uid;
 	try {
-		// It is used when making a payment with the saved billing key.
+		// It is used when making a actual payment with the saved billing key to get the card details.
 		var paymentResponse = iamportHelpers.handleSubcribePaymentRequest(req, customerUid);
 		if (!paymentResponse.isOk() || paymentResponse.getObject().message) {
 			var iamportResponseError = '';
