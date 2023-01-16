@@ -30,6 +30,22 @@
         <password encrypted="true" encryption-type="common.export">RN+Evztou+4guHP/WLtqxOgZrFkOITViz6ZL/So7cRcLAnW9wweq81WKqwwtA9fGI9VEyNcbMzCy3HAjEyuADNqRsf8f2LoH+jnGeJ1rriymOAx3dj/sBrTMuQLU5emqvTjjBDcMDGdt6VFIty5PRA==</password>
     </service-credential>
 
+	<service-credential service-credential-id="iamport_validate_customer_uid_cred">
+        <url>https://api.iamport.kr/subscribe/customers</url>
+        <user-id>5710432070117613</user-id>
+        <password encrypted="true" encryption-type="common.export">T5u7SK9KTDmwfsOUTcWv6+gZrFkOITViz6ZL/So7cRcLAnW9wweq81WKqwwtA9fGI9VEyNcbMzCy3HAjEyuADNqRsf8f2LoH+jnGeJ1rrixhPv0/TiYROHXaZ0ocv6c6FIj4KJHbPCtpeWv/ZU1DfA==</password>
+    </service-credential>
+
+	<service-profile service-profile-id="iamport_validate_customer_uid_Prof">
+        <timeout-millis>0</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>0</cb-calls>
+        <cb-millis>0</cb-millis>
+    </service-profile>
+
     <service-profile service-profile-id="iamport_authenticateProf">
         <timeout-millis>1000</timeout-millis>
         <rate-limit-enabled>false</rate-limit-enabled>
@@ -133,6 +149,16 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>iamport_subscribePaymentProf</profile-id>
         <credential-id>iamport_subscribePaymentCred</credential-id>
+    </service>
+	<service service-id="iamport_validate_subscribe_customer_uid">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>subscribeCustomerUID</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <force-prd-enabled>false</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>iamport_validate_customer_uid_Prof</profile-id>
+        <credential-id>iamport_validate_customer_uid_cred</credential-id>
     </service>
 
 </services>
