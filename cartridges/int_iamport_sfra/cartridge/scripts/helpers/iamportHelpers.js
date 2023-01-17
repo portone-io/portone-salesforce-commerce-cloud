@@ -190,7 +190,7 @@ function handleSubcribePaymentRequest(req, customerUid) {
 		}
 		iamportResponseError = new CustomError({ status: errorcode }).message;
 		iamportLogger.error('IamportHelpers-Subscibe Payment request failed: {0}.', JSON.stringify(iamportResponseError));
-	} else if (paymentResponse.isOk() && paymentResponse.getObject().message === null) {
+	} else if (paymentResponse.isOk() && paymentResponse.getObject().message === null && paymentResponse.getObject().response && paymentResponse.getObject().response.card_number && paymentResponse.getObject().response.customer_uid) {
 		var paymentResponseObj = paymentResponse.getObject().response;
 		var CustomerMgr = require('dw/customer/CustomerMgr');
 		var Transaction = require('dw/system/Transaction');
