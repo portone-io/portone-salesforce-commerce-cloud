@@ -147,7 +147,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
 }
 
 /**
- * Update the iamport payment id (imp_uid) attribute on the Order object
+ * Update the iamport payment id (imp_uid) attribute in order level custom attribue and paymentTransaction of paymentInstrument
  * @param {string} paymentId - The payment identifier
  * @param {Object} order - The current order
  */
@@ -155,24 +155,10 @@ function updatePaymentIdOnOrder(paymentId, order) {
 	try {
 		Transaction.wrap(function () {
 			order.custom.imp_uid = paymentId;
-		});
-	} catch (e) {
-		iamportLogger.error('Could not update iamport payment id on the order object: \n{0}: {1}', e.message, e.stack);
-	}
-}
-
-/**
- * Update the iamport payment id (imp_uid) attribute on the payment transaction id of the Order object
- * @param {string} paymentId - The payment identifier
- * @param {Object} order - The current order
- */
-function updateTransactionIdOnOrder(paymentId, order) {
-	try {
-		Transaction.wrap(function () {
-			let paymentInstruments = order.getPaymentInstruments();
+			var paymentInstruments = order.getPaymentInstruments();
 
 			if (!empty(paymentInstruments)) {
-				let paymentTransaction = paymentInstruments[0].paymentTransaction;
+				var paymentTransaction = paymentInstruments[0].paymentTransaction;
 
 				if (paymentTransaction) {
 					order.paymentInstruments[0].paymentTransaction.setTransactionID(paymentId);
@@ -180,7 +166,7 @@ function updateTransactionIdOnOrder(paymentId, order) {
 			}
 		});
 	} catch (e) {
-		iamportLogger.error('Could not update iamport payment id on the payment transaction id order object: \n{0}: {1}', e.message, e.stack);
+		iamportLogger.error('Could not update iamport payment id on the order object: \n{0}: {1}', e.message, e.stack);
 	}
 }
 
@@ -264,7 +250,7 @@ function postAuthorize(order, paymentData, req) {
 			}
 
 			let paymentId = paymentData.getObject().response.imp_uid;
-			updatePaymentIdOnOrder(paymentId, order);
+			order.custom.imp_uid = paymentId;
 		}
 
 		orderStatus = order.getStatus().getValue();
@@ -325,6 +311,5 @@ module.exports = {
 	vbankIssued: vbankIssued,
 	updatePaymentIdOnOrder: updatePaymentIdOnOrder,
 	updateVbankOnOrder: updateVbankOnOrder,
-	updatePaymentMethodOnBasket: updatePaymentMethodOnBasket,
-	updateTransactionIdOnOrder: updateTransactionIdOnOrder
+	updatePaymentMethodOnBasket: updatePaymentMethodOnBasket
 };

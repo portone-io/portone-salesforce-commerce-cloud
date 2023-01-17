@@ -143,10 +143,10 @@ const deleteSubscribePayment = LocalServiceRegistry.createService('iamport_delet
 });
 
 /**
- * Validating the buyer's customer uid information.
+ * Get Buyer's billing key information(customer uid)
  * @returns {Object} returns the response from iamport
  */
-const validateCustomerUid = LocalServiceRegistry.createService('iamport_validate_subscribe_customer_uid', {
+const getBillingKeyInformation = LocalServiceRegistry.createService('iamport_validate_subscribe_customer_uid', {
 	createRequest: function (svc, args) {
 		let credential = svc.getConfiguration().getCredential();
 		let auth = getAuthAccessToken.call(credential);
@@ -165,11 +165,12 @@ const validateCustomerUid = LocalServiceRegistry.createService('iamport_validate
 		return ServiceMock.validateCustomerUid;
 	}
 });
+
 module.exports = {
 	getPaymentInformation: getPaymentInformation,
 	registerAndValidatePayment: registerAndValidatePayment,
 	subscribePayment: subscribePayment,
 	deleteSubscribePayment: deleteSubscribePayment,
-	validateCustomerUid: validateCustomerUid
+	getBillingKeyInformation: getBillingKeyInformation
 
 };

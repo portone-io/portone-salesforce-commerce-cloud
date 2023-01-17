@@ -275,7 +275,7 @@ var iamportPayment = require('../iamport/paymentLoader');
 								paymentForm += '&securityCode=' + cvvCode;
 							}
 						}
-						// update selected credit card details in data for credit card payment method.
+						// pass the selected saved card details in paymentForm data.
 						if ($(':radio[name=paymentOption]').filter(':checked').attr('id') === 'card' && $('.saved-payment-instrument.selected-payment:visible').length > 0) {
 							if ($('.saved-payment-instrument.selected-payment:visible').attr('data-uuid') !== '') {
 								paymentForm += '&storedPaymentUUID='

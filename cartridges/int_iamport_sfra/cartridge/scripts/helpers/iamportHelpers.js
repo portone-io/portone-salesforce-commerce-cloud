@@ -220,10 +220,10 @@ function handleSubcribePaymentRequest(req, customerUid) {
 }
 
 /**
- * validate the customer uid and place the order with Iamport customer uid.
+ * get buyer's billing key information(customer uid) and make payment with billing key.
  * @param {Object} paymentResources - iamport payment request
  * @param {Object} paymentInstrument order paymentInstrument
- * @returns {Object} - Response of place order with register customer uid.
+ * @returns {Object} - Return Iamport Uid with error status.
  */
 function paymentWithSavedCard(paymentResources, paymentInstrument) {
 	var iamportServices = require('*/cartridge/scripts/service/iamportService');
@@ -235,32 +235,32 @@ function paymentWithSavedCard(paymentResources, paymentInstrument) {
 		error: false,
 		imp_uid: ''
 	};
-	// validate the Iamport Customer Uid.
-	var responseCustomerUID = iamportServices.validateCustomerUid.call(requestBody);
+	// Get Buyer's billing key information(customer uid).
+	var responseCustomerUID = iamportServices.getBillingKeyInformation.call(requestBody);
 	try {
 		if (responseCustomerUID.isOk()) {
 			if (responseCustomerUID.getObject().message) {
-				iamportLogger.error('IamportHelpers-validated customer uid failed: {0}.', JSON.stringify(responseCustomerUID.getObject().message));
+				iamportLogger.error('IamportHelpers-paymentWithSavedCard Get Buyer Billing Key information failed: {0}.', JSON.stringify(responseCustomerUID.getObject().message));
 				response.error = true;
 			} else {
 				paymentResources.customer_uid = paymentInstrument.creditCardToken;
-				// make payment with Iamport Customer Uid.
+				// make payment with the saved billing key(customer uid).
 				var paymentResponse = iamportServices.subscribePayment.call(paymentResources);
 				if (paymentResponse.isOk()) {
 					if (responseCustomerUID.getObject().message) {
-						iamportLogger.error('IamportHelpers-payment with saved card customer uid failed: {0}.', JSON.stringify(responseCustomerUID.getObject().message));
+						iamportLogger.error('IamportHelpers-paymentWithSavedCard make payment with the saved billing key failed: {0}.', JSON.stringify(responseCustomerUID.getObject().message));
 						response.error = true;
 					} else {
 						response.error = false;
 						response.imp_uid = paymentResponse.getObject().response.imp_uid;
 					}
 				} else {
-					iamportLogger.error('IamportHelpers-payment With saved card customeruid failed: {0}.', JSON.stringify(paymentResponse.errorMessage));
+					iamportLogger.error('IamportHelpers-paymentWithSavedCard make payment with the saved billing key failed: {0}.', JSON.stringify(paymentResponse.errorMessage));
 					response.error = true;
 				}
 			}
 		} else {
-			iamportLogger.error('IamportHelpers-validated customer uid failed: {0}.', JSON.stringify(responseCustomerUID.errorMessage));
+			iamportLogger.error('IamportHelpers-paymentWithSavedCard Get Buyer Billing Key information failed: {0}.', JSON.stringify(responseCustomerUID.errorMessage));
 			response.error = true;
 		}
 	} catch (e) {
