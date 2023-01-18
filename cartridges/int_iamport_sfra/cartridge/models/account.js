@@ -20,7 +20,7 @@ function getPayment(wallet) {
 				creditCardExpirationMonth: paymentInstrument.creditCardExpirationMonth,
 				creditCardExpirationYear: paymentInstrument.creditCardExpirationYear,
 				iamportCreditCardNumber: 'iamportCreditCardNumber' in paymentObj.custom ? paymentObj.custom.iamportCreditCardNumber : '',
-				iamportCreditCardPG: 'iamportCreditCardPG' in paymentObj ? paymentObj.custom.iamportCreditCardPG : ''
+				iamportCreditCardPG: 'iamportCreditCardPG' in paymentObj.custom ? paymentObj.custom.iamportCreditCardPG : ''
 			};
 		}
 	}
@@ -45,7 +45,7 @@ function getCustomerPaymentInstruments(userPaymentInstruments) {
 			creditCardExpirationYear: paymentInstrument.creditCardExpirationYear,
 			UUID: paymentInstrument.UUID,
 			iamportCreditCardNumber: 'iamportCreditCardNumber' in paymentObj.custom ? paymentObj.custom.iamportCreditCardNumber : '',
-			iamportCreditCardPG: 'iamportCreditCardPG' in paymentObj ? paymentObj.custom.iamportCreditCardPG : ''
+			iamportCreditCardPG: 'iamportCreditCardPG' in paymentObj.custom ? paymentObj.custom.iamportCreditCardPG : ''
 		};
 
 		result.cardTypeImage = {
@@ -71,6 +71,17 @@ function getCustomerPaymentInstruments(userPaymentInstruments) {
 function account(currentCustomer, addressModel, orderModel) {
 	base.call(this, currentCustomer, addressModel, orderModel);
 	this.payment = getPayment(currentCustomer instanceof Customer ? currentCustomer.profile.wallet : currentCustomer.wallet);
+	if (currentCustomer instanceof Customer) {
+		this.customerPaymentInstruments = currentCustomer.profile.wallet
+		&& currentCustomer.profile.wallet.paymentInstruments
+		? getCustomerPaymentInstruments(currentCustomer.profile.wallet.paymentInstruments.toArray())
+		: null;
+	} else {
+		this.customerPaymentInstruments = currentCustomer.wallet
+		&& currentCustomer.wallet.paymentInstruments
+		? getCustomerPaymentInstruments(currentCustomer.wallet.paymentInstruments)
+		: null;
+	}
 }
 
 account.getCustomerPaymentInstruments = getCustomerPaymentInstruments;

@@ -140,13 +140,6 @@ server.get('GetConfirmation', server.middleware.https, function (req, res, next)
 			require('*/cartridge/scripts/hooks/payment/processor/iamportPayments').updatePaymentIdOnOrder
 		);
 
-		hooksHelper('app.payment.processor.iamport',
-			'updateTransactionIdOnOrder',
-			paymentId,
-			order,
-			require('*/cartridge/scripts/hooks/payment/processor/iamportPayments').updateTransactionIdOnOrder
-		);
-
 		var fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', paymentData, order, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
 		if (fraudDetectionStatus.status === 'fail') {
 			Transaction.wrap(function () {

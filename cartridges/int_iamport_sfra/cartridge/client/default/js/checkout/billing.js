@@ -192,20 +192,21 @@ function updateBillingInformation(order, customer) {
  */
 function updatePaymentInformation(order) {
     // update payment details
-	var $paymentSummary = $('.payment-details');
+	var $paymentSummary = $('.payment-details .credit-section');
 	var htmlToAppend = '';
+	var cardType = '';
+
 
 	if (order.billing.payment && order.billing.payment.selectedPaymentInstruments
         && order.billing.payment.selectedPaymentInstruments.length > 0) {
-		htmlToAppend += '<span>' + order.resources.cardType + ' '
+		if (order.billing.payment.selectedPaymentInstruments[0].type !== '') {
+			cardType = order.resources.cardType;
+		}
+		htmlToAppend += '<span>' + cardType + ' '
             + order.billing.payment.selectedPaymentInstruments[0].type
             + '</span><div>'
             + order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber
-            + '</div><div><span>'
-            + order.resources.cardEnding + ' '
-            + order.billing.payment.selectedPaymentInstruments[0].expirationMonth
-            + '/' + order.billing.payment.selectedPaymentInstruments[0].expirationYear
-            + '</span></div>';
+            + '</div>';
 	}
 
 	$paymentSummary.empty().append(htmlToAppend);
@@ -276,16 +277,19 @@ module.exports = {
 	},
 
 	handleCreditCardNumber: function () {
-		cleave.handleCreditCardNumber('.cardNumber', '#cardType');
+		if ($('.cardNumber').length > 0 && $('#cardType').length > 0) {
+			cleave.handleCreditCardNumber('.cardNumber', '#cardType');
+		}
 	},
 
+	/* not using the cleave.
 	santitizeForm: function () {
 		$('body').on('checkout:serializeBilling', function (e, data) {
 			var serializedForm = cleave.serializeData(data.form);
 
 			data.callback(serializedForm);
 		});
-	},
+	},*/
 
 	selectSavedPaymentInstrument: function () {
 		$(document).on('click', '.saved-payment-instrument', function (e) {

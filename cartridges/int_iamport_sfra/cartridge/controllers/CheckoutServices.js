@@ -356,6 +356,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	const Resource = require('dw/web/Resource');
 	const Transaction = require('dw/system/Transaction');
 	const URLUtils = require('dw/web/URLUtils');
+	const OrderMgr = require('dw/order/OrderMgr');
 	const basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
 	const hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 	const COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
@@ -365,6 +366,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	const CustomError = require('*/cartridge/errors/customError');
 	var pgValidators = require('*/cartridge/config/pgValidators');
 	var iamportConstants = require('*/cartridge/constants/iamportConstants');
+	var addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
 	let customError;
 
 	let currentBasket = BasketMgr.getCurrentBasket();
@@ -544,6 +546,122 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		return next();
 	}
 
+	// place the order with saved credit card.
+	var orderPaymentInstrumentObj = order.paymentInstruments.length > 0 ? order.paymentInstruments[0] : null;
+	if (req.currentCustomer.raw.authenticated && req.currentCustomer.raw.registered && orderPaymentInstrumentObj && orderPaymentInstrumentObj.creditCardToken) {
+		// Handles payment authorization
+		var handlePaymentResult = COHelpers.handlePayments(order, order.orderNo);
+		if (handlePaymentResult.error) {
+			res.json({
+				error: true,
+				errorMessage: Resource.msg('error.technical', 'checkout', null)
+			});
+			return next();
+		}
+
+		// Making a payment with saved billing key(customer uid)
+		var sucessPayment = iamportHelpers.paymentWithSavedCard(paymentResources, orderPaymentInstrumentObj);
+
+		// if saved billing key(customer uid) is not register in Iamport server and Payment is not made as success with saved billing key.
+		if (sucessPayment.error) {
+			Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
+			res.json({
+				error: true,
+				errorMessage: Resource.msg('error.technical', 'checkout', null)
+			});
+			return next();
+		}
+
+		// get iamport uid from success payment.
+		var paymentID = sucessPayment.imp_uid;
+
+		// get order payment information
+		let paymentData = iamportServices.getPaymentInformation.call({
+			paymentID: paymentID
+		});
+
+		if (!paymentData.isOk()) {
+			iamportLogger.error('Server failed to retrieve payment data for "{0}": {1}.', paymentID, JSON.stringify(paymentData));
+			customError = new CustomError({ status: paymentData.getError() });
+
+			COHelpers.recreateCurrentBasket(order, 'Order failed', customError.note);
+
+			res.json({
+				error: true,
+				cartError: true,
+				redirectUrl: URLUtils.url('Cart-Show', 'err', paymentData.getError().toString()).toString()
+			});
+			return next();
+		}
+
+		// save the payment id in a custom attribute on the Order object
+		let paymentResponse = paymentData.getObject().response;
+		let paymentId = paymentResponse.imp_uid;
+
+		hooksHelper('app.payment.processor.iamport',
+			'updatePaymentIdOnOrder',
+			paymentId,
+			order,
+			require('*/cartridge/scripts/hooks/payment/processor/iamportPayments').updatePaymentIdOnOrder
+		);
+
+		var iamportFraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', paymentData, order, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
+		if (iamportFraudDetectionStatus.status === 'fail') {
+			Transaction.wrap(function () {
+				OrderMgr.failOrder(order, true);
+				COHelpers.addOrderNote(order,
+					Resource.msg('order.note.payment.incomplete.subject', 'order', null),
+					iamportFraudDetectionStatus.errorMessage);
+			});
+
+			// fraud detection failed
+			req.session.privacyCache.set('fraudDetectionStatus', true);
+
+			res.json({
+				error: true,
+				cartError: true,
+				redirectUrl: URLUtils.url('Error-ErrorCode', 'err', iamportFraudDetectionStatus.errorCode).toString(),
+				errorMessage: Resource.msg('error.technical', 'checkout', null)
+			});
+
+			return next();
+		}
+
+		// Places the order
+		let placeOrderResult = COHelpers.placeOrder(order, iamportFraudDetectionStatus);
+		if (placeOrderResult.error) {
+			res.json({
+				error: true,
+				errorMessage: Resource.msg('error.technical', 'checkout', null)
+			});
+			return next();
+		}
+
+		if (req.currentCustomer.addressBook) {
+			// save all used shipping addresses to address book of the logged in customer
+			var allAddresses = addressHelpers.gatherShippingAddresses(order);
+			allAddresses.forEach(function (address) {
+				if (!addressHelpers.checkIfAddressStored(address, req.currentCustomer.addressBook.addresses)) {
+					addressHelpers.saveAddress(address, req.currentCustomer, addressHelpers.generateAddressName(address));
+				}
+			});
+		}
+
+		// Reset usingMultiShip after successful Order placement
+		req.session.privacyCache.set('usingMultiShipping', false);
+
+		// TODO: Exposing a direct route to an Order, without at least encoding the orderID
+		//  is a serious PII violation.  It enables looking up every customers orders, one at a
+		//  time.
+		res.json({
+			error: false,
+			orderID: order.orderNo,
+			orderToken: order.orderToken,
+			placedOrderWithSavedCard: true,
+			continueUrl: URLUtils.url('Order-Confirm').toString()
+		});
+		return next();
+	}
     // TODO: Exposing a direct route to an Order, without at least encoding the orderID
     //  is a serious PII violation.  It enables looking up every customers orders, one at a
     //  time.
@@ -551,6 +669,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		error: false,
 		orderID: order.orderNo,
 		orderToken: order.orderToken,
+		placedOrderWithSavedCard: false,
 		validationUrl: URLUtils.url('CheckoutServices-ValidatePlaceOrder').toString(),
 		requestPayFailureUrl: URLUtils.url('Checkout-HandlePaymentRequestFailure').toString(),
 		cancelUrl: URLUtils.url('Checkout-HandleCancel').toString(),
@@ -668,20 +787,13 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		require('*/cartridge/scripts/hooks/payment/processor/iamportPayments').updatePaymentIdOnOrder
 	);
 
-	hooksHelper('app.payment.processor.iamport',
-		'updateTransactionIdOnOrder',
-		paymentId,
-		order,
-		require('*/cartridge/scripts/hooks/payment/processor/iamportPayments').updateTransactionIdOnOrder
-	);
-
-	var fraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', paymentData, order, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
-	if (fraudDetectionStatus.status === 'fail') {
+	var iamportFraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', paymentData, order, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
+	if (iamportFraudDetectionStatus.status === 'fail') {
 		Transaction.wrap(function () {
 			OrderMgr.failOrder(order, true);
 			COHelpers.addOrderNote(order,
 				Resource.msg('order.note.payment.incomplete.subject', 'order', null),
-				fraudDetectionStatus.errorMessage);
+				iamportFraudDetectionStatus.errorMessage);
 		});
         // fraud detection failed
 		req.session.privacyCache.set('fraudDetectionStatus', true);
@@ -689,7 +801,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 		res.json({
 			error: true,
 			cartError: true,
-			redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
+			redirectUrl: URLUtils.url('Error-ErrorCode', 'err', iamportFraudDetectionStatus.errorCode).toString(),
 			errorMessage: Resource.msg('error.technical', 'checkout', null)
 		});
 
@@ -736,7 +848,7 @@ server.post('ValidatePlaceOrder', server.middleware.https, function (req, res, n
 	}
 
 	// Places the order
-	let placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+	let placeOrderResult = COHelpers.placeOrder(order, iamportFraudDetectionStatus);
 	if (placeOrderResult.error) {
 		res.json({
 			error: true,

@@ -1,12 +1,13 @@
 'use strict';
 
-const iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
-const Transaction = require('dw/system/Transaction');
-const Resource = require('dw/web/Resource');
-const Order = require('dw/order/Order');
-const PaymentMgr = require('dw/order/PaymentMgr');
-const Money = require('dw/value/Money');
-const OrderMgr = require('dw/order/OrderMgr');
+var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
+var Transaction = require('dw/system/Transaction');
+var Resource = require('dw/web/Resource');
+var Order = require('dw/order/Order');
+var PaymentMgr = require('dw/order/PaymentMgr');
+var Money = require('dw/value/Money');
+var OrderMgr = require('dw/order/OrderMgr');
+var collections = require('*/cartridge/scripts/util/collections');
 
 /**
  * Iamport hook form processor
@@ -16,11 +17,35 @@ const OrderMgr = require('dw/order/OrderMgr');
  * @returns {Object} an object that has error information or payment information
  */
 function processForm(req, paymentForm, viewFormData) {
+	var array = require('*/cartridge/scripts/util/array');
+	var viewData = viewFormData;
 	viewFormData.paymentMethod = {
 		value: paymentForm.paymentMethod.value,
 		htmlName: paymentForm.paymentMethod.value
 	};
+	if (req.form.storedPaymentUUID) {
+		viewData.storedPaymentUUID = req.form.storedPaymentUUID;
+	}
 
+	// process payment information of saved credit card
+	if (viewData.storedPaymentUUID && req.currentCustomer.raw.authenticated && req.currentCustomer.raw.registered) {
+		var paymentInstruments = req.currentCustomer.wallet.paymentInstruments;
+		var paymentInstrument = array.find(paymentInstruments, function (item) {
+			return viewData.storedPaymentUUID === item.UUID;
+		});
+		viewData.paymentInformation = {
+			cardNumber: {
+				value: 'iamportCreditCardNumber' in paymentInstrument.raw.custom ? paymentInstrument.raw.custom.iamportCreditCardNumber : '',
+				htmlName: 'iamportCreditCardNumber' in paymentInstrument.raw.custom ? paymentInstrument.raw.custom.iamportCreditCardNumber : ''
+			},
+			cardType: {
+				value: paymentInstrument.creditCardType,
+				htmlName: paymentInstrument.creditCardType
+			}
+
+		};
+		viewData.paymentInformation.creditCardToken = paymentInstrument.raw.creditCardToken;
+	}
 	return {
 		viewData: viewFormData,
 		success: true,
@@ -38,20 +63,43 @@ function processForm(req, paymentForm, viewFormData) {
  * @returns {Object} processor result
  */
 function Handle(basket, paymentInformation, paymentMethodID, req) {
+	var currentBasket = basket;
+	var cardNumber = paymentInformation != null && paymentInformation.cardNumber != null ? paymentInformation.cardNumber.value : '';
+	var cardType = paymentInformation != null && paymentInformation.cardType != null ? paymentInformation.cardType.value : '';
+	var creditCardToken = paymentInformation != null && paymentInformation.creditCardToken != null ? paymentInformation.creditCardToken : '';
 	let result;
+
+	// Invalid Payment Instrument
+	if (!empty(cardNumber) && !empty(cardType) && empty(creditCardToken)) {
+		var invalidPaymentMethod = Resource.msg('error.card.information.error', 'creditCard', null);
+		return {
+			fieldErrors: [],
+			serverErrors: [invalidPaymentMethod],
+			error: true
+		};
+	}
+
 
 	try {
 		result = Transaction.wrap(function () {
-			let paymentInstrument;
-			if (empty(basket.getPaymentInstruments(paymentMethodID))) {
-				paymentInstrument = basket.createPaymentInstrument(
-					paymentMethodID,
-					basket.getTotalGrossPrice()
-				);
-			} else {
-				paymentInstrument = basket.getPaymentInstruments(paymentMethodID);
-			}
+			var paymentInstruments = currentBasket.getPaymentInstruments(
+				paymentMethodID
+			);
 
+			collections.forEach(paymentInstruments, function (item) {
+				currentBasket.removePaymentInstrument(item);
+			});
+
+			var paymentInstrument = currentBasket.createPaymentInstrument(
+				paymentMethodID, currentBasket.totalGrossPrice
+			);
+			// set the selected credit card in basket payment instrument.
+			if (!empty(cardNumber) && !empty(cardType) && !empty(creditCardToken)) {
+				paymentInstrument.setCreditCardHolder(currentBasket.billingAddress.fullName);
+				paymentInstrument.setCreditCardNumber(cardNumber);
+				paymentInstrument.setCreditCardType(cardType);
+				paymentInstrument.setCreditCardToken(creditCardToken);
+			}
 			return {
 				paymentInstrument: paymentInstrument,
 				success: true,
@@ -99,7 +147,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
 }
 
 /**
- * Update the iamport payment id (imp_uid) attribute on the Order object
+ * Update the iamport payment id (imp_uid) attribute in order level custom attribue and paymentTransaction of paymentInstrument
  * @param {string} paymentId - The payment identifier
  * @param {Object} order - The current order
  */
@@ -107,24 +155,10 @@ function updatePaymentIdOnOrder(paymentId, order) {
 	try {
 		Transaction.wrap(function () {
 			order.custom.imp_uid = paymentId;
-		});
-	} catch (e) {
-		iamportLogger.error('Could not update iamport payment id on the order object: \n{0}: {1}', e.message, e.stack);
-	}
-}
-
-/**
- * Update the iamport payment id (imp_uid) attribute on the payment transaction id of the Order object
- * @param {string} paymentId - The payment identifier
- * @param {Object} order - The current order
- */
-function updateTransactionIdOnOrder(paymentId, order) {
-	try {
-		Transaction.wrap(function () {
-			let paymentInstruments = order.getPaymentInstruments();
+			var paymentInstruments = order.getPaymentInstruments();
 
 			if (!empty(paymentInstruments)) {
-				let paymentTransaction = paymentInstruments[0].paymentTransaction;
+				var paymentTransaction = paymentInstruments[0].paymentTransaction;
 
 				if (paymentTransaction) {
 					order.paymentInstruments[0].paymentTransaction.setTransactionID(paymentId);
@@ -132,7 +166,7 @@ function updateTransactionIdOnOrder(paymentId, order) {
 			}
 		});
 	} catch (e) {
-		iamportLogger.error('Could not update iamport payment id on the payment transaction id order object: \n{0}: {1}', e.message, e.stack);
+		iamportLogger.error('Could not update iamport payment id on the order object: \n{0}: {1}', e.message, e.stack);
 	}
 }
 
@@ -216,7 +250,7 @@ function postAuthorize(order, paymentData, req) {
 			}
 
 			let paymentId = paymentData.getObject().response.imp_uid;
-			updatePaymentIdOnOrder(paymentId, order);
+			order.custom.imp_uid = paymentId;
 		}
 
 		orderStatus = order.getStatus().getValue();
@@ -277,6 +311,5 @@ module.exports = {
 	vbankIssued: vbankIssued,
 	updatePaymentIdOnOrder: updatePaymentIdOnOrder,
 	updateVbankOnOrder: updateVbankOnOrder,
-	updatePaymentMethodOnBasket: updatePaymentMethodOnBasket,
-	updateTransactionIdOnOrder: updateTransactionIdOnOrder
+	updatePaymentMethodOnBasket: updatePaymentMethodOnBasket
 };

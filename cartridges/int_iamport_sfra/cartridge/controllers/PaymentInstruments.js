@@ -45,8 +45,8 @@ server.append('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req,
 });
 
 /**
- * PaymentInstruments-GetList : The endpoint PaymentInstruments-GetList is the endpoint that renders a list of shopper saved payment instruments from m_redirectUrl. The rendered list displays the masked card number and payemnt instrument type
- * @name Custom/PaymentInstruments-GetList
+ * PaymentInstruments-ListCardsForMobile : The endpoint PaymentInstruments-ListCardsForMobile is call from Iamport Server to display customer saved credit cards for mobile
+ * @name Custom/PaymentInstruments-ListCardsForMobile
  * @function
  * @memberof PaymentInstruments
  * @param {middleware} - userLoggedIn.validateLoggedIn
@@ -55,7 +55,7 @@ server.append('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req,
  * @param {renders} - isml
  * @param {serverfunction} - get
  */
-server.get('GetList', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
+server.get('ListCardsForMobile', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
 	var iamportServices = require('*/cartridge/scripts/service/iamportService');
 	var iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	var URLUtils = require('dw/web/URLUtils');
@@ -81,7 +81,7 @@ server.get('GetList', userLoggedIn.validateLoggedIn, consentTracking.consent, fu
 			var responseMerchantId = response.merchant_uid;
 			customerUid = response.customer_uid;
 			if (merchantUid === responseMerchantId) {
-				// It is used when making a payment with the saved billing key.
+				// Make auth payment with the saved billing key to get credit card detials and save card details in wallet for mobile.
 				iamportHelpers.handleSubcribePaymentRequest(req, customerUid);
 				req.session.raw.custom.paymentId = paymentId;
 			}
