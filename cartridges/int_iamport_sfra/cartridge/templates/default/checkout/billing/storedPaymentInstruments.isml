@@ -1,0 +1,30 @@
+<isif condition="${pdict.customer.customerPaymentInstruments && pdict.customer.customerPaymentInstruments.length > 0}">
+	<isset name="displayedNewCardOpt" value="${false}" scope="page" />
+
+	<isloop items="${pdict.customer.customerPaymentInstruments}" var="paymentInstrument" status="loopState">
+	    <isset name="displayedNewCardOpt" value="${true}" scope="page" />
+	    <div class="iamport-cards row saved-payment-instrument  ${loopState.first ? 'selected-payment' : ''}" data-uuid="${paymentInstrument.UUID}">
+			<div class="saved-payment-information">
+	            <div class="saved-credit-card-type">
+	                <span>
+	                    ${Resource.msg('msg.payment.type.credit', 'confirmation', null)}
+	                    ${paymentInstrument.creditCardType}
+	                </span>
+	            </div>
+	            <div class="saved-credit-card-number">
+	                ${paymentInstrument.iamportCreditCardNumber}
+	            </div>
+	        </div>
+			<div class="iamport-selected-icon"></div>
+	    </div>
+	</isloop>
+	<isif condition="${displayedNewCardOpt === true}">
+	    <div class="iamport-cards new-iamport-creditcard row saved-payment-instrument" data-uuid="">
+			<div class="saved-payment-information">
+			   <isprint value="${Resource.msg('label.payment.new.creditcard','checkout',null)}" encoding="off" />
+			</div>
+			<div class="iamport-selected-icon"></div>
+		</div>
+	</isif>
+</isif>
+

@@ -12,11 +12,10 @@
 
     <div class="tab-pane active iamport-card-content d-flex" id="iamport-card-content" role="tabpanel">
         <fieldset class="payment-form-fields d-flex">
-            <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="Iamport">
 
+            <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="Iamport">
             <div class="btn-group payment-methods d-flex flex-column">
                 <isloop items="${pdict.order.billing.payment.iamportPaymentMethods}" alias="paymentMethod" status="payment">
-
                     <div class="payment-options__payment d-flex align-items-center justify-content-start">
                         <input type="radio" class="btn-check payment-method" name="paymentOption" value="${paymentMethod.value + '&' + paymentMethod.displayValue}" id="${paymentMethod.value}" autocomplete="off" />
 
@@ -49,6 +48,16 @@
                             ${paymentMethod.displayValue}
                         </label>
                     </div>
+					<isif condition="${pdict.customer.registeredUser && paymentMethod.value === 'card'}">
+						<div class="user-payment-instruments container checkout-hidden ${pdict.customer.registeredUser && pdict.customer.customerPaymentInstruments.length ? '' : 'checkout-hidden'}">
+			                <iscomment>
+								display the user saved credit card on checkout page.
+							</iscomment>
+			                <div class="stored-payments">
+			                    <isinclude template="checkout/billing/storedPaymentInstruments" />
+			                </div>
+		            	</div>
+					</isif>
                 </isloop>
             </div>
             <div class="payment-error"></div>

@@ -144,5 +144,26 @@ module.exports = {
 			pg_provider: 'kicc',
 			updated: 1672300188
 		}
+	},
+	validateCustomerUid: {
+		code: 0,
+		message: null,
+		response: {
+			card_code: 'MAS',
+			card_name: '해외마스터카드',
+			card_number: null,
+			card_type: null,
+			customer_addr: null,
+			customer_email: null,
+			customer_id: 'customer-id-7ce14c9f-b6eb-402c-8e37-0cfc7f650946',
+			customer_name: null,
+			customer_postcode: null,
+			customer_tel: null,
+			customer_uid: 'rukze_00001001',
+			inserted: 1672821249,
+			pg_id: 'T5102001',
+			pg_provider: 'kicc',
+			updated: 1672821249
+		}
 	}
 };

@@ -84,6 +84,31 @@
   }
 }
 
+.saved-payment-instrument.selected-payment .iamport-selected-icon {
+    display: block;
+    background-image: url("../../images/check.png");
+    width: 30px;
+    height: 30px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: none;
+    background-repeat: no-repeat;
+    margin-top: 10px;
+    margin-left: 12px;
+}
+
 .cart-error-messaging.cart-error {
   position: relative;
+}
+
+.user-payment-instruments {
+	padding-left: 50px
+}
+
+.saved-payment-instrument {
+	padding: 0px 10px;
+}
+
+.new-iamport-creditcard {
+	font-weight: 500;
 }
