@@ -172,7 +172,6 @@
                 <default-value>false</default-value>
             </attribute-definition>
 
-            
 
             <attribute-definition attribute-id="iamport_kcpPaymentMethods">
                 <display-name xml:lang="x-default">KCP Payment Methods</display-name>
@@ -371,6 +370,22 @@
                         <value>vbank</value>
                     </value-definition>
                 </value-definitions>
+            </attribute-definition>
+
+			<attribute-definition attribute-id="iamport_vbank_due">
+                <display-name xml:lang="x-default">Number of virtual bank due days</display-name>
+                <description xml:lang="x-default">Number of Days to deposit payment to virtual account</description>
+                <type>int</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+
+            <attribute-definition attribute-id="iamport_danal_biz_num">
+                <display-name xml:lang="x-default">Danal  Business Registration Number</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
             </attribute-definition>
 
 			<attribute-definition attribute-id="iamport_danal_general_storeID">
@@ -672,6 +687,7 @@
                 <attribute attribute-id="iamport_merchantID"/>
                 <attribute attribute-id="iamport_paymentGateway"/>
                 <attribute attribute-id="iamport_enabledSFRA5"/>
+				<attribute attribute-id="iamport_vbank_due"/>
             </attribute-group>
             <attribute-group group-id="iamport_inicisConfigs">
                 <display-name xml:lang="x-default">Iamport Inicis Configs</display-name>
@@ -708,6 +724,7 @@
                 <attribute attribute-id="iamport_danalPaymentMethods"/>
                 <attribute attribute-id="iamport_danal_subscription_storeID"/>
                 <attribute attribute-id="iamport_danal_general_storeID"/>
+				<attribute attribute-id="iamport_danal_biz_num"/>
             </attribute-group>
             <attribute-group group-id="iamport_smartroConfigs">
                 <display-name xml:lang="x-default">Iamport Smartro Configs</display-name>

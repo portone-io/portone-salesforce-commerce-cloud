@@ -3,6 +3,8 @@
 const Resource = require('dw/web/Resource');
 const iamportConstants = require('*/cartridge/constants/iamportConstants');
 const Site = require('dw/system/Site');
+const Calendar = require('dw/util/Calendar');
+const StringUtils = require('dw/util/StringUtils');
 
 /**
  * Prepares the payment resources needed to request payment to Iamport server
@@ -60,6 +62,24 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 	if (mobileRedirectUrl && request.httpUserAgent.indexOf('Mobile') > -1) {
 		paymentInformation.m_redirect_url = mobileRedirectUrl;
 		paymentInformation.popup = false;
+	}
+
+	// additional parameters for virtual Account.
+	if (selectedPaymentMethod === 'vbank') {
+		var dueDays = Site.getCurrent().getCustomPreferenceValue('iamport_vbank_due');
+		var bizNumber = Site.getCurrent().getCustomPreferenceValue('iamport_danal_biz_num');
+		if (paymentInformation.pg.indexOf('danal') > -1 && bizNumber) {
+			paymentInformation.biz_num = bizNumber;
+		}
+		if (dueDays) {
+			var date = new Date();
+			date.setTime(date.getTime() + (dueDays * 24 * 60 * 60 * 1000));
+			var calendar = new Calendar(date);
+			var siteTimeZone = Site.getCurrent().timezone;
+			calendar.setTimeZone(siteTimeZone);
+			var result = StringUtils.formatCalendar(calendar, 'yyyyMMddhhmm');
+			paymentInformation.vbank_due = result;
+		}
 	}
 
 	return paymentInformation;
