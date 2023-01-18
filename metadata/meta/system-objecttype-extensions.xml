@@ -375,7 +375,7 @@
 			<attribute-definition attribute-id="iamport_vbank_due">
                 <display-name xml:lang="x-default">Number of virtual bank due days</display-name>
                 <description xml:lang="x-default">Number of Days to deposit payment to virtual account</description>
-                <type>double</type>
+                <type>int</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
