@@ -7,6 +7,26 @@ const Calendar = require('dw/util/Calendar');
 const StringUtils = require('dw/util/StringUtils');
 
 /**
+ *
+ * @param {Object} order - Customer order data
+ * @returns {Object} - array of objects consisting of the following 4 required product properties.
+ */
+function prepareEscrowPaymentRequest(order) {
+	var result = [];
+	// iterate all product line items of the order and create product object with required attributes
+	var productLineItems = order.getAllProductLineItems().iterator();
+	while (productLineItems.hasNext()) {
+		var productLineItem = productLineItems.next();
+		result.push({
+			orderNumber: order.orderNo,
+			name: productLineItem.productName,
+			quantity: parseInt(productLineItem.quantity.value.toFixed(0)),
+			amount: parseInt(productLineItem.getGrossPrice().value.toFixed(0))
+		});
+	}
+	return result;
+}
+/**
  * Prepares the payment resources needed to request payment to Iamport server
  * @param {Object} order - Customer order data
  * @param {string} selectedPaymentMethod - Id of the selected payment method
@@ -18,7 +38,8 @@ const StringUtils = require('dw/util/StringUtils');
 function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobileRedirectUrl, selectedPG) {
 	let paymentInformation = {
 		pg: Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value,
-		pay_method: selectedPaymentMethod
+		pay_method: selectedPaymentMethod,
+		escrow: Site.getCurrent().getCustomPreferenceValue('iamport_useEscrow')
 	};
 	if (selectedPG) {
 		paymentInformation.pg = selectedPG;
@@ -62,6 +83,9 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 	if (mobileRedirectUrl && request.httpUserAgent.indexOf('Mobile') > -1) {
 		paymentInformation.m_redirect_url = mobileRedirectUrl;
 		paymentInformation.popup = false;
+	}
+	if (paymentInformation.escrow) {
+		paymentInformation.kiccProducts = prepareEscrowPaymentRequest(order);
 	}
 
 	// additional parameters for virtual Account.
