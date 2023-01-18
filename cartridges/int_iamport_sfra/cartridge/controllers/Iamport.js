@@ -353,7 +353,7 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 			fullName: profile.firstName + ' ' + profile.lastName
 		}
 	};
-	var mobileRedirectUrl = URLUtils.abs('PaymentInstruments-GetMobileCardList').toString();
+	var mobileRedirectUrl = URLUtils.abs('PaymentInstruments-ListCardsForMobile').toString();
 	var paymentResources = iamportHelpers.preparePaymentResources(order, selectedCardPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedPG);
 	paymentResources.customer_uid = iamportHelpers.generateString(5) + '_' + profile.customerNo;
 	res.json({
@@ -365,7 +365,7 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 });
 
 /**
- * Save the billingKey(customer uid) with customer saved credit card.
+ * Save the billingKey(customer uid) as credit card token to the profile wallet .
  * @name Iamport-SaveBillingKey
  * @function
  * @memberof Iamport
@@ -378,7 +378,7 @@ server.post('SaveBillingKey', function (req, res, next) {
 	var paymentInformation = req.form;
 	var customerUid = paymentInformation.customer_uid;
 	try {
-		// Make a payment with the registered billing key to get credit card detials and save card details in wallet.
+		// Make auth payment with the saved billing key to get credit card detials and save card details in wallet.
 		var paymentResponse = iamportHelpers.handleSubcribePaymentRequest(req, customerUid);
 		if (!paymentResponse.isOk() || paymentResponse.getObject().message) {
 			var iamportResponseError = '';

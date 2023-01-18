@@ -45,8 +45,8 @@ server.append('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req,
 });
 
 /**
- * PaymentInstruments-GetMobileCardList : The endpoint PaymentInstruments-GetMobileCardList is call from Iamport Server to display customer saved credit cards for mobile
- * @name Custom/PaymentInstruments-GetMobileCardList
+ * PaymentInstruments-ListCardsForMobile : The endpoint PaymentInstruments-ListCardsForMobile is call from Iamport Server to display customer saved credit cards for mobile
+ * @name Custom/PaymentInstruments-ListCardsForMobile
  * @function
  * @memberof PaymentInstruments
  * @param {middleware} - userLoggedIn.validateLoggedIn
@@ -55,7 +55,7 @@ server.append('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req,
  * @param {renders} - isml
  * @param {serverfunction} - get
  */
-server.get('GetMobileCardList', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
+server.get('ListCardsForMobile', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
 	var iamportServices = require('*/cartridge/scripts/service/iamportService');
 	var iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	var URLUtils = require('dw/web/URLUtils');
@@ -81,7 +81,7 @@ server.get('GetMobileCardList', userLoggedIn.validateLoggedIn, consentTracking.c
 			var responseMerchantId = response.merchant_uid;
 			customerUid = response.customer_uid;
 			if (merchantUid === responseMerchantId) {
-				// make the payment with the saved billing key to get the card details for mobile.
+				// Make auth payment with the saved billing key to get credit card detials and save card details in wallet for mobile.
 				iamportHelpers.handleSubcribePaymentRequest(req, customerUid);
 				req.session.raw.custom.paymentId = paymentId;
 			}
