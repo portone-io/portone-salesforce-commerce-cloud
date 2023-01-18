@@ -75,6 +75,8 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 			var date = new Date();
 			date.setTime(date.getTime() + (dueDays * 24 * 60 * 60 * 1000));
 			var calendar = new Calendar(date);
+			var siteTimeZone = Site.getCurrent().timezone;
+			calendar.setTimeZone(siteTimeZone);
 			var result = StringUtils.formatCalendar(calendar, 'yyyyMMddhhmm');
 			paymentInformation.vbank_due = result;
 		}
