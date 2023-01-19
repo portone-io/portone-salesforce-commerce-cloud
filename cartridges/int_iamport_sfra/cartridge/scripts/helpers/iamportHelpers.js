@@ -6,6 +6,29 @@ const Site = require('dw/system/Site');
 const Calendar = require('dw/util/Calendar');
 const StringUtils = require('dw/util/StringUtils');
 
+
+/**
+ *
+ * @param {Object} order - Customer order data
+ * @returns {Object} - array of objects consisting of the following 5 required product properties.
+ */
+function prepareNarverPayPaymentRequest(order) {
+	var result = [];
+	// iterate all product line items of the order and create product object with required attributes
+	var productLineItems = order.getAllProductLineItems().iterator();
+	while (productLineItems.hasNext()) {
+		var productLineItem = productLineItems.next();
+		result.push({
+			categoryType: 'PRODUCT',
+			categoryId: 'GENERAL',
+			count: parseInt(productLineItem.quantity.value.toFixed(0), 10),
+			name: productLineItem.productName,
+			uid: productLineItem.productID
+		});
+	}
+	return result;
+}
+
 /**
  * Prepares the payment resources needed to request payment to Iamport server
  * @param {Object} order - Customer order data
@@ -16,7 +39,8 @@ const StringUtils = require('dw/util/StringUtils');
  * @returns {Object} - The payment resources
  */
 function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobileRedirectUrl, selectedPG) {
-	let paymentInformation = {
+	var siteTimeZone = Site.getCurrent().timezone;
+	var paymentInformation = {
 		pg: Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value,
 		pay_method: selectedPaymentMethod
 	};
@@ -63,6 +87,14 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 		paymentInformation.m_redirect_url = mobileRedirectUrl;
 		paymentInformation.popup = false;
 	}
+	if (paymentInformation.pg.indexOf('naverpay') > -1) {
+		var orderCalendar = new Calendar(order.getCreationDate());
+		orderCalendar.setTimeZone(siteTimeZone);
+		paymentInformation.naverUseCfm = StringUtils.formatCalendar(orderCalendar, 'yyyyMMdd');
+		paymentInformation.tax_free = 0;
+		paymentInformation.naverPopupMode = true;
+		paymentInformation.naverProducts = prepareNarverPayPaymentRequest(order);
+	}
 
 	// additional parameters for virtual Account.
 	if (selectedPaymentMethod === 'vbank') {
@@ -75,7 +107,6 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 			var date = new Date();
 			date.setTime(date.getTime() + (dueDays * 24 * 60 * 60 * 1000));
 			var calendar = new Calendar(date);
-			var siteTimeZone = Site.getCurrent().timezone;
 			calendar.setTimeZone(siteTimeZone);
 			var result = StringUtils.formatCalendar(calendar, 'yyyyMMddhhmm');
 			paymentInformation.vbank_due = result;
