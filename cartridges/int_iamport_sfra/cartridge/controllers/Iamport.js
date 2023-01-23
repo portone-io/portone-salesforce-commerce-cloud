@@ -346,6 +346,7 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 			value: iamportConstants.TEST_SUBSCRIBE_AMOUNT
 		},
 		customerName: profile.firstName + ' ' + profile.lastName,
+		isSubscription: true,
 		orderNo: 'authsave_' + iamportHelpers.generateString(8),
 		customerEmail: profile.email,
 		billingAddress: {

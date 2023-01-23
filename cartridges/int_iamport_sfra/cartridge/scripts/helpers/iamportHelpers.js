@@ -88,12 +88,15 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 		paymentInformation.popup = false;
 	}
 	if (paymentInformation.pg.indexOf('naverpay') > -1) {
-		var orderCalendar = new Calendar(order.getCreationDate());
-		orderCalendar.setTimeZone(siteTimeZone);
-		paymentInformation.naverUseCfm = StringUtils.formatCalendar(orderCalendar, 'yyyyMMdd');
 		paymentInformation.tax_free = 0;
 		paymentInformation.naverPopupMode = true;
-		paymentInformation.naverProducts = prepareNarverPayPaymentRequest(order);
+		if ('getAllProductLineItems' in order) {
+			paymentInformation.naverProducts = prepareNarverPayPaymentRequest(order);
+		}
+		if ('isSubscription' in order && order.isSubscription) {
+			paymentInformation.naverProductCode = Site.getCurrent().getCustomPreferenceValue('iamport_naverProductCode');
+		}
+		paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverChainId');
 	}
 
 	// additional parameters for virtual Account.

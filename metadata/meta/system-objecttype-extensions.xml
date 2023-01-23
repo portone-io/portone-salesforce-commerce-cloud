@@ -47,6 +47,22 @@
                 <min-length>0</min-length>
             </attribute-definition>
 
+			<attribute-definition attribute-id="iamport_naverChainId">
+                <display-name xml:lang="x-default">Naver Chain ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+			<attribute-definition attribute-id="iamport_naverProductCode">
+                <display-name xml:lang="x-default">Naver Product Code</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
             <attribute-definition attribute-id="iamport_paymentGateway">
                 <display-name xml:lang="x-default">Iamport Payment Gateway</display-name>
                 <description xml:lang="x-default">Select from a list of supported payment gateways</description>
@@ -755,6 +771,8 @@
                 <attribute attribute-id="iamport_naverPayPaymentMethods"/>
                 <attribute attribute-id="iamport_naverPay_general_storeID"/>
                 <attribute attribute-id="iamport_naverPay_subscription_storeID"/>
+				<attribute attribute-id="iamport_naverChainId"/>
+				<attribute attribute-id="iamport_naverProductCode"/>
             </attribute-group>
             <attribute-group group-id="iamport_paycoConfigs">
                 <display-name xml:lang="x-default">Iamport PAYCO Configs</display-name>
