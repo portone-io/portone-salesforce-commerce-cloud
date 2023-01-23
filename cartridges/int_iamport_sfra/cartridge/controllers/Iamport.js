@@ -304,8 +304,9 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 	var paymentGatewayID = Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID)
 		|| iamportConstants.PG_DEFAULT_FALLBACK;
 	var paymentGateway = pgValidators[paymentGatewayID];
+	var pgID = paymentGatewayID.value.indexOf('kcp') > -1 ? 'kcp_billing' : paymentGatewayID.value;
 	var storeID = Site.getCurrent().getCustomPreferenceValue(paymentGateway.subscriptionStoreID);
-	var selectedPG = !empty(storeID) ? paymentGatewayID.value + '.' + storeID : paymentGatewayID.value;
+	var selectedPG = !empty(storeID) ? pgID + '.' + storeID : pgID;
 	var selectedPaymentMethods = Site.getCurrent().getCustomPreferenceValue(paymentGateway.paymentMethodsAttributeID);
 	var validPaymentMethod = false;
 	var enablePaymentWindow = false;
