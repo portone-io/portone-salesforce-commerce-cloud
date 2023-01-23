@@ -301,12 +301,12 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 	var iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	var pgValidators = require('*/cartridge/config/pgValidators');
 	var selectedCardPaymentMethod = 'card';
-	var paymentGatewayID = Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID)
+	var selectedPaymentGateway = Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID)
 		|| iamportConstants.PG_DEFAULT_FALLBACK;
-	var paymentGateway = pgValidators[paymentGatewayID];
-	var pgID = paymentGatewayID.value.indexOf('kcp') > -1 ? 'kcp_billing' : paymentGatewayID.value;
+	var paymentGateway = pgValidators[selectedPaymentGateway];
+	var paymentGatewayID = selectedPaymentGateway.value.indexOf('kcp') > -1 ? 'kcp_billing' : selectedPaymentGateway.value;
 	var storeID = Site.getCurrent().getCustomPreferenceValue(paymentGateway.subscriptionStoreID);
-	var selectedPG = !empty(storeID) ? pgID + '.' + storeID : pgID;
+	var selectedPG = !empty(storeID) ? paymentGatewayID + '.' + storeID : paymentGatewayID;
 	var selectedPaymentMethods = Site.getCurrent().getCustomPreferenceValue(paymentGateway.paymentMethodsAttributeID);
 	var validPaymentMethod = false;
 	var enablePaymentWindow = false;
