@@ -304,8 +304,10 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 	var selectedPaymentGateway = Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID)
 		|| iamportConstants.PG_DEFAULT_FALLBACK;
 	var paymentGateway = pgValidators[selectedPaymentGateway];
+	// update the selected payment gateway ID for KCP Subscription Payment.
 	var selectedpaymentGatewayID = selectedPaymentGateway.value.indexOf('kcp') > -1 ? 'kcp_billing' : selectedPaymentGateway.value;
 	var storeID = Site.getCurrent().getCustomPreferenceValue(paymentGateway.subscriptionStoreID);
+	// pass the multistore id in selected payment gateway ID if we have more than one.
 	selectedpaymentGatewayID = !empty(storeID) ? selectedpaymentGatewayID + '.' + storeID : selectedpaymentGatewayID;
 	var selectedPaymentMethods = Site.getCurrent().getCustomPreferenceValue(paymentGateway.paymentMethodsAttributeID);
 	var validPaymentMethod = false;
