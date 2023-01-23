@@ -304,9 +304,9 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 	var selectedPaymentGateway = Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID)
 		|| iamportConstants.PG_DEFAULT_FALLBACK;
 	var paymentGateway = pgValidators[selectedPaymentGateway];
-	var paymentGatewayID = selectedPaymentGateway.value.indexOf('kcp') > -1 ? 'kcp_billing' : selectedPaymentGateway.value;
+	var selectedpaymentGatewayID = selectedPaymentGateway.value.indexOf('kcp') > -1 ? 'kcp_billing' : selectedPaymentGateway.value;
 	var storeID = Site.getCurrent().getCustomPreferenceValue(paymentGateway.subscriptionStoreID);
-	var selectedPG = !empty(storeID) ? paymentGatewayID + '.' + storeID : paymentGatewayID;
+	selectedpaymentGatewayID = !empty(storeID) ? selectedpaymentGatewayID + '.' + storeID : selectedpaymentGatewayID;
 	var selectedPaymentMethods = Site.getCurrent().getCustomPreferenceValue(paymentGateway.paymentMethodsAttributeID);
 	var validPaymentMethod = false;
 	var enablePaymentWindow = false;
@@ -355,7 +355,7 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 		}
 	};
 	var mobileRedirectUrl = URLUtils.abs('PaymentInstruments-ListCardsForMobile').toString();
-	var paymentResources = iamportHelpers.preparePaymentResources(order, selectedCardPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedPG);
+	var paymentResources = iamportHelpers.preparePaymentResources(order, selectedCardPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedpaymentGatewayID);
 	paymentResources.customer_uid = iamportHelpers.generateString(5) + '_' + profile.customerNo;
 	res.json({
 		error: false,
