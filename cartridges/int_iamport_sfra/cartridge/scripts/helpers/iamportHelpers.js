@@ -18,10 +18,10 @@ function prepareEscrowPaymentRequest(order) {
 	while (productLineItems.hasNext()) {
 		var productLineItem = productLineItems.next();
 		result.push({
-			orderNumber: order.orderNo,
+			orderNumber: productLineItem.productID,
 			name: productLineItem.productName,
-			quantity: parseInt(productLineItem.quantity.value.toFixed(0)),
-			amount: parseInt(productLineItem.getGrossPrice().value.toFixed(0))
+			quantity: parseInt(productLineItem.quantity.value.toFixed(0), 10),
+			amount: parseInt(productLineItem.getGrossPrice().value.toFixed(0), 10)
 		});
 	}
 	return result;
@@ -33,13 +33,15 @@ function prepareEscrowPaymentRequest(order) {
  * @param {string} noticeUrl - webhook receive URL. Default is undefined
  * @param {string} mobileRedirectUrl - redirect url(order confirmation page) for mobile
  * @param {string} selectedPG - pass payment gateway with merchant id.
+ * @param {boolean} enableEscrowForPM - check the escrow is enable for selected payment method from pgValidators.json
  * @returns {Object} - The payment resources
  */
-function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobileRedirectUrl, selectedPG) {
+function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobileRedirectUrl, selectedPG, enableEscrowForPM) {
+	var configuredPGID = Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value;
 	let paymentInformation = {
-		pg: Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value,
+		pg: configuredPGID,
 		pay_method: selectedPaymentMethod,
-		escrow: Site.getCurrent().getCustomPreferenceValue('iamport_useEscrow')
+		escrow: false
 	};
 	if (selectedPG) {
 		paymentInformation.pg = selectedPG;
@@ -84,8 +86,16 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 		paymentInformation.m_redirect_url = mobileRedirectUrl;
 		paymentInformation.popup = false;
 	}
-	if (paymentInformation.escrow) {
-		paymentInformation.kiccProducts = prepareEscrowPaymentRequest(order);
+	// pass the additional parameter in request if escrow is enable in site preference and eligible for selected paymentMethod.
+	var isEligibleEscrow = false;
+	var isEnableEscrowForPaymentGateway = Site.getCurrent().getCustomPreferenceValue('iamport_useEscrow');
+	if (enableEscrowForPM) {
+		isEligibleEscrow = true;
+	}
+	if (isEnableEscrowForPaymentGateway && isEligibleEscrow && 'getAllProductLineItems' in order) {
+		paymentInformation.escrow = isEnableEscrowForPaymentGateway;
+		var escrowProductAttribute = configuredPGID + 'Products';
+		paymentInformation[escrowProductAttribute] = prepareEscrowPaymentRequest(order);
 	}
 
 	// additional parameters for virtual Account.

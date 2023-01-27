@@ -495,7 +495,12 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	let selectedPaymentMethod = req.session.privacyCache.get('iamportPaymentMethod');
 	let generalPaymentWebhookUrl = URLUtils.abs('Iamport-SfNotifyHook').toString();
 	let mobileRedirectUrl = URLUtils.abs('Order-GetConfirmation', 'token', encodeURIComponent(order.orderToken)).toString();
-	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedPG);
+	// check escrow is applicable for selected payment method.
+	var selectedPaymethodObj = paymentGateway.paymentMethods.filter(function (paymentMethod) {
+		return paymentMethod.id === selectedPaymentMethod;
+	});
+	var enableEscrowForPM = 'escrow' in selectedPaymethodObj[0] ? selectedPaymethodObj[0].escrow : false;
+	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedPG, enableEscrowForPM);
 
 	// Pre-register payment before the client call for forgery protection
 	let paymentRegistered = iamportServices.registerAndValidatePayment.call({
