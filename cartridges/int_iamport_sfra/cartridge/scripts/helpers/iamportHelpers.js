@@ -94,9 +94,9 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 			paymentInformation.naverProducts = prepareNarverPayPaymentRequest(order);
 		}
 		if ('isSubscription' in order && order.isSubscription) {
-			paymentInformation.naverProductCode = Site.getCurrent().getCustomPreferenceValue('iamport_naverProductCode');
+			paymentInformation.naverProductCode = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_ProductCode');
 		}
-		paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverChainId');
+		paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_ChainId');
 	}
 
 	// additional parameters for virtual Account.
