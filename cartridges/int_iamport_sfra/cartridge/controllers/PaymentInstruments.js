@@ -28,7 +28,7 @@ server.prepend('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req
 	});
 	if (paymentToDelete && paymentToDelete.raw.creditCardToken) {
 		var token = paymentToDelete.raw.creditCardToken;
-		// delete SubscribePayment service is use to delete the subscribe payment from Iamport database.
+		// The delete SubscribePayment service is used to delete a subscription payment from the Iamport database.
 		var paymentResponse = iamportServices.deleteSubscribePayment.call({
 			customerUid: token
 		});
@@ -73,7 +73,7 @@ server.get('ListCardsForMobile', userLoggedIn.validateLoggedIn, consentTracking.
 	var success = parameters.imp_success;
 	var merchantUid = parameters.merchant_uid;
 	var customerUid = '';
-	// not allow to customer hit the same endpoint after saved the card details.
+	// Do not allow customers to reach the same endpoint after saving card details.
 	var lastPaymentId = Object.prototype.hasOwnProperty.call(req.session.raw.custom, 'paymentId') ? req.session.raw.custom.paymentId : null;
 	if (lastPaymentId === paymentId) {
 		res.redirect(URLUtils.url('PaymentInstruments-List'));
