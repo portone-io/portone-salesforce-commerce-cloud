@@ -108,10 +108,11 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 		}
 		if (dueDays) {
 			var date = new Date();
+			var calendarFormat = paymentInformation.pg.indexOf('daou') > -1 ? 'YYYYMMDDhhmmss' : 'YYYYMMDDhhmm';
 			date.setTime(date.getTime() + (dueDays * 24 * 60 * 60 * 1000));
 			var calendar = new Calendar(date);
 			calendar.setTimeZone(siteTimeZone);
-			var result = StringUtils.formatCalendar(calendar, 'yyyyMMddhhmm');
+			var result = StringUtils.formatCalendar(calendar, calendarFormat);
 			paymentInformation.vbank_due = result;
 		}
 	}

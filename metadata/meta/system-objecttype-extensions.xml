@@ -122,7 +122,7 @@
                     </value-definition>
                     <value-definition>
                         <display xml:lang="x-default">PAYJOA</display>
-                        <value>payjoa</value>
+                        <value>daou</value>
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
@@ -757,7 +757,7 @@
                 <attribute attribute-id="iamport_settle_general_storeID"/>
             </attribute-group>
             <attribute-group group-id="iamport_payjoaConfigs">
-                <display-name xml:lang="x-default">Iamport PAYJOA Configs</display-name>
+                <display-name xml:lang="x-default">Iamport PAYJOA(Daou) Configs</display-name>
                 <attribute attribute-id="iamport_payjoaPaymentMethods"/>
                 <attribute attribute-id="iamport_payjoa_general_storeID"/>
                 <attribute attribute-id="iamport_payjoa_subscription_storeID"/>

@@ -17,8 +17,9 @@ var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
  * @param {returns} - json
  * @param {serverfunction} - get
  */
-server.append('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
+server.prepend('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
 	var array = require('*/cartridge/scripts/util/array');
+	var Resource = require('dw/web/Resource');
 	var iamportServices = require('*/cartridge/scripts/service/iamportService');
 	var UUID = req.querystring.UUID;
 	var paymentInstruments = req.currentCustomer.wallet.paymentInstruments;
@@ -27,18 +28,24 @@ server.append('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req,
 	});
 	if (paymentToDelete && paymentToDelete.raw.creditCardToken) {
 		var token = paymentToDelete.raw.creditCardToken;
-		// It is use to delete the subscribe payment from my account.
+		// The delete SubscribePayment service is used to delete a subscription payment from the Iamport database.
 		var paymentResponse = iamportServices.deleteSubscribePayment.call({
 			customerUid: token
 		});
 		if (!paymentResponse.isOk() || paymentResponse.getObject().message) {
-			var iamportResponseError = '';
-			if (paymentResponse.errorMessage) {
+			var iamportResponseError = paymentResponse.errorMessage;
+			if (paymentResponse.msg && paymentResponse.errorMessage) {
 				iamportResponseError = JSON.parse(paymentResponse.errorMessage);
-			} else if (paymentResponse.getObject().message) {
+			} else if (paymentResponse.getObject() != null && paymentResponse.getObject().message) {
 				iamportResponseError = paymentResponse.getObject().message;
 			}
-			iamportLogger.error('Delete Subscibe Payment request failed: {0}.', JSON.stringify(iamportResponseError));
+			iamportLogger.error('Delete Subscribe Payment request failed: {0}.', JSON.stringify(iamportResponseError));
+			res.json({
+				UUID: UUID,
+				message: Resource.msg('message.error.delete.customeruid', 'error', null)
+			});
+			this.emit('route:Complete', req, res);
+			return;
 		}
 	}
 	next();
@@ -66,7 +73,7 @@ server.get('ListCardsForMobile', userLoggedIn.validateLoggedIn, consentTracking.
 	var success = parameters.imp_success;
 	var merchantUid = parameters.merchant_uid;
 	var customerUid = '';
-	// not allow to customer hit the same endpoint after saved the card details.
+	// Do not allow customers to reach the same endpoint after saving card details.
 	var lastPaymentId = Object.prototype.hasOwnProperty.call(req.session.raw.custom, 'paymentId') ? req.session.raw.custom.paymentId : null;
 	if (lastPaymentId === paymentId) {
 		res.redirect(URLUtils.url('PaymentInstruments-List'));
