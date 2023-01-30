@@ -297,7 +297,7 @@
             }
         ]
     },
-    "payjoa": {
+    "daou": {
         "name": "PAYJOA",
         "paymentMethodsAttributeID": "iamport_payjoaPaymentMethods",
         "generalStoreID": "iamport_payjoa_general_storeID",
