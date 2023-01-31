@@ -59,7 +59,7 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 	if (noticeUrl) {
 		paymentInformation.notice_url = noticeUrl;
 	}
-	if (mobileRedirectUrl && request.httpUserAgent.indexOf('Mobile') > -1) {
+	if (mobileRedirectUrl && request.httpUserAgent.indexOf('Mobile') > -1 && paymentInformation.pg.indexOf('danal') < 0) {
 		paymentInformation.m_redirect_url = mobileRedirectUrl;
 		paymentInformation.popup = false;
 	}
