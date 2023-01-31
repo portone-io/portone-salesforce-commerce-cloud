@@ -359,6 +359,7 @@ var iamportPayment = require('../iamport/paymentLoader');
 						method: 'POST',
 						success: function (data) {
 							$.spinner().start();
+							// Remove CSS position property to Show payment gateway[Danal, PayCO, SmilePay] payment window popup in mobile view
 							if ($('body').parent().hasClass('veiled')) {
 								$('body').parent().css('position', '');
 								$('body').parent().removeClass('veiled');

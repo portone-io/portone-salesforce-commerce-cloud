@@ -335,7 +335,7 @@ const billingHelpers = require('./billing');
 					method: 'POST',
 					success: function (data) {
 						$.spinner().stop();
-						// Show payment gateway popup in mobile view
+						// Remove CSS position property to Show payment gateway[Danal, PayCO, SmilePay] payment window popup in mobile view
 						if ($('body').parent().hasClass('veiled')) {
 							$('body').parent().css('position', '');
 							$('body').parent().removeClass('veiled');
