@@ -301,11 +301,14 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 	var iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	var pgValidators = require('*/cartridge/config/pgValidators');
 	var selectedCardPaymentMethod = 'card';
-	var paymentGatewayID = Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID)
+	var selectedPaymentGateway = Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID)
 		|| iamportConstants.PG_DEFAULT_FALLBACK;
-	var paymentGateway = pgValidators[paymentGatewayID];
+	var paymentGateway = pgValidators[selectedPaymentGateway];
+	// update the selected payment gateway ID for KCP Subscription Payment.
+	var selectedpaymentGatewayID = selectedPaymentGateway.value.indexOf('kcp') > -1 ? 'kcp_billing' : selectedPaymentGateway.value;
 	var storeID = Site.getCurrent().getCustomPreferenceValue(paymentGateway.subscriptionStoreID);
-	var selectedPG = !empty(storeID) ? paymentGatewayID.value + '.' + storeID : paymentGatewayID.value;
+	// pass the multistore id in selected payment gateway ID if we have more than one.
+	selectedpaymentGatewayID = !empty(storeID) ? selectedpaymentGatewayID + '.' + storeID : selectedpaymentGatewayID;
 	var selectedPaymentMethods = Site.getCurrent().getCustomPreferenceValue(paymentGateway.paymentMethodsAttributeID);
 	var validPaymentMethod = false;
 	var enablePaymentWindow = false;
@@ -355,7 +358,7 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 		}
 	};
 	var mobileRedirectUrl = URLUtils.abs('PaymentInstruments-ListCardsForMobile').toString();
-	var paymentResources = iamportHelpers.preparePaymentResources(order, selectedCardPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedPG);
+	var paymentResources = iamportHelpers.preparePaymentResources(order, selectedCardPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedpaymentGatewayID);
 	paymentResources.customer_uid = iamportHelpers.generateString(5) + '_' + profile.customerNo;
 	res.json({
 		error: false,
