@@ -6,9 +6,23 @@ const Site = require('dw/system/Site');
 const Calendar = require('dw/util/Calendar');
 const StringUtils = require('dw/util/StringUtils');
 
-
 /**
  *
+ * @param {number} length - define the length of String
+ * @returns {string} - return the generated Rendom String
+ */
+function generateString(length) {
+	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+	const charactersLength = characters.length;
+	let result = '';
+	for (let i = 0; i < length; i++) {
+		result += characters.charAt(Math.floor(Math.random() * charactersLength));
+	}
+	return result;
+}
+
+/**
+ * Prepare Product information (required input) json for NaverPay General Payment.
  * @param {Object} order - Customer order data
  * @returns {Object} - array of objects consisting of the following 5 required product properties.
  */
@@ -30,7 +44,7 @@ function prepareNarverPayPaymentRequest(order) {
 }
 
 /**
- * Prepares the payment resources needed to request payment to Iamport server
+ * Prepare parameters to call IMP.request_pay(param) and open regular and recurring payment registration window.
  * @param {Object} order - Customer order data
  * @param {string} selectedPaymentMethod - Id of the selected payment method
  * @param {string} noticeUrl - webhook receive URL. Default is undefined
@@ -94,7 +108,7 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 			paymentInformation.naverProducts = prepareNarverPayPaymentRequest(order);
 		}
 		if ('isSubscription' in order && order.isSubscription) {
-			paymentInformation.naverProductCode = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_ProductCode');
+			paymentInformation.naverProductCode = generateString(8);
 		}
 		paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_ChainId');
 	}
@@ -194,21 +208,7 @@ function getTranslatedMessage(pgType, errorMessage) {
 }
 
 /**
- *
- * @param {number} length - define the length of String
- * @returns {string} - return the generated Rendom String
- */
-function generateString(length) {
-	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-	const charactersLength = characters.length;
-	let result = '';
-	for (let i = 0; i < length; i++) {
-		result += characters.charAt(Math.floor(Math.random() * charactersLength));
-	}
-	return result;
-}
-
-/**
+ * Prepare REST API /subscribe/payments/again request.
  * @param {dw.system.Request} req - system request object
  * @param {string} customerUid get the customer uid in client side response
  * @param {string} impUid get the imp_uid in mobile response
@@ -233,7 +233,10 @@ function handleSubcribePaymentRequest(req, customerUid) {
 		buyer_email: profile.email,
 		buyer_tel: phone
 	};
-
+	// Passing additional parameters for NaverPay payment
+	if (Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value === 'naverpay') {
+		requestBody.tax_free = 0;
+	}
 	var paymentResponse = iamportServices.subscribePayment.call(requestBody);
 	if (!paymentResponse.isOk() || paymentResponse.getObject().message) {
 		var iamportResponseError = paymentResponse.errorMessage;
