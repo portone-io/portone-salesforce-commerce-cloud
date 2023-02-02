@@ -109,8 +109,10 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 		}
 		if ('isSubscription' in order && order.isSubscription) {
 			paymentInformation.naverProductCode = generateString(8);
+			paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_subscription_ChainId');
+		} else {
+			paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_ChainId');
 		}
-		paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_ChainId');
 	}
 
 	// additional parameters for virtual Account.
