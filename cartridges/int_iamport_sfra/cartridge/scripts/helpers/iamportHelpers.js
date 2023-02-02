@@ -9,7 +9,7 @@ const StringUtils = require('dw/util/StringUtils');
 /**
  *
  * @param {number} length - define the length of String
- * @returns {string} - return the generated Rendom String
+ * @returns {string} - return the generated Random String
  */
 function generateString(length) {
 	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
