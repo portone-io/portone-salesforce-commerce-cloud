@@ -192,8 +192,6 @@ const handlePaymentError = function handlePaymentError(item, paymentPayload) {
 module.exports = {
 	generalPayment: function (payload) {
 		try {
-			$.spinner().start();
-
 			if (payload && payload.paymentError) {
 				deferLoader.defer('IMP', handlePaymentError, payload);
 			} else if (payload) {
@@ -202,8 +200,6 @@ module.exports = {
 		} catch (err) {
 			// eslint-disable-next-line no-console
 			console.error('Error on the request calling to PG server:', err);
-		} finally {
-			$.spinner().stop();
 		}
 	},
 

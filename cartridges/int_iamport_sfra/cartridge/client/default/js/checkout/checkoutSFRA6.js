@@ -354,11 +354,16 @@ var iamportPayment = require('../iamport/paymentLoader');
 					// disable the placeOrder button here
 					$('body').trigger('checkout:disableButton', '.next-step-button button');
 					$('.payments-error .alert-danger').remove();
-					$.spinner().start();
 					$.ajax({
 						url: $('.place-order').data('action'),
 						method: 'POST',
 						success: function (data) {
+							$.spinner().start();
+							// Remove CSS position property to Show payment gateway[Danal, PayCO, SmilePay] payment window popup in mobile view
+							if ($('body').parent().hasClass('veiled')) {
+								$('body').parent().css('position', '');
+								$('body').parent().removeClass('veiled');
+							}
 							// not enable the placeOrder button here in order to user do only one click
 							// $('body').trigger('checkout:enableButton', '.next-step-button button');
 
@@ -389,7 +394,6 @@ var iamportPayment = require('../iamport/paymentLoader');
 									};
 									iamportPayment.generalPayment(payload);
 								} else {
-									$.spinner().stop();
 									// go to appropriate stage and display error message
 									defer.reject(data);
 								}
