@@ -8,17 +8,13 @@ const StringUtils = require('dw/util/StringUtils');
 
 /**
  *
- * @param {number} length - define the length of String
  * @returns {string} - return the generated Random String
  */
-function generateString(length) {
-	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-	const charactersLength = characters.length;
-	let result = '';
-	for (let i = 0; i < length; i++) {
-		result += characters.charAt(Math.floor(Math.random() * charactersLength));
-	}
-	return result;
+function generateString() {
+	var SecureRandom = require('dw/crypto/SecureRandom');
+	var length = 1000000000;
+	var random = new SecureRandom();
+	return random.nextInt(length).toString();
 }
 
 /**
@@ -109,7 +105,7 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 			paymentInformation.naverProducts = prepareNarverPayPaymentRequest(order);
 		}
 		if ('isSubscription' in order && order.isSubscription) {
-			paymentInformation.naverProductCode = generateString(8);
+			paymentInformation.naverProductCode = generateString();
 			paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_subscription_ChainId');
 		} else {
 			paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_ChainId');
@@ -221,7 +217,7 @@ function handleSubcribePaymentRequest(req, customerUid) {
 	var iamportServices = require('*/cartridge/scripts/service/iamportService');
 	var CustomError = require('*/cartridge/errors/customError');
 	var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
-	var merchantUid = 'authsave_' + generateString(8);
+	var merchantUid = 'authsave_' + generateString();
 	var payingAmount = iamportConstants.TEST_SUBSCRIBE_AMOUNT;
 	var orderName = iamportConstants.SUBSCRIBE_ORDER_NAME;
 	var profile = req.currentCustomer.profile;
