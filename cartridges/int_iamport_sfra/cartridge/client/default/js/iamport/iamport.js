@@ -37,7 +37,7 @@ function requestSubscriptionPayment(item, paymentPayload) {
 					window.location.reload();
 				}
 			});
-		} else if (paymentResponse.error_code !== 'STOP' && paymentResponse.pg_type !== 'payment') {
+		} else if (paymentResponse.error_code !== 'STOP') {
 			// Error occurred before page is redirected
 			notification({
 				target: '.js-error-alert',

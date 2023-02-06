@@ -349,7 +349,8 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 			value: iamportConstants.TEST_SUBSCRIBE_AMOUNT
 		},
 		customerName: profile.firstName + ' ' + profile.lastName,
-		orderNo: 'authsave_' + iamportHelpers.generateString(8),
+		isSubscription: true,
+		orderNo: 'authsave_' + iamportHelpers.generatePseudorandom(),
 		customerEmail: profile.email,
 		billingAddress: {
 			phone: !empty(profile.phone) ? profile.phone : '0000000000',
@@ -358,7 +359,7 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 	};
 	var mobileRedirectUrl = URLUtils.abs('PaymentInstruments-ListCardsForMobile').toString();
 	var paymentResources = iamportHelpers.preparePaymentResources(order, selectedCardPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedpaymentGatewayID);
-	paymentResources.customer_uid = iamportHelpers.generateString(5) + '_' + profile.customerNo;
+	paymentResources.customer_uid = iamportHelpers.generatePseudorandom() + '_' + profile.customerNo;
 	res.json({
 		error: false,
 		paymentResources: paymentResources,

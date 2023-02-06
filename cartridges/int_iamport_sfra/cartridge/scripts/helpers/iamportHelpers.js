@@ -8,6 +8,17 @@ const StringUtils = require('dw/util/StringUtils');
 
 /**
  *
+ * @returns {string} - Returns the generated random number as a string
+ */
+function generatePseudorandom() {
+	var SecureRandom = require('dw/crypto/SecureRandom');
+	var length = 1000000000;
+	var random = new SecureRandom();
+	return random.nextInt(length).toString();
+}
+
+/**
+ *
  * @param {Object} order - Customer order data
  * @returns {Object} - array of objects consisting of the following 4 required product properties.
  */
@@ -26,19 +37,42 @@ function prepareEscrowPaymentRequest(order) {
 	}
 	return result;
 }
+
 /**
- * Prepares the payment resources needed to request payment to Iamport server
+ * Prepare Product information (required input) json for NaverPay General Payment.
+ * @param {Object} order - Customer order data
+ * @returns {Object} - array of objects consisting of the following 5 required product properties.
+ */
+function prepareNarverPayPaymentRequest(order) {
+	var result = [];
+	// iterate all product line items of the order and create product object with required attributes
+	var productLineItems = order.getAllProductLineItems().iterator();
+	while (productLineItems.hasNext()) {
+		var productLineItem = productLineItems.next();
+		result.push({
+			categoryType: 'PRODUCT',
+			categoryId: 'GENERAL',
+			count: parseInt(productLineItem.quantity.value.toFixed(0), 10),
+			name: productLineItem.productName,
+			uid: productLineItem.productID
+		});
+	}
+	return result;
+}
+
+/**
+ * Prepare parameters to call IMP.request_pay(param) and open regular and recurring payment registration window.
  * @param {Object} order - Customer order data
  * @param {string} selectedPaymentMethod - Id of the selected payment method
  * @param {string} noticeUrl - webhook receive URL. Default is undefined
  * @param {string} mobileRedirectUrl - redirect url(order confirmation page) for mobile
  * @param {string} selectedPG - pass payment gateway with merchant id.
- * @param {boolean} enableEscrowForPM - check the escrow is enable for selected payment method from pgValidators.json
  * @returns {Object} - The payment resources
  */
-function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobileRedirectUrl, selectedPG, enableEscrowForPM) {
+function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobileRedirectUrl, selectedPG) {
 	var configuredPGID = Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value;
-	let paymentInformation = {
+	var siteTimeZone = Site.getCurrent().timezone;
+	var paymentInformation = {
 		pg: configuredPGID,
 		pay_method: selectedPaymentMethod,
 		escrow: false
@@ -87,6 +121,19 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 		paymentInformation.m_redirect_url = mobileRedirectUrl;
 		paymentInformation.popup = false;
 	}
+	if (paymentInformation.pg.indexOf('naverpay') > -1) {
+		paymentInformation.tax_free = 0;
+		paymentInformation.naverPopupMode = true;
+		if ('getAllProductLineItems' in order) {
+			paymentInformation.naverProducts = prepareNarverPayPaymentRequest(order);
+		}
+		if ('isSubscription' in order && order.isSubscription) {
+			paymentInformation.naverProductCode = generatePseudorandom();
+			paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_subscription_ChainId');
+		} else {
+			paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_ChainId');
+		}
+	}
 	// pass the additional parameter in request if escrow is enable in site preference and eligible for selected paymentMethod.
 	var isEligibleEscrow = false;
 	var isEnableEscrowForPaymentGateway = Site.getCurrent().getCustomPreferenceValue('iamport_useEscrow');
@@ -98,7 +145,6 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 		var escrowProductAttribute = configuredPGID + 'Products';
 		paymentInformation[escrowProductAttribute] = prepareEscrowPaymentRequest(order);
 	}
-
 	// additional parameters for virtual Account.
 	if (selectedPaymentMethod === 'vbank') {
 		var dueDays = Site.getCurrent().getCustomPreferenceValue('iamport_vbank_due');
@@ -111,7 +157,6 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 			var calendarFormat = paymentInformation.pg.indexOf('daou') > -1 ? 'YYYYMMDDhhmmss' : 'YYYYMMDDhhmm';
 			date.setTime(date.getTime() + (dueDays * 24 * 60 * 60 * 1000));
 			var calendar = new Calendar(date);
-			var siteTimeZone = Site.getCurrent().timezone;
 			calendar.setTimeZone(siteTimeZone);
 			var result = StringUtils.formatCalendar(calendar, calendarFormat);
 			paymentInformation.vbank_due = result;
@@ -195,21 +240,7 @@ function getTranslatedMessage(pgType, errorMessage) {
 }
 
 /**
- *
- * @param {number} length - define the length of String
- * @returns {string} - return the generated Rendom String
- */
-function generateString(length) {
-	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-	const charactersLength = characters.length;
-	let result = '';
-	for (let i = 0; i < length; i++) {
-		result += characters.charAt(Math.floor(Math.random() * charactersLength));
-	}
-	return result;
-}
-
-/**
+ * Prepare REST API /subscribe/payments/again request.
  * @param {dw.system.Request} req - system request object
  * @param {string} customerUid get the customer uid in client side response
  * @param {string} impUid get the imp_uid in mobile response
@@ -219,7 +250,7 @@ function handleSubcribePaymentRequest(req, customerUid) {
 	var iamportServices = require('*/cartridge/scripts/service/iamportService');
 	var CustomError = require('*/cartridge/errors/customError');
 	var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
-	var merchantUid = 'authsave_' + generateString(8);
+	var merchantUid = 'authsave_' + generatePseudorandom();
 	var payingAmount = iamportConstants.TEST_SUBSCRIBE_AMOUNT;
 	var orderName = iamportConstants.SUBSCRIBE_ORDER_NAME;
 	var profile = req.currentCustomer.profile;
@@ -234,7 +265,10 @@ function handleSubcribePaymentRequest(req, customerUid) {
 		buyer_email: profile.email,
 		buyer_tel: phone
 	};
-
+	// Passing additional parameters for NaverPay payment
+	if (Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value === 'naverpay') {
+		requestBody.tax_free = 0;
+	}
 	var paymentResponse = iamportServices.subscribePayment.call(requestBody);
 	if (!paymentResponse.isOk() || paymentResponse.getObject().message) {
 		var iamportResponseError = paymentResponse.errorMessage;
@@ -334,7 +368,7 @@ module.exports = {
 	mapVbankResponseForLogging: mapVbankResponseForLogging,
 	handleErrorFromPaymentGateway: handleErrorFromPaymentGateway,
 	getTranslatedMessage: getTranslatedMessage,
-	generateString: generateString,
+	generatePseudorandom: generatePseudorandom,
 	handleSubcribePaymentRequest: handleSubcribePaymentRequest,
 	paymentWithSavedCard: paymentWithSavedCard
 };
