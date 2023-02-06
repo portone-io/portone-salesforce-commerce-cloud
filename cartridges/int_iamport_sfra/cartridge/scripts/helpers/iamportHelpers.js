@@ -8,9 +8,9 @@ const StringUtils = require('dw/util/StringUtils');
 
 /**
  *
- * @returns {string} - return the generated Random String
+ * @returns {string} - Returns the generated random number as a string
  */
-function generateString() {
+function generatePseudorandom() {
 	var SecureRandom = require('dw/crypto/SecureRandom');
 	var length = 1000000000;
 	var random = new SecureRandom();
@@ -105,7 +105,7 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 			paymentInformation.naverProducts = prepareNarverPayPaymentRequest(order);
 		}
 		if ('isSubscription' in order && order.isSubscription) {
-			paymentInformation.naverProductCode = generateString();
+			paymentInformation.naverProductCode = generatePseudorandom();
 			paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_subscription_ChainId');
 		} else {
 			paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_ChainId');
@@ -217,7 +217,7 @@ function handleSubcribePaymentRequest(req, customerUid) {
 	var iamportServices = require('*/cartridge/scripts/service/iamportService');
 	var CustomError = require('*/cartridge/errors/customError');
 	var iamportLogger = require('dw/system/Logger').getLogger('iamport', 'Iamport');
-	var merchantUid = 'authsave_' + generateString();
+	var merchantUid = 'authsave_' + generatePseudorandom();
 	var payingAmount = iamportConstants.TEST_SUBSCRIBE_AMOUNT;
 	var orderName = iamportConstants.SUBSCRIBE_ORDER_NAME;
 	var profile = req.currentCustomer.profile;
@@ -335,7 +335,7 @@ module.exports = {
 	mapVbankResponseForLogging: mapVbankResponseForLogging,
 	handleErrorFromPaymentGateway: handleErrorFromPaymentGateway,
 	getTranslatedMessage: getTranslatedMessage,
-	generateString: generateString,
+	generatePseudorandom: generatePseudorandom,
 	handleSubcribePaymentRequest: handleSubcribePaymentRequest,
 	paymentWithSavedCard: paymentWithSavedCard
 };
