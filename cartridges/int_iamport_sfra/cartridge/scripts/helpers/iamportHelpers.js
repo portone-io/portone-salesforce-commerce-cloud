@@ -135,7 +135,7 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 			paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_ChainId');
 		}
 	}
-	// pass the additional parameter in request if escrow is enable in site preference and eligible for selected paymentMethod.
+	// pass additional parameters to your request , If escrow is enabled in site preferences, applicable for chosen payment method and place the real order .
 	if (isEnableEscrow && 'getAllProductLineItems' in order) {
 		paymentInformation.escrow = isEnableEscrow;
 		var escrowProductAttribute = activePGID + 'Products';
