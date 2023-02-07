@@ -358,7 +358,7 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
 		}
 	};
 	var mobileRedirectUrl = URLUtils.abs('PaymentInstruments-ListCardsForMobile').toString();
-	var paymentResources = iamportHelpers.preparePaymentResources(order, selectedCardPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedpaymentGatewayID);
+	var paymentResources = iamportHelpers.preparePaymentResources(order, selectedCardPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedpaymentGatewayID, false);
 	paymentResources.customer_uid = iamportHelpers.generatePseudorandom() + '_' + profile.customerNo;
 	res.json({
 		error: false,

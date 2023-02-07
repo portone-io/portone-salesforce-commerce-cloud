@@ -18,6 +18,27 @@ function generatePseudorandom() {
 }
 
 /**
+ * Prepare Product information (required input) json.
+ * @param {Object} order - Customer order data
+ * @returns {Object} - array of objects consisting of the following 4 required product properties.
+ */
+function prepareEscrowPaymentRequest(order) {
+	var result = [];
+	// iterate all product line items of the order and create product object with required attributes
+	var productLineItems = order.getAllProductLineItems().iterator();
+	while (productLineItems.hasNext()) {
+		var productLineItem = productLineItems.next();
+		result.push({
+			orderNumber: productLineItem.productID,
+			name: productLineItem.productName,
+			quantity: parseInt(productLineItem.quantity.value.toFixed(0), 10),
+			amount: parseInt(productLineItem.getGrossPrice().value.toFixed(0), 10)
+		});
+	}
+	return result;
+}
+
+/**
  * Prepare Product information (required input) json for NaverPay General Payment.
  * @param {Object} order - Customer order data
  * @returns {Object} - array of objects consisting of the following 5 required product properties.
@@ -46,13 +67,16 @@ function prepareNarverPayPaymentRequest(order) {
  * @param {string} noticeUrl - webhook receive URL. Default is undefined
  * @param {string} mobileRedirectUrl - redirect url(order confirmation page) for mobile
  * @param {string} selectedPG - pass payment gateway with merchant id.
+ * @param {boolean} isEnableEscrow - Defines whether escrow is enabled for the selected payment method
  * @returns {Object} - The payment resources
  */
-function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobileRedirectUrl, selectedPG) {
+function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobileRedirectUrl, selectedPG, isEnableEscrow) {
+	var activePGID = Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value;
 	var siteTimeZone = Site.getCurrent().timezone;
 	var paymentInformation = {
-		pg: Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value,
-		pay_method: selectedPaymentMethod
+		pg: activePGID,
+		pay_method: selectedPaymentMethod,
+		escrow: false
 	};
 	if (selectedPG) {
 		paymentInformation.pg = selectedPG;
@@ -101,6 +125,7 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 	if (paymentInformation.pg.indexOf('naverpay') > -1) {
 		paymentInformation.tax_free = 0;
 		paymentInformation.naverPopupMode = true;
+		// using getAllProductLineItems to make sure the condition gets executed only during checkout place order.
 		if ('getAllProductLineItems' in order) {
 			paymentInformation.naverProducts = prepareNarverPayPaymentRequest(order);
 		}
@@ -111,7 +136,12 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 			paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_ChainId');
 		}
 	}
-
+	// using getAllProductLineItems to make sure the condition gets executed only during checkout place order.
+	if (isEnableEscrow && 'getAllProductLineItems' in order) {
+		paymentInformation.escrow = isEnableEscrow;
+		var escrowProductAttribute = activePGID + 'Products';
+		paymentInformation[escrowProductAttribute] = prepareEscrowPaymentRequest(order);
+	}
 	// additional parameters for virtual Account.
 	if (selectedPaymentMethod === 'vbank') {
 		var dueDays = Site.getCurrent().getCustomPreferenceValue('iamport_vbank_due');
@@ -121,7 +151,7 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 		}
 		if (dueDays) {
 			var date = new Date();
-			var calendarFormat = paymentInformation.pg.indexOf('daou') > -1 ? 'YYYYMMDDhhmmss' : 'YYYYMMDDhhmm';
+			var calendarFormat = paymentInformation.pg.indexOf('daou') > -1 ? 'YYYYMMDDhhmmss' : 'yyyyMMddhhmm';
 			date.setTime(date.getTime() + (dueDays * 24 * 60 * 60 * 1000));
 			var calendar = new Calendar(date);
 			calendar.setTimeZone(siteTimeZone);

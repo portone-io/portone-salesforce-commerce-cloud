@@ -495,13 +495,27 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	let selectedPaymentMethod = req.session.privacyCache.get('iamportPaymentMethod');
 	let generalPaymentWebhookUrl = URLUtils.abs('Iamport-SfNotifyHook').toString();
 	let mobileRedirectUrl = URLUtils.abs('Order-GetConfirmation', 'token', encodeURIComponent(order.orderToken)).toString();
-	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedPG);
+	// check escrow is applicable for selected payment method.
+	var selectedPaymethodObj = paymentGateway.paymentMethods.filter(function (paymentMethod) {
+		return paymentMethod.id === selectedPaymentMethod;
+	});
+	var isEnableEscrowForPM = 'escrow' in selectedPaymethodObj[0] ? selectedPaymethodObj[0].escrow : false;
+	var isUseEscrow = Site.getCurrent().getCustomPreferenceValue('iamport_useEscrow');
+	var isEnableEscrow = isEnableEscrowForPM && isUseEscrow;
+	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedPG, isEnableEscrow);
 
 	// Pre-register payment before the client call for forgery protection
 	let paymentRegistered = iamportServices.registerAndValidatePayment.call({
 		merchant_uid: paymentResources.merchant_uid,
 		amount: paymentResources.amount
 	});
+
+	// Ensure order-level custom attribute 'isEscrowPayment' is true if escrow is enabled in site preferences and applicable for selected payment method
+	if (isEnableEscrow) {
+		Transaction.wrap(function () {
+			order.custom.isEscrowPayment = isEnableEscrow;
+		});
+	}
 
 	// when Iamport server call (service) fails
 	// Expected Iamport server error codes
@@ -604,7 +618,6 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 			order,
 			require('*/cartridge/scripts/hooks/payment/processor/iamportPayments').updatePaymentIdOnOrder
 		);
-
 		var iamportFraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', paymentData, order, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
 		if (iamportFraudDetectionStatus.status === 'fail') {
 			Transaction.wrap(function () {
