@@ -125,6 +125,7 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 	if (paymentInformation.pg.indexOf('naverpay') > -1) {
 		paymentInformation.tax_free = 0;
 		paymentInformation.naverPopupMode = true;
+		// using getAllProductLineItems to make sure the condition gets executed only during checkout place order.
 		if ('getAllProductLineItems' in order) {
 			paymentInformation.naverProducts = prepareNarverPayPaymentRequest(order);
 		}
@@ -135,7 +136,7 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 			paymentInformation.naverChainId = Site.getCurrent().getCustomPreferenceValue('iamport_naverPay_ChainId');
 		}
 	}
-	// pass additional parameters to your request , If escrow is enabled in site preferences, applicable for chosen payment method and place the real order .
+	// using getAllProductLineItems to make sure the condition gets executed only during checkout place order.
 	if (isEnableEscrow && 'getAllProductLineItems' in order) {
 		paymentInformation.escrow = isEnableEscrow;
 		var escrowProductAttribute = activePGID + 'Products';
