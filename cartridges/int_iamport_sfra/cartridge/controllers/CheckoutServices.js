@@ -499,14 +499,21 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	var selectedPaymethodObj = paymentGateway.paymentMethods.filter(function (paymentMethod) {
 		return paymentMethod.id === selectedPaymentMethod;
 	});
-	var enableEscrowForPM = 'escrow' in selectedPaymethodObj[0] ? selectedPaymethodObj[0].escrow : false;
-	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedPG, enableEscrowForPM);
+	var isEnableEscrowForPM = 'escrow' in selectedPaymethodObj[0] ? selectedPaymethodObj[0].escrow : false;
+	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedPG, isEnableEscrowForPM);
 
 	// Pre-register payment before the client call for forgery protection
 	let paymentRegistered = iamportServices.registerAndValidatePayment.call({
 		merchant_uid: paymentResources.merchant_uid,
 		amount: paymentResources.amount
 	});
+
+	// Ensure order-level custom attribute 'isEscrowPayment' is true if escrow is enabled in site preferences and applicable for selected payment method
+	if (isEnableEscrowForPM && Site.getCurrent().getCustomPreferenceValue('iamport_useEscrow')) {
+		Transaction.wrap(function () {
+			order.custom.isEscrowPayment = isEnableEscrowForPM;
+		});
+	}
 
 	// when Iamport server call (service) fails
 	// Expected Iamport server error codes
@@ -609,7 +616,6 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 			order,
 			require('*/cartridge/scripts/hooks/payment/processor/iamportPayments').updatePaymentIdOnOrder
 		);
-
 		var iamportFraudDetectionStatus = hooksHelper('app.fraud.detection', 'fraudDetection', paymentData, order, require('*/cartridge/scripts/hooks/fraudDetection').fraudDetection);
 		if (iamportFraudDetectionStatus.status === 'fail') {
 			Transaction.wrap(function () {

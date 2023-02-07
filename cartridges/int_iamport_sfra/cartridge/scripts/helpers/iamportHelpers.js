@@ -18,7 +18,7 @@ function generatePseudorandom() {
 }
 
 /**
- *
+ * Prepare Product information (required input) json.
  * @param {Object} order - Customer order data
  * @returns {Object} - array of objects consisting of the following 4 required product properties.
  */
@@ -67,13 +67,14 @@ function prepareNarverPayPaymentRequest(order) {
  * @param {string} noticeUrl - webhook receive URL. Default is undefined
  * @param {string} mobileRedirectUrl - redirect url(order confirmation page) for mobile
  * @param {string} selectedPG - pass payment gateway with merchant id.
+ * @param {boolean} isEnableEscrowForPM - Defines whether escrow is enabled for the selected payment method
  * @returns {Object} - The payment resources
  */
-function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobileRedirectUrl, selectedPG) {
-	var configuredPGID = Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value;
+function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobileRedirectUrl, selectedPG, isEnableEscrowForPM) {
+	var activePGID = Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value;
 	var siteTimeZone = Site.getCurrent().timezone;
 	var paymentInformation = {
-		pg: configuredPGID,
+		pg: activePGID,
 		pay_method: selectedPaymentMethod,
 		escrow: false
 	};
@@ -135,14 +136,10 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 		}
 	}
 	// pass the additional parameter in request if escrow is enable in site preference and eligible for selected paymentMethod.
-	var isEligibleEscrow = false;
 	var isEnableEscrowForPaymentGateway = Site.getCurrent().getCustomPreferenceValue('iamport_useEscrow');
-	if (enableEscrowForPM) {
-		isEligibleEscrow = true;
-	}
-	if (isEnableEscrowForPaymentGateway && isEligibleEscrow && 'getAllProductLineItems' in order) {
+	if (isEnableEscrowForPaymentGateway && isEnableEscrowForPM && 'getAllProductLineItems' in order) {
 		paymentInformation.escrow = isEnableEscrowForPaymentGateway;
-		var escrowProductAttribute = configuredPGID + 'Products';
+		var escrowProductAttribute = activePGID + 'Products';
 		paymentInformation[escrowProductAttribute] = prepareEscrowPaymentRequest(order);
 	}
 	// additional parameters for virtual Account.
@@ -154,7 +151,7 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 		}
 		if (dueDays) {
 			var date = new Date();
-			var calendarFormat = paymentInformation.pg.indexOf('daou') > -1 ? 'YYYYMMDDhhmmss' : 'YYYYMMDDhhmm';
+			var calendarFormat = paymentInformation.pg.indexOf('daou') > -1 ? 'YYYYMMDDhhmmss' : 'yyyyMMddhhmm';
 			date.setTime(date.getTime() + (dueDays * 24 * 60 * 60 * 1000));
 			var calendar = new Calendar(date);
 			calendar.setTimeZone(siteTimeZone);
