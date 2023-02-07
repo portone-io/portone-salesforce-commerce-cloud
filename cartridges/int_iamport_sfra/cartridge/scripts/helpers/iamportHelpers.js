@@ -67,10 +67,10 @@ function prepareNarverPayPaymentRequest(order) {
  * @param {string} noticeUrl - webhook receive URL. Default is undefined
  * @param {string} mobileRedirectUrl - redirect url(order confirmation page) for mobile
  * @param {string} selectedPG - pass payment gateway with merchant id.
- * @param {boolean} isEnableEscrowForPM - Defines whether escrow is enabled for the selected payment method
+ * @param {boolean} isEnableEscrow - Defines whether escrow is enabled for the selected payment method
  * @returns {Object} - The payment resources
  */
-function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobileRedirectUrl, selectedPG, isEnableEscrowForPM) {
+function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobileRedirectUrl, selectedPG, isEnableEscrow) {
 	var activePGID = Site.getCurrent().getCustomPreferenceValue(iamportConstants.PG_ATTRIBUTE_ID).value;
 	var siteTimeZone = Site.getCurrent().timezone;
 	var paymentInformation = {
@@ -136,9 +136,8 @@ function preparePaymentResources(order, selectedPaymentMethod, noticeUrl, mobile
 		}
 	}
 	// pass the additional parameter in request if escrow is enable in site preference and eligible for selected paymentMethod.
-	var isEnableEscrowForPaymentGateway = Site.getCurrent().getCustomPreferenceValue('iamport_useEscrow');
-	if (isEnableEscrowForPaymentGateway && isEnableEscrowForPM && 'getAllProductLineItems' in order) {
-		paymentInformation.escrow = isEnableEscrowForPaymentGateway;
+	if (isEnableEscrow && 'getAllProductLineItems' in order) {
+		paymentInformation.escrow = isEnableEscrow;
 		var escrowProductAttribute = activePGID + 'Products';
 		paymentInformation[escrowProductAttribute] = prepareEscrowPaymentRequest(order);
 	}

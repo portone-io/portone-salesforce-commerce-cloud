@@ -500,7 +500,9 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		return paymentMethod.id === selectedPaymentMethod;
 	});
 	var isEnableEscrowForPM = 'escrow' in selectedPaymethodObj[0] ? selectedPaymethodObj[0].escrow : false;
-	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedPG, isEnableEscrowForPM);
+	var isUseEscrow = Site.getCurrent().getCustomPreferenceValue('iamport_useEscrow');
+	var isEnableEscrow = isEnableEscrowForPM && isUseEscrow;
+	let paymentResources = iamportHelpers.preparePaymentResources(order, selectedPaymentMethod, generalPaymentWebhookUrl, mobileRedirectUrl, selectedPG, isEnableEscrow);
 
 	// Pre-register payment before the client call for forgery protection
 	let paymentRegistered = iamportServices.registerAndValidatePayment.call({
@@ -509,9 +511,9 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	});
 
 	// Ensure order-level custom attribute 'isEscrowPayment' is true if escrow is enabled in site preferences and applicable for selected payment method
-	if (isEnableEscrowForPM && Site.getCurrent().getCustomPreferenceValue('iamport_useEscrow')) {
+	if (isEnableEscrow) {
 		Transaction.wrap(function () {
-			order.custom.isEscrowPayment = isEnableEscrowForPM;
+			order.custom.isEscrowPayment = isEnableEscrow;
 		});
 	}
 
