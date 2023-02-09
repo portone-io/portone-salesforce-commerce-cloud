@@ -23,11 +23,7 @@ function proxyModel() {
 			getApplicablePaymentMethods: function () {
 				return [
 					{
-						ID: 'GIFT_CERTIFICATE',
-						name: 'Gift Certificate'
-					},
-					{
-						ID: 'CREDIT_CARD',
+						ID: 'card',
 						name: 'Credit Card'
 					}
 				];
