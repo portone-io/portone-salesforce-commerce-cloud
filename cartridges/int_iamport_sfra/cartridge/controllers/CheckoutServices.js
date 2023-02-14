@@ -142,8 +142,13 @@ server.replace(
 
 		let currentBasket = BasketMgr.getCurrentBasket();
 		let billingData = res.getViewData();
-		let selectedPaymentMethod = req.form.paymentOption
-		.toString().trim().split('&');
+		var selectedPaymentMethod;
+		if (req.form.paymentOption) {
+			selectedPaymentMethod = req.form.paymentOption.toString().trim().split('&');
+		} else if ('paymentMethod' in paymentForm && paymentForm.paymentMethod.value === 'CREDIT_CARD') {
+			selectedPaymentMethod = 'card&Credit Card';
+			selectedPaymentMethod = selectedPaymentMethod.toString().trim().split('&')
+		}
 
 		// save the selected payment method id to the session.
 		// It will be retrieved later to prepare the payment resources to request for payment
