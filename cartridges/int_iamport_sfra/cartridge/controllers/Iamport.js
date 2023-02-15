@@ -375,7 +375,7 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
  * @memberof Iamport
  * @param {returns} - json
  */
-server.post('SaveBillingKey', function (req, res, next) {
+server.post('SaveBillingKey', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
 	var iamportHelpers = require('*/cartridge/scripts/helpers/iamportHelpers');
 	var CustomError = require('*/cartridge/errors/customError');
 	var URLUtils = require('dw/web/URLUtils');

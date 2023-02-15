@@ -22,6 +22,7 @@ describe('Controller CheckoutServices', function () {
                 .then(function (response) {
                     var bodyAsJson = JSON.parse(response.body);
                     assert.isTrue(bodyAsJson.error);
+					assert.isUndefined(bodyAsJson.errorStage);
                 });
         });
     });
@@ -42,6 +43,7 @@ describe('Controller CheckoutServices', function () {
             return request(myRequest)
                 .then(function (response) {
                     var bodyAsJson = JSON.parse(response.body);
+					assert.isUndefined(bodyAsJson.errorStage);
                     assert.isTrue(bodyAsJson.error);
                 });
         });
