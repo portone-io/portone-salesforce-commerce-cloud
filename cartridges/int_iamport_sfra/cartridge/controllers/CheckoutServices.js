@@ -147,7 +147,7 @@ server.replace(
 			selectedPaymentMethod = req.form.paymentOption.toString().trim().split('&');
 		} else if ('paymentMethod' in paymentForm && paymentForm.paymentMethod.value === 'CREDIT_CARD') {
 			selectedPaymentMethod = 'card&Credit Card';
-			selectedPaymentMethod = selectedPaymentMethod.toString().trim().split('&')
+			selectedPaymentMethod = selectedPaymentMethod.toString().trim().split('&');
 		}
 
 		// save the selected payment method id to the session.

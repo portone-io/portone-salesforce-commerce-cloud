@@ -373,6 +373,7 @@ server.get('RequestBillingKey', userLoggedIn.validateLoggedInAjax, function (req
  * @name Iamport-SaveBillingKey
  * @function
  * @memberof Iamport
+ * @param {middleware} - userLoggedIn.validateLoggedInAjax
  * @param {returns} - json
  */
 server.post('SaveBillingKey', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
