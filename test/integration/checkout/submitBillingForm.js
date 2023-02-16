@@ -1,6 +1,6 @@
 var assert = require('chai').assert;
 var request = require('request-promise');
-var config = require('../it.config');
+var config = require('../general.config');
 var chai = require('chai');
 var chaiSubset = require('chai-subset');
 var jsonHelpers = require('../helpers/jsonUtils');
