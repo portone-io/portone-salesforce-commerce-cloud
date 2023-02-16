@@ -1,7 +1,6 @@
 //Load express module
 const express = require('express');
 const app = express();
-const jwt = require('jsonwebtoken');
 
 app.use(express.json());
 
@@ -19,7 +18,7 @@ app.post('/api/auth/token', (req, res) => {
 	if(password == 'incorrectpassword'){
 		return res.status(401).json({"error":"Invalid username or password"})
 	}
-	const token = jwt.sign({ sub: username }, 'secretkey', { expiresIn: '1h' });
+	const token = '86e4c4a668c408a6f03ee09650e1ea607994751d';
     return res.status(200).json({ token });
 });
 
@@ -37,8 +36,8 @@ app.get('/api/iamport_getPaymentInfo/', (req,res)=>{
 			bank_code: null,
 			bank_name: null,
 			buyer_addr: '548 Market St',
-			buyer_email: 'isaac.oppong-baah@kcsit.pt',
-			buyer_name: 'Isaac Oppong-Baa',
+			buyer_email: 'shivam.varshney@viseo.com',
+			buyer_name: 'Viseo',
 			buyer_postcode: '94103',
 			buyer_tel: '4152879794',
 			cancel_amount: 0,
@@ -63,7 +62,7 @@ app.get('/api/iamport_getPaymentInfo/', (req,res)=>{
 			failed_at: 0,
 			imp_uid: 'imp_566377906932',
 			merchant_uid: '00000901',
-			name: 'Isaac Oppong-Baah',
+			name: 'Viseo',
 			paid_at: 1666334556,
 			pay_method: 'card',
 			pg_id: 'INIpayTest',
