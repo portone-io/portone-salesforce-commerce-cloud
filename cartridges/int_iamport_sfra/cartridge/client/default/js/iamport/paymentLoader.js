@@ -14,7 +14,7 @@ const IAMPORT_ARGS = { MID: $('input[name="merchantID"]').val()
  * @param {Object} paymentOptions.validationUrl - Url for payment post validation
  */
 function sendPaymentInformation(paymentResponse, paymentOptions) {
-	let defer = $.Deferred(); // eslint-disable-line
+	var defer = $.Deferred(); // eslint-disable-line
 
 	$.ajax({
 		url: paymentOptions.validationUrl,
@@ -30,46 +30,60 @@ function sendPaymentInformation(paymentResponse, paymentOptions) {
 					defer.reject(data);
 				}
 			} else {
-				let redirect = $('<form>')
-				.appendTo(document.body)
-				.attr({
-					method: 'POST',
-					action: data.continueUrl
-				});
+				if ($('input[name="sfra5Enabled"]').val() === 'true') {
+					var continueUrl = data.continueUrl;
+					var urlParams = {
+						ID: data.orderID,
+						token: data.orderToken
+					};
 
-				$('<input>')
-				.appendTo(redirect)
-				.attr({
-					name: 'orderID',
-					value: data.orderID
-				});
+					continueUrl += (continueUrl.indexOf('?') !== -1 ? '&' : '?') +
+						Object.keys(urlParams).map(function (key) {
+							return key + '=' + encodeURIComponent(urlParams[key]);
+						}).join('&');
 
-				$('<input>')
-				.appendTo(redirect)
-				.attr({
-					name: 'orderToken',
-					value: data.orderToken
-				});
+					window.location.href = continueUrl;
+				} else {
+					var redirect = $('<form>')
+					.appendTo(document.body)
+					.attr({
+						method: 'POST',
+						action: data.continueUrl
+					});
 
-				if (data.vbank) {
 					$('<input>')
 					.appendTo(redirect)
 					.attr({
-						name: 'vbank',
-						value: data.vbank
+						name: 'orderID',
+						value: data.orderID
 					});
 
-					for (let vbankPayloadKey in data.vbankPayload) {
+					$('<input>')
+					.appendTo(redirect)
+					.attr({
+						name: 'orderToken',
+						value: data.orderToken
+					});
+
+					if (data.vbank) {
 						$('<input>')
 						.appendTo(redirect)
 						.attr({
-							name: vbankPayloadKey,
-							value: data.vbankPayload[vbankPayloadKey]
+							name: 'vbank',
+							value: data.vbank
 						});
-					}
-				}
 
-				redirect.submit();
+						for (var vbankPayloadKey in data.vbankPayload) {
+							$('<input>')
+							.appendTo(redirect)
+							.attr({
+								name: vbankPayloadKey,
+								value: data.vbankPayload[vbankPayloadKey]
+							});
+						}
+					}
+					redirect.submit();
+				}
 				defer.resolve(data);
 			}
 		},
@@ -88,7 +102,7 @@ function sendPaymentInformation(paymentResponse, paymentOptions) {
  * @param {Object} paymentOptions.cancelUrl - Url for handling payment failure cases
  */
 function handlePaymentFailure(paymentResources, paymentOptions) {
-	let defer = $.Deferred(); // eslint-disable-line
+	var defer = $.Deferred(); // eslint-disable-line
 
 	if (paymentResources.error_code || paymentResources.paymentError) {
 		// If there is an error code in the response, the cancellation belongs from a bad request, and the PG popup couldn't be opened. Executes requestPayFailureUrl method
@@ -145,7 +159,7 @@ function handlePaymentFailure(paymentResources, paymentOptions) {
  */
 const requestPayment = function requestPayment(item, paymentPayload) {
 	if (paymentPayload.paymentResources) {
-		let IMP = window[item];
+		var IMP = window[item];
 		if (!IMP || !IAMPORT_ARGS.MID) {
 			throw new Error('Merchant code not set');
 		}
@@ -154,7 +168,7 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 		IMP.init(IAMPORT_ARGS.MID);
 
 		IMP.request_pay(paymentPayload.paymentResources, function (paymentResponse) {
-			let paymentOptions = {
+			var paymentOptions = {
 				validationUrl: paymentPayload.validationUrl,
 				cancelUrl: paymentPayload.cancelUrl,
 				orderToken: paymentPayload.orderToken,
@@ -180,7 +194,7 @@ const requestPayment = function requestPayment(item, paymentPayload) {
 
 const handlePaymentError = function handlePaymentError(item, paymentPayload) {
 	if (paymentPayload.paymentError) {
-		let paymentOptions = {
+		var paymentOptions = {
 			orderToken: paymentPayload.orderToken,
 			requestPayFailureUrl: paymentPayload.requestPayFailureUrl,
 			merchant_uid: paymentPayload.merchantID
@@ -206,7 +220,7 @@ module.exports = {
 	// Render the selected payment method
 	renderSelectedPaymentMethod: function (selectedPaymentMethod) {
 		if (selectedPaymentMethod) {
-			let paymentMethod = selectedPaymentMethod.toString().replace(/['"]+/g, '');
+			var paymentMethod = selectedPaymentMethod.toString().replace(/['"]+/g, '');
 			$('.iamport-payment-method-name').empty().html('<span>' + paymentMethod + '</span>');
 		}
 	}
