@@ -178,10 +178,18 @@ function updatePaymentIdOnOrder(paymentId, order) {
  */
 function updateVbankOnOrder(status, vbankPayload, order) {
 	try {
+		var vbankObj = {
+			'vbankHolder':vbankPayload.vbankHolder || '',
+			'vbankCode': vbankPayload.vbankCode || '',
+			'vbankIssuedAt': vbankPayload.vbankIssuedAt || '',
+			'vbankName' : vbankPayload.vbankName || '',
+		};
+
 		Transaction.wrap(function () {
 			order.custom.isVirtualPayment = status;
 			order.custom.vbankNumber = vbankPayload.vbankNumber;
 			order.custom.vbankExpiration = vbankPayload.vbankExpiration;
+			order.custom.vbankAdditionalDetails = JSON.stringify(vbankObj);
 		});
 	} catch (e) {
 		iamportLogger.error('Could not update vbank data on the order object: {0}', e.stack);
