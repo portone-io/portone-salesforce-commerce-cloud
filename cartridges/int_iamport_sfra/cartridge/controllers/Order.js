@@ -31,7 +31,7 @@ server.append('Confirm', function (req, res, next) {
 			vbankHolder: orderVbankObj.vbankHolder
 		});
 	} else if (req.form.vbank) {
-		// For SFRA version 6 only, get vbank attribute on placed order
+		// For SFRA version 6 only, get vbank attribute on placed order if order level custom attribute value null.
 		Object.assign(viewData, {
 			vbank: req.form.vbank,
 			vbankName: req.form.vbankName,

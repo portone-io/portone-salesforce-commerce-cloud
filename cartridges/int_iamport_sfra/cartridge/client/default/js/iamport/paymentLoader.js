@@ -30,6 +30,7 @@ function sendPaymentInformation(paymentResponse, paymentOptions) {
 					defer.reject(data);
 				}
 			} else {
+				// Pass Get Request on order confirmation page for SFRA 5
 				if ($('input[name="sfra5Enabled"]').val() === 'true') {
 					var continueUrl = data.continueUrl;
 					var urlParams = {
@@ -44,7 +45,8 @@ function sendPaymentInformation(paymentResponse, paymentOptions) {
 
 					window.location.href = continueUrl;
 				} else {
-					var redirect = $('<form>')
+					// Pass Post Request on order confirmation page for SFRA 6
+					var redirect = $('<form>'
 					.appendTo(document.body)
 					.attr({
 						method: 'POST',
