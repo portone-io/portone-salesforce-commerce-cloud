@@ -46,7 +46,7 @@ function sendPaymentInformation(paymentResponse, paymentOptions) {
 					window.location.href = continueUrl;
 				} else {
 					// Pass Post Request on order confirmation page for SFRA 6
-					var redirect = $('<form>'
+					var redirect = $('<form>')
 					.appendTo(document.body)
 					.attr({
 						method: 'POST',

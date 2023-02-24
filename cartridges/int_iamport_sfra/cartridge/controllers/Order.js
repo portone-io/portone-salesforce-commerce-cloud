@@ -2,6 +2,7 @@
 
 const server = require('server');
 server.extend(module.superModule);
+var Resource = require('dw/web/Resource');
 
 /**
  * Order-Confirm : This endpoint is invoked when the shopper's Order is Placed and Confirmed
@@ -14,11 +15,25 @@ server.append('Confirm', function (req, res, next) {
 
 	var viewData = res.getViewData();
 	var orderID = req.querystring.ID || req.form.orderID;
-	var orderToken =  req.querystring.token || req.form.orderToken;
+	var orderToken = req.querystring.token || req.form.orderToken;
+	if (!orderID || !orderToken) {
+		res.render('/error', {
+			message: Resource.msg('error.confirmation.error', 'confirmation', null)
+		});
+
+		return next();
+	}
 	var order = OrderMgr.getOrder(orderID, orderToken);
+	if (!order || order.customer.ID !== req.currentCustomer.raw.ID
+	) {
+		res.render('/error', {
+			message: Resource.msg('error.confirmation.error', 'confirmation', null)
+		});
+		return next();
+	}
 	viewData.selectedPaymentMethod = order.custom.pay_method;
 	// get the vbank attributes from order level custom attributes for SFRA version 5 and 6.
-	if('vbankExpiration' in order.custom && 'vbankNumber' in order.custom && 'vbankAdditionalDetails' in order.custom) {
+	if ('vbankExpiration' in order.custom && 'vbankNumber' in order.custom && 'vbankAdditionalDetails' in order.custom) {
 		var orderVbankObj = order.custom.vbankAdditionalDetails;
 		orderVbankObj = JSON.parse(orderVbankObj);
 		Object.assign(viewData, {
@@ -60,7 +75,6 @@ server.get('GetConfirmation', server.middleware.https, function (req, res, next)
 	var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 	var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 	var OrderMgr = require('dw/order/OrderMgr');
-	var Resource = require('dw/web/Resource');
 	var URLUtils = require('dw/web/URLUtils');
 	var Transaction = require('dw/system/Transaction');
 	var HookMgr = require('dw/system/HookMgr');

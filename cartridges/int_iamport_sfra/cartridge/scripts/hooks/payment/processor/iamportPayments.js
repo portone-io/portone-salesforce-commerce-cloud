@@ -179,10 +179,10 @@ function updatePaymentIdOnOrder(paymentId, order) {
 function updateVbankOnOrder(status, vbankPayload, order) {
 	try {
 		var vbankObj = {
-			'vbankHolder':vbankPayload.vbankHolder || '',
-			'vbankCode': vbankPayload.vbankCode || '',
-			'vbankIssuedAt': vbankPayload.vbankIssuedAt || '',
-			'vbankName' : vbankPayload.vbankName || '',
+			vbankHolder: vbankPayload.vbankHolder || '',
+			vbankCode: vbankPayload.vbankCode || '',
+			vbankIssuedAt: vbankPayload.vbankIssuedAt || '',
+			vbankName: vbankPayload.vbankName || ''
 		};
 
 		Transaction.wrap(function () {
