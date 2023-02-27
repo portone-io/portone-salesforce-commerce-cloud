@@ -828,6 +828,12 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
+			<attribute-definition attribute-id="vbankAdditionalDetails">
+                <display-name xml:lang="x-default">vbank Additional Details</display-name>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
             <attribute-definition attribute-id="vbankExpiration">
                 <display-name xml:lang="x-default">Virtual Payment Expiration</display-name>
                 <type>string</type>
@@ -858,6 +864,7 @@
                 <attribute attribute-id="vbankExpiration"/>
                 <attribute attribute-id="imp_uid"/>
                 <attribute attribute-id="pay_method"/>
+				<attribute attribute-id="vbankAdditionalDetails"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
