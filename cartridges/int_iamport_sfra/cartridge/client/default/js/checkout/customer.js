@@ -1,6 +1,7 @@
 'use strict';
-
-// Overridden this file from sfra base, just to avoid JS compilation errors. No other changes done.
+/**
+ * Overridden this file from sfra base, just to avoid JS compilation errors. No other changes done.
+ */
 var formHelpers = require('base/checkout/formErrors');
 var scrollAnimate = require('base/components/scrollAnimate');
 var createErrorNotification = require('base/components/errorNotification');
