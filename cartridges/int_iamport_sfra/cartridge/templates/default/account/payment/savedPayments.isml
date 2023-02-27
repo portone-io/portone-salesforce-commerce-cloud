@@ -4,9 +4,11 @@
 	    <div class="row justify-content-center" id="uuid-${paymentInstrument.UUID}">
 	        <div class="col-sm-8 col-md-6">
 	            <div class="card">
-	                <div class="card-header">
-	                    <h2 class="pull-left">${paymentInstrument.creditCardHolder}</h2>
-	                </div>
+					<isif condition="${paymentInstrument.creditCardHolder}">
+					    <div class="card-header">
+		                    <h2 class="pull-left">${paymentInstrument.creditCardHolder}</h2>
+		                </div>
+					</isif>
 	                <div class="card-body card-body-positioning">
 	                    <div class="card-info-group">
 	                        <isset name="payment" value="${paymentInstrument}" scope="page">

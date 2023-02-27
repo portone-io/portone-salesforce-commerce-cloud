@@ -48,12 +48,14 @@ function getCustomerPaymentInstruments(userPaymentInstruments) {
 			iamportCreditCardPG: 'iamportCreditCardPG' in paymentObj.custom ? paymentObj.custom.iamportCreditCardPG : ''
 		};
 
-		result.cardTypeImage = {
-			src: URLUtils.staticURL('/images/' +
-				paymentInstrument.creditCardType.toLowerCase().replace(/\s/g, '') +
-				'-dark.svg'),
-			alt: paymentInstrument.creditCardType
-		};
+		if (paymentInstrument.creditCardType) {
+			result.cardTypeImage = {
+				src: URLUtils.staticURL('/images/' +
+					paymentInstrument.creditCardType.toLowerCase().replace(/\s/g, '') +
+					'-dark.svg'),
+				alt: paymentInstrument.creditCardType
+			};
+		}
 
 		return result;
 	});
