@@ -1,6 +1,5 @@
 'use strict';
 var base = module.superModule;
-var URLUtils = require('dw/web/URLUtils');
 var Customer = require('dw/customer/Customer');
 
 /**
@@ -47,15 +46,6 @@ function getCustomerPaymentInstruments(userPaymentInstruments) {
 			iamportCreditCardNumber: 'iamportCreditCardNumber' in paymentObj.custom ? paymentObj.custom.iamportCreditCardNumber : '',
 			iamportCreditCardPG: 'iamportCreditCardPG' in paymentObj.custom ? paymentObj.custom.iamportCreditCardPG : ''
 		};
-
-		if (paymentInstrument.creditCardType) {
-			result.cardTypeImage = {
-				src: URLUtils.staticURL('/images/' +
-					paymentInstrument.creditCardType.toLowerCase().replace(/\s/g, '') +
-					'-dark.svg'),
-				alt: paymentInstrument.creditCardType
-			};
-		}
 
 		return result;
 	});
