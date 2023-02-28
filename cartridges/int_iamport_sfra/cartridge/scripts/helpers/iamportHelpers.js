@@ -277,7 +277,7 @@ function handleSubcribePaymentRequest(req, customerUid) {
 		}
 		iamportResponseError = new CustomError({ status: errorcode }).message;
 		iamportLogger.error('IamportHelpers-Subscibe Payment request failed: {0}.', JSON.stringify(iamportResponseError));
-		// Store card details in wallet with or without card number(ex: KAKAOPAY PG is not returning card number in response)
+		// Store card details in wallet with or without card number(ex: KAKAOPAY PG is not returning card number in response  in test mode.)
 	} else if (paymentResponse.isOk() && paymentResponse.getObject().message === null && paymentResponse.getObject().response && paymentResponse.getObject().response.customer_uid) {
 		var paymentResponseObj = paymentResponse.getObject().response;
 		var CustomerMgr = require('dw/customer/CustomerMgr');
