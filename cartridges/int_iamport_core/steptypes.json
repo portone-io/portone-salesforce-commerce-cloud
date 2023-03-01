@@ -1,0 +1,14 @@
+{
+    "step-types": {
+      "script-module-step": [
+        {
+          "@type-id": "custom.failUnpaidVirtualPaymentOrders",
+          "@supports-site-context": "true",
+          "module": "int_iamport_core/cartridge/scripts/jobs/failUnpaidVirtualPaymentOrders.js",
+          "description": "Fetch virtual payment orders and fail the unpaid orders if it has exceed the given time.",
+          "function": "execute",
+          "parameters": {}
+        }
+      ]
+    }
+  }

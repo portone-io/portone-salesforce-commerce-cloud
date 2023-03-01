@@ -124,7 +124,7 @@
         <log-prefix>validatePayment</log-prefix>
         <comm-log-enabled>true</comm-log-enabled>
         <force-prd-enabled>true</force-prd-enabled>
-        <mock-mode-enabled>true</mock-mode-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>iamport_validatePaymentProf</profile-id>
         <credential-id>iamport_validatePaymentCred</credential-id>
     </service>

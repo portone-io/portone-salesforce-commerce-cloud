@@ -1,29 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jobs xmlns="http://www.demandware.com/xml/impex/jobs/2015-07-01">
     <job job-id="Iamport-FailUnpaidVirtualPaymentOrders" priority="0">
-        <description>Fetch virtual payment orders and fail the unpaid orders if it has exceed the given time.</description>
+        <description>Fetch virtual payment orders and fail the unpaid orders if it has exceeded the given time.</description>
         <parameters/>
-        <split sequential="false">
-            <contexts template-ref="template_45">
-                <all-storefront-sites/>
-            </contexts>
-            <flow-template template-id="template_45">
-                <step step-id="Iamport-FailUnpaidVirtualPaymentOrders" type="ExecuteScriptModule" enforce-restart="false">
-                    <description>Fetch virtual payment orders and fail the unpaid orders if it has exceed the given time.</description>
-                    <parameters>
-                        <parameter name="ExecuteScriptModule.Module">int_iamport_core/cartridge/scripts/jobs/failUnpaidVirtualPaymentOrders.js</parameter>
-                        <parameter name="ExecuteScriptModule.FunctionName">execute</parameter>
-                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
-                    </parameters>
-                </step>
-            </flow-template>
-        </split>
-        <rules/>
+        <flow>
+            <context site-id="RefArch"/>
+            <step step-id="Iamport-FailUnpaidVirtualPaymentOrders" type="custom.failUnpaidVirtualPaymentOrders" enforce-restart="false">
+                <description>Fetch virtual payment orders and fail the unpaid orders if it has exceed the given time.</description>
+                <parameters/>
+            </step>
+        </flow>
+        <rules>
+            <on-running runtime-threshold="60m" enabled="false">
+                <mark-job-as-hanging/>
+            </on-running>
+        </rules>
         <triggers>
-            <run-once enabled="false">
-                <date>2022-12-07Z</date>
-                <time>10:01:28.000Z</time>
-            </run-once>
+            <run-recurring enabled="true">
+                <recurrence>
+                    <date-from>2023-03-01Z</date-from>
+                    <start-time>05:00:00.000Z</start-time>
+                    <interval>1d</interval>
+                    <day-of-week>
+                        <weekday>Thursday</weekday>
+                        <weekday>Sunday</weekday>
+                        <weekday>Wednesday</weekday>
+                        <weekday>Monday</weekday>
+                        <weekday>Saturday</weekday>
+                        <weekday>Tuesday</weekday>
+                        <weekday>Friday</weekday>
+                    </day-of-week>
+                </recurrence>
+            </run-recurring>
         </triggers>
     </job>
 </jobs>
