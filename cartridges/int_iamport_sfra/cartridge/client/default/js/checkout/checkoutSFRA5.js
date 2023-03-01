@@ -95,9 +95,9 @@ const iamportPayment = require('../iamport/paymentLoader');
 					//
 					var isMultiShip = $('#checkout-main').hasClass('multi-ship');
 					var formSelector = isMultiShip ? '.multi-shipping .active form' : '.single-shipping .shipping-form';
-					var form = $(formSelector);
+					var shippingForm = $(formSelector);
 
-					if (isMultiShip && form.length === 0) {
+					if (isMultiShip && shippingForm.length === 0) {
 						// disable the next:Payment button here
 						$('body').trigger('checkout:disableButton', '.next-step-button button');
 						// in case the multi ship form is already submitted
@@ -134,9 +134,9 @@ const iamportPayment = require('../iamport/paymentLoader');
 							}
 						});
 					} else {
-						var shippingFormData = form.serialize();
+						var shippingFormData = shippingForm.serialize();
 						$('body').trigger('checkout:serializeShipping', {
-							form: form,
+							form: shippingForm,
 							data: shippingFormData,
 							callback: function (data) {
 								shippingFormData = data;
@@ -145,7 +145,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 						// Not disable the next:Payment button here
 						$('body').trigger('checkout:enableButton', '.next-step-button button');
 						$.ajax({
-							url: form.attr('action'),
+							url: shippingForm.attr('action'),
 							type: 'post',
 							data: shippingFormData,
 							success: function (data) {
@@ -364,7 +364,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 										data.paymentResources.error_msg = data.serverErrors[0].message;
 									}
 
-									var payload = {
+									var generalPaymentPayload = {
 										paymentError: true,
 										paymentErrorCode: data.paymentErrorCode,
 										paymentResources: data.paymentResources,
@@ -372,7 +372,7 @@ const iamportPayment = require('../iamport/paymentLoader');
 										requestPayFailureUrl: data.requestPayFailureUrl,
 										merchantID: data.paymentResources.merchant_uid
 									};
-									iamportPayment.generalPayment(payload);
+									iamportPayment.generalPayment(generalPaymentPayload);
 								} else {
 									// go to appropriate stage and display error message
 									defer.reject(data);
