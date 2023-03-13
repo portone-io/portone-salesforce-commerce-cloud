@@ -294,7 +294,8 @@ function handleSubcribePaymentRequest(req, customerUid) {
 			var paymentInstrument = wallet.createPaymentInstrument(dwOrderPaymentInstrument.METHOD_CREDIT_CARD);
 			paymentInstrument.setCreditCardHolder(paymentResponseObj.buyer_name || '');
 			paymentInstrument.setCreditCardNumber(paymentResponseObj.card_number);
-			paymentInstrument.setCreditCardType(paymentResponseObj.card_name);
+			// If we get card_name as null set the default value to 'card'(ex: getting null for KAKAOPAY PG)
+			paymentInstrument.setCreditCardType(paymentResponseObj.card_name || 'card');
 			paymentInstrument.setCreditCardToken(paymentResponseObj.customer_uid);
 			// store the iamport credit card in custom attribute because system attribtue will convert in mask with last four digits.
 			paymentInstrument.custom.iamportCreditCardNumber = paymentResponseObj.card_number;
