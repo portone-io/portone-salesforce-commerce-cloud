@@ -94,10 +94,14 @@ function Handle(basket, paymentInformation, paymentMethodID, req) {
 				paymentMethodID, currentBasket.totalGrossPrice
 			);
 			// set the selected credit card in basket payment instrument.
-			if (!empty(cardNumber) && !empty(cardType) && !empty(creditCardToken)) {
-				paymentInstrument.setCreditCardHolder(currentBasket.billingAddress.fullName);
+			paymentInstrument.setCreditCardHolder(currentBasket.billingAddress.fullName);
+			if (!empty(cardNumber)) {
 				paymentInstrument.setCreditCardNumber(cardNumber);
+			}
+			if (!empty(cardType)) {
 				paymentInstrument.setCreditCardType(cardType);
+			}
+			if (!empty(creditCardToken)) {
 				paymentInstrument.setCreditCardToken(creditCardToken);
 			}
 			return {
