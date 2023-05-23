@@ -1,6 +1,6 @@
 <isscript>
     var assets = require('*/cartridge/scripts/assets.js');
-    assets.addJs('https://cdn.iamport.kr/js/iamport.payment-1.2.0.js');
+    assets.addJs('/js/iamport.payment-1.2.0.js');
     assets.addJs('/js/iamportMain.js');
     assets.addCss('/css/iamportGlobal.css');
 </isscript>
