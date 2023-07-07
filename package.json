@@ -90,7 +90,7 @@
     "should": "^13.2.3",
     "sinon": "^1.17.7",
     "style-loader": "^0.21.0",
-    "stylelint": "^13.13.1",
+    "stylelint": "^15.10.1",
     "stylelint-config-standard": "^17.0.0",
     "stylelint-scss": "^2.5.0",
     "url": "^0.11.0",
